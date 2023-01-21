@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "deno.enable": true,
+  "deno.enablePaths": ["supabase/functions"]
+}

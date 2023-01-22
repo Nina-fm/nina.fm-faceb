@@ -23,7 +23,7 @@ const handleBack = () => {
     </template>
     <template #extra>
       <div class="flex items-center">
-        <el-button type="primary" class="ml-2">Modifier</el-button>
+        <el-button type="primary" class="ml-2" disabled>Modifier</el-button>
       </div>
     </template>
   </el-page-header>

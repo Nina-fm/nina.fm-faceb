@@ -30,10 +30,10 @@ const handleLogin = async () => {
       :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
       <el-form :model="form" label-width="75px">
         <el-form-item label="Email">
-          <el-input v-model="form.email" placeholder="Email..." />
+          <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />
         </el-form-item>
         <el-form-item label="Password">
-          <el-input v-model="form.password" type="password" placeholder="Password..." />
+          <el-input v-model="form.password" type="password" placeholder="Password..." @keyup.enter="handleLogin" />
         </el-form-item>
       </el-form>
       <template #footer>

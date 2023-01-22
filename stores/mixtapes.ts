@@ -24,38 +24,36 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   const isLoading = ref<boolean>(false);
   const mixtapes = ref<MixtapeExt[]>([]);
 
-  async function fetchMixtapes() {
+  const errorHandler = async (fn: AnyFn) => {
     try {
       isLoading.value = true;
-      const data = await api.get(`/mixtapes`);
-      mixtapes.value = data as Mixtape[];
+      return await fn();
     } catch (error: any) {
       console.log(error);
-      ElMessage(error.error_description || error.message);
+      ElMessage.error({ message: error.error_description || error.message });
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
-  async function loadMixtapeById(mixtapeId: string | number) {
-    let id = typeof mixtapeId === "number" ? mixtapeId : Number(mixtapeId);
-    try {
-      isLoading.value = true;
+  const fetchMixtapes = async () =>
+    await errorHandler(async () => {
+      const data = await api.get(`/mixtapes`);
+      mixtapes.value = data as Mixtape[];
+    });
+
+  const loadMixtapeById = async (mixtapeId: string | number) =>
+    await errorHandler(async () => {
+      let id = typeof mixtapeId === "number" ? mixtapeId : Number(mixtapeId);
       const data = await api.get(`/mixtapes`, {
         query: {
           id,
         },
       });
       mixtapes.value = data as Mixtape[];
-    } catch (error: any) {
-      console.log(error);
-      ElMessage(error.error_description || error.message);
-    } finally {
-      isLoading.value = false;
-    }
-  }
+    });
 
-  async function getById(mixtapeId: string | number) {
+  const getById = async (mixtapeId: string | number) => {
     let id = typeof mixtapeId === "number" ? mixtapeId : Number(mixtapeId);
 
     const mixtapeExists = mixtapes.value.find((m) => m.id === id);
@@ -68,7 +66,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     }
 
     return mixtapes.value.find((m) => m.id === id);
-  }
+  };
 
   return {
     isLoading,

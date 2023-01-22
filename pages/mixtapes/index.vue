@@ -1,21 +1,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
+import { AuthorExt, MixtapeExt } from '~~/stores/mixtapes';
 
 const { fetchMixtapes } = useMixtapesStore()
 const { mixtapes } = storeToRefs(useMixtapesStore());
-
-const columns = [{
-  key: "id",
-  dataKey: "id",
-  title: "ID",
-  width: 30,
-},
-{
-  key: "name",
-  dataKey: "name",
-  title: "Name",
-  width: 300
-}];
 
 const handleRowClick = (payload: any) => {
   navigateTo(`/mixtapes/${payload.id}`)
@@ -24,6 +12,9 @@ const handleRowClick = (payload: any) => {
 const handleBack = () => {
   navigateTo("/")
 }
+
+const formatAuthors = (row: MixtapeExt) =>
+  row.authors.reduce((r: string[], a: AuthorExt) => [...r, a.name], [] as string[]).join(", ");
 
 onMounted(() => fetchMixtapes())
 </script>
@@ -39,7 +30,9 @@ onMounted(() => fetchMixtapes())
       <client-only>
         <el-table class="clickable" :data="mixtapes" style="width: 100%" @row-click="handleRowClick">
           <el-table-column prop="id" label="ID" width="40" />
-          <el-table-column prop="name" label="Name" />
+          <el-table-column prop="name" label="Mixtape" />
+          <el-table-column label="Par" :formatter="formatAuthors" />
+          <el-table-column prop="year" label="Année" />
         </el-table>
       </client-only>
     </el-main>

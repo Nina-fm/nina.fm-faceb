@@ -1,5 +1,6 @@
 import { Provider, User } from "@supabase/supabase-js";
-// import { ElMessage } from "element-plus";
+
+import { ElMessage } from "element-plus";
 
 export const useAuthStore = defineStore("auth", () => {
   const { $auth } = useNuxtApp();
@@ -25,102 +26,108 @@ export const useAuthStore = defineStore("auth", () => {
     isLoading.value = false;
   });
 
+  const errorHandler = async (fn: AnyFn) => {
+    try {
+      isLoading.value = true;
+      return await fn();
+    } catch (error: any) {
+      console.log(error);
+      ElMessage.error({ message: error.error_description || error.message });
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   /**
    * Login with email and password
    */
-  const login = async ({ email, password }: SignInParams) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.signInWithPassword({
-      email,
-      password,
+  const login = async ({ email, password }: SignInParams) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return user;
     });
-    if (error) throw error;
-    return user;
-  };
 
   /**
    * Login with email (magic)
    */
-  const loginWithEmail = async ({ email }: Pick<SignInParams, "email">) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.signInWithOtp({ email });
-    if (error) throw error;
-    isLoading.value = false;
-    return user;
-  };
+  const loginWithEmail = async ({ email }: Pick<SignInParams, "email">) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.signInWithOtp({ email });
+      if (error) throw error;
+      return user;
+    });
 
   /**
    * Login with google, github, etc
    */
 
-  const loginWithSocialProvider = async (provider: Provider) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.signInWithOAuth({
-      provider,
+  const loginWithSocialProvider = async (provider: Provider) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.signInWithOAuth({
+        provider,
+      });
+      if (error) throw error;
+      return user;
     });
-    if (error) throw error;
-    isLoading.value = false;
-    return user;
-  };
 
   /**
    * Logout
    */
-  const logout = async () => {
-    isLoading.value = true;
-    const { error } = await $auth.auth.signOut();
-    if (error) throw error;
-  };
+  const logout = async () =>
+    await errorHandler(async () => {
+      const { error } = await $auth.auth.signOut();
+      if (error) throw error;
+    });
 
   /**
    * Register
    */
-  const register = async ({ email, password, ...meta }: SignUpParams) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.signUp({
-      email,
-      password,
+  const register = async ({ email, password, ...meta }: SignUpParams) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.signUp({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return user;
     });
-    if (error) throw error;
-    isLoading.value = false;
-    return user;
-  };
 
   /**
    * Update user email, password, or meta data
    */
-  const update = async (data: Obj) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.updateUser(data);
-    if (error) throw error;
-    isLoading.value = false;
-    return user;
-  };
+  const update = async (data: Obj) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.updateUser(data);
+      if (error) throw error;
+      return user;
+    });
 
   /**
    * Send user an email to reset their password
    * (ie. support "Forgot Password?")
    */
-  const sendPasswordRestEmail = async (email: string) => {
-    isLoading.value = true;
-    const { data, error } = await $auth.auth.resetPasswordForEmail(email);
-    if (error) throw error;
-    isLoading.value = false;
-    return data;
-  };
+  const sendPasswordRestEmail = async (email: string) =>
+    await errorHandler(async () => {
+      const { data, error } = await $auth.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      return data;
+    });
 
-  const resetPassword = async (accessToken: string, newPassword: string) => {
-    isLoading.value = true;
-    const { data: user, error } = await $auth.auth.admin.updateUserById(
-      accessToken,
-      {
-        password: newPassword,
-      }
-    );
-    if (error) throw error;
-    isLoading.value = false;
-    return user;
-  };
+  const resetPassword = async (accessToken: string, newPassword: string) =>
+    await errorHandler(async () => {
+      const { data: user, error } = await $auth.auth.admin.updateUserById(
+        accessToken,
+        {
+          password: newPassword,
+        }
+      );
+      if (error) throw error;
+      return user;
+    });
 
   return {
     user,

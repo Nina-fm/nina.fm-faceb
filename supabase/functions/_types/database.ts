@@ -1,3 +1,5 @@
+/// <reference types="../_types/utils.d.ts" />
+
 import type { Database } from "../_types/supabase.ts";
 import type { GetResult } from "https://esm.sh/@supabase/postgrest-js@2/dist/module/select-query-parser";
 

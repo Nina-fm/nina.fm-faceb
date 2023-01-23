@@ -17,8 +17,8 @@ export interface ApiOptions {
 export const useApi = () => {
   const config = useRuntimeConfig();
   const token = useSupabaseToken();
-  const url = config.public.supabase.url;
   const apikey = config.public.supabase.key;
+  const baseURL = config.public.supabase.functionsUrl;
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) =>
     await $fetch(
@@ -28,7 +28,7 @@ export const useApi = () => {
       }),
       {
         method: method ?? Methods.GET,
-        baseURL: `${url}/functions/v1`,
+        baseURL,
         headers: {
           apikey,
           Authorization: `Bearer ${token.value}`,

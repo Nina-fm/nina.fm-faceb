@@ -2,6 +2,8 @@
 import { storeToRefs } from 'pinia';
 import { AuthorExt, MixtapeExt } from '~~/stores/mixtapes';
 
+definePageMeta({ middleware: ["auth"] })
+
 const { fetchMixtapes } = useMixtapesStore()
 const { mixtapes } = storeToRefs(useMixtapesStore());
 

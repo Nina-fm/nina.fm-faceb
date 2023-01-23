@@ -18,6 +18,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 
 const handleLogout = async () => {
   await logout()
+  navigateTo("/login")
 }
 
 </script>
@@ -27,7 +28,7 @@ const handleLogout = async () => {
     <el-menu :default-active="activeRoute" class="nina-navbar" mode="horizontal" :ellipsis="false"
       @select="handleSelect">
       <el-menu-item index="/" class="brand">
-        Nina Admin
+        Nina.fm Admin
       </el-menu-item>
       <div class="flex-grow" />
       <el-menu-item index="/mixtapes">

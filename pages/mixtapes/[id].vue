@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 
+definePageMeta({ middleware: ["auth"] })
+
 const { params } = useRoute();
 const { getById } = useMixtapesStore();
 const { data } = await useAsyncData("mixtape", () => getById(params.id as string));

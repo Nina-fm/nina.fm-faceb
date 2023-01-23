@@ -13,7 +13,7 @@ provide(ID_INJECTION_KEY, {
 
 watchEffect(() => {
   if (!isLoggedIn.value && currentRoute.value.name !== "login") {
-    navigateTo("/login");
+    // navigateTo("/login");
   }
 })
 </script>

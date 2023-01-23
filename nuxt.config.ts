@@ -17,10 +17,20 @@ export default defineNuxtConfig({
           content: "The Nina.fm Admin",
         },
       ],
-      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.png" }],
       script: [],
     },
   },
+
+  runtimeConfig: {
+    public: {
+      supabase: {
+        functionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
+      },
+    },
+  },
+
+  ssr: false,
 
   css: ["~/assets/scss/index.scss"],
 

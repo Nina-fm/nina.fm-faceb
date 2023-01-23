@@ -20,7 +20,6 @@ watchEffect(() => {
 
 const handleLogin = async () => {
   await login({ email: form.email, password: form.password });
-  navigateTo("/")
 }
 </script>
 
@@ -28,7 +27,7 @@ const handleLogin = async () => {
   <client-only>
     <el-dialog class="login-modal" v-model="dialogVisible" title="Authentification" center align-center width="30%"
       :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
-      <el-form :model="form" label-width="75px">
+      <el-form :model="form" label-width="75px" @submit.prevent>
         <el-form-item label="Email">
           <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />
         </el-form-item>

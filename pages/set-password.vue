@@ -21,7 +21,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-dialog class="password-modal" v-model="dialogVisible" title="Mot de passe" center align-center width="30%"
+  <el-dialog class="auth-modal" v-model="dialogVisible" title="Mot de passe" center align-center width="30%"
     :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
     <el-form :model="form" label-width="75px" @submit.prevent>
       <el-form-item label="Password">
@@ -40,7 +40,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.password-modal {
-  min-width: 320px;
-}
+
 </style>

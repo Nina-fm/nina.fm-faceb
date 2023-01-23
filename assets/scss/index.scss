@@ -26,3 +26,17 @@ a {
 .flex-grow {
   flex-grow: 1;
 }
+
+.auth-modal {
+  min-width: 320px;
+
+  .el-form .el-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .pre-footer {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+}

@@ -25,7 +25,7 @@ const handleLogin = async () => {
 
 <template>
   <client-only>
-    <el-dialog class="login-modal" v-model="dialogVisible" title="Authentification" center align-center width="30%"
+    <el-dialog class="auth-modal" v-model="dialogVisible" title="Authentification" center align-center width="30%"
       :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
       <el-form :model="form" label-width="75px" @submit.prevent>
         <el-form-item label="Email">
@@ -36,6 +36,8 @@ const handleLogin = async () => {
         </el-form-item>
       </el-form>
       <template #footer>
+        <div class="pre-footer"><nuxt-link to="/reset-password"><el-link>Mot de passe oublié ?</el-link></nuxt-link>
+        </div>
         <span class="dialog-footer">
           <el-button type="primary" @click="handleLogin">
             Connexion
@@ -47,7 +49,5 @@ const handleLogin = async () => {
 </template>
 
 <style scoped>
-.login-modal {
-  min-width: 320px;
-}
+
 </style>

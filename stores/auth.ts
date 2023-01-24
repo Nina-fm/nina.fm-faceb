@@ -22,6 +22,7 @@ export const useAuthStore = defineStore("auth", () => {
    */
   $auth.auth.onAuthStateChange((event, session) => {
     user.value = session?.user || null;
+    console.log("onAuthStateChange", { user: user.value });
     refresh();
     isLoading.value = false;
   });

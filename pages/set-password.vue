@@ -8,6 +8,8 @@ const form = reactive({
   password: '',
 })
 
+console.log("on render", { user });
+
 const handleSavePassword = async () => {
   await update({ password: form.password });
   navigateTo("/")
@@ -15,7 +17,7 @@ const handleSavePassword = async () => {
 
 onMounted(() => {
   if (!user) {
-    navigateTo("/login")
+    // navigateTo("/login")
   }
 })
 </script>

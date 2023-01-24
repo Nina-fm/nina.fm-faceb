@@ -9,11 +9,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const { isLoggedIn } = storeToRefs(useAuthStore());
   const isPassLink =
     ["invite", "recovery"].includes(String(hash?.type)) && hash?.token;
-  if (
-    !isPassLink &&
-    !isLoggedIn.value &&
-    !allowedPaths.includes(String(to.name))
-  ) {
-    return navigateTo("/login");
-  }
+  // if (
+  //   !isPassLink &&
+  //   !isLoggedIn.value &&
+  //   !allowedPaths.includes(String(to.name))
+  // ) {
+  //   return navigateTo("/login");
+  // }
 });

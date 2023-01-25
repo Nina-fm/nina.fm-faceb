@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div>
+  <div class="nina-layout full-height">
     <el-container>
       <el-header>
         <Navbar />

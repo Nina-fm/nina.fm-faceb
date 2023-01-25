@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 .n-main {
   display: flex;
   justify-content: center;

@@ -24,28 +24,27 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <client-only>
-    <el-dialog class="auth-modal" v-model="dialogVisible" title="Authentification" center align-center width="30%"
-      :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
-      <el-form :model="form" label-width="75px" @submit.prevent>
-        <el-form-item label="Email">
-          <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />
-        </el-form-item>
-        <el-form-item label="Password">
-          <el-input v-model="form.password" type="password" placeholder="Password..." @keyup.enter="handleLogin" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="pre-footer"><nuxt-link to="/reset-password"><el-link>Mot de passe oublié ?</el-link></nuxt-link>
-        </div>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="handleLogin">
-            Connexion
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-  </client-only>
+  <el-dialog class="auth-modal" v-model="dialogVisible" title="Connexion" center align-center width="30%"
+    :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
+    <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
+      <el-form-item>
+        <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="form.password" type="password" placeholder="Password..." @keyup.enter="handleLogin" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="pre-footer">
+        <nuxt-link to="/reset-password"><el-link type="info">Mot de passe oublié ?</el-link></nuxt-link>
+      </div>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="handleLogin">
+          Se connecter
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>

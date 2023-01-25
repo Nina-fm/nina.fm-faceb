@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 
 definePageMeta({ layout: "auth" });
 
+const config = useRuntimeConfig()
 const { user } = storeToRefs(useAuthStore());
 const { update } = useAuthStore();
 const dialogVisible = ref(true)
@@ -23,8 +24,12 @@ const handleSavePassword = async () => {
 </script>
 
 <template>
-  <el-dialog class="auth-modal" v-model="dialogVisible" title="Mot de passe" center align-center width="30%"
-    :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
+  <el-dialog class="auth-modal" v-model="dialogVisible" center align-center width="30%" :show-close="false"
+    :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
+    <template #title>
+      <span class="sitename">{{ config.public.sitename }}</span>
+      <span class="el-dialog-title">Mot de passe</span>
+    </template>
     <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
       <el-form-item>
         <el-input v-model="form.password" type="password" placeholder="Choisissez votre mot de passe..."

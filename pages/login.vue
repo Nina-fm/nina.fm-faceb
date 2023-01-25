@@ -4,6 +4,7 @@ import { ref, reactive } from 'vue';
 
 definePageMeta({ layout: "auth" });
 
+const config = useRuntimeConfig()
 const { login } = useAuthStore()
 const { isLoggedIn } = storeToRefs(useAuthStore())
 const dialogVisible = ref(true)
@@ -24,8 +25,12 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <el-dialog class="auth-modal" v-model="dialogVisible" title="Connexion" center align-center width="30%"
-    :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
+  <el-dialog class="auth-modal" v-model="dialogVisible" center align-center width="30%" :show-close="false"
+    :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
+    <template #title>
+      <span class="sitename">{{ config.public.sitename }}</span>
+      <span class="el-dialog-title">Connexion</span>
+    </template>
     <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
       <el-form-item>
         <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />

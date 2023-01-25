@@ -49,14 +49,20 @@ a {
 .auth-modal {
   min-width: 320px;
 
-  &:before {
-    content: "Nina.fm Admin";
+  .sitename {
     display: block;
-    padding-top: 20px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
     font-size: 1.75rem;
     letter-spacing: -0.04em;
     font-weight: 500;
-    color: var(--el-color-info-light-7);
+    color: var(--el-color-info-light-8);
+  }
+
+  .el-dialog-title {
+    font-size: 1.2em;
+    font-weight: bold;
   }
 
   .el-form .el-form-item:last-child {

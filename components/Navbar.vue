@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue'
 
+const config = useRuntimeConfig()
 const { logout } = useAuthStore();
 const { user, isLoggedIn } = storeToRefs(useAuthStore());
 const route = useRoute()
@@ -28,7 +29,7 @@ const handleLogout = async () => {
     <el-menu :default-active="activeRoute" class="nina-navbar" mode="horizontal" :ellipsis="false"
       @select="handleSelect">
       <el-menu-item index="/" class="brand">
-        Nina.fm Admin
+        {{ config.public.sitename }}
       </el-menu-item>
       <div class="flex-grow" />
       <el-menu-item index="/mixtapes">

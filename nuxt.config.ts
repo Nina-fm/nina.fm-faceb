@@ -1,6 +1,8 @@
 import ElementPlus from "unplugin-element-plus/vite";
 import path from "node:path";
 
+const sitename = "Nina.fm • Face B";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -9,7 +11,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         class: "dark",
       },
-      title: "Nina.fm Admin",
+      title: sitename,
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         {
@@ -25,6 +27,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      sitename,
       supabase: {
         functionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
       },

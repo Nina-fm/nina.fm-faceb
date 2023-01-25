@@ -129,6 +129,7 @@ serve((req: Request) => {
    * GET mixtapes
    */
   return queryResponse(async () => {
+    console.log("Get all mixtapes");
     // And we can run queries in the context of our authenticated user
     const { data, error } = await supabaseClient
       .from("mixtapes")

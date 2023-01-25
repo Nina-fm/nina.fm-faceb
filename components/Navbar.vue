@@ -7,8 +7,6 @@ const { user, isLoggedIn } = storeToRefs(useAuthStore());
 const route = useRoute()
 const activeRoute = ref(route.path || '/')
 
-console.log({ user: user.value, isLoggedIn: isLoggedIn.value })
-
 const handleSelect = (key: string, keyPath: string[]) => {
   if (key) {
     activeRoute.value = key

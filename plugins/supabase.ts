@@ -3,10 +3,6 @@ export default defineNuxtPlugin(() => {
   const auth = useSupabaseAuthClient();
   const user = useSupabaseUser();
 
-  console.log({ supabase });
-  console.log({ auth });
-  console.log({ user: user.value });
-
   return {
     provide: {
       auth,

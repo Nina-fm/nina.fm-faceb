@@ -1,4 +1,5 @@
 import ElementPlus from "unplugin-element-plus/vite";
+import path from "node:path";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -32,8 +33,6 @@ export default defineNuxtConfig({
 
   ssr: false,
 
-  css: ["~/assets/scss/index.scss"],
-
   // build
   build: {
     transpile: ["element-plus/es"],
@@ -45,7 +44,24 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    plugins: [ElementPlus()],
+    resolve: {
+      alias: {
+        "~/": `${path.resolve(__dirname, ".")}/`,
+      },
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@use "~/styles/element/index.scss" as *; @use "~/styles/index.scss" as *;`,
+        },
+      },
+    },
+    plugins: [
+      ElementPlus({
+        useSource: true,
+        defaultLocale: "fr",
+      }),
+    ],
   },
 
   // build modules

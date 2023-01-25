@@ -12,9 +12,12 @@ const form = reactive({
 })
 
 onMounted(() => {
-  if (!user.value) {
-    navigateTo("/login")
-  }
+  setTimeout(() => {
+    console.log("onMounted", user.value)
+    if (!user.value) {
+      navigateTo("/login")
+    }
+  }, 1000);
 })
 
 const handleSavePassword = async () => {

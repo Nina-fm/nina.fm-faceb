@@ -14,6 +14,7 @@ const handleSavePassword = async () => {
 }
 
 onMounted(() => {
+  console.log("onMouted /set-password", { user })
   if (!user) {
     navigateTo("/login")
   }

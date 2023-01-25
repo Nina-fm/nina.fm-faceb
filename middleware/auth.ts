@@ -8,6 +8,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const isPassLink =
     ["invite", "recovery"].includes(String(params?.type)) && params?.token;
 
+  console.log("middleware params", { params });
+  console.log("middleware isLoggedIn", { isLoggedIn });
+  console.log("middleware isPassLink", { isPassLink });
+  console.log("middleware isPassLink", { isPassLink });
+
   if (
     !isPassLink &&
     !isLoggedIn.value &&

@@ -2,7 +2,7 @@
 
 definePageMeta({ layout: "auth" });
 
-const { sendPasswordRestEmail, user } = useAuthStore();
+const { sendPasswordRestEmail } = useAuthStore();
 const dialogVisible = ref(true)
 const form = reactive({
   email: '',

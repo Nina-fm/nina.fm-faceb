@@ -1,24 +1,25 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia';
 
 definePageMeta({ layout: "auth" });
 
-const { update, user } = useAuthStore();
+const { user } = storeToRefs(useAuthStore());
+const { update } = useAuthStore();
 const dialogVisible = ref(true)
 const form = reactive({
   password: '',
+})
+
+onMounted(() => {
+  if (!user.value) {
+    navigateTo("/login")
+  }
 })
 
 const handleSavePassword = async () => {
   await update({ password: form.password });
   navigateTo("/")
 }
-
-onMounted(() => {
-  console.log("onMouted /set-password", { user })
-  if (!user) {
-    navigateTo("/login")
-  }
-})
 </script>
 
 <template>

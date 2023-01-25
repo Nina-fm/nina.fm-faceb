@@ -9,10 +9,12 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoggedIn = computed(() => !!user.value);
 
   const refresh = () => {
-    const token = useSupabaseToken();
-    if (!token.value) {
-      user.value = null;
-    }
+    setTimeout(() => {
+      const token = useSupabaseToken();
+      if (!token.value) {
+        user.value = null;
+      }
+    }, 1000);
   };
 
   refresh();

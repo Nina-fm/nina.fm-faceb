@@ -37,8 +37,7 @@ const handleLogout = async () => {
       </el-menu-item>
       <el-sub-menu v-if="isLoggedIn" index="">
         <template #title>
-          <el-avatar size="small" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-            :alt="user?.email" />
+          <el-avatar class="avatar-icon" size="small" :icon="ElIconUserFilled" />
         </template>
         <el-menu-item disabled>{{ user?.email }}</el-menu-item>
         <el-menu-item @click="handleLogout" index="">Se déconnecter</el-menu-item>
@@ -47,9 +46,19 @@ const handleLogout = async () => {
   </client-only>
 </template>
 
-<style scoped>
+<style scoped >
 .brand {
   font-weight: bold;
   font-size: 1rem;
+}
+
+.avatar-icon {
+  background-color: var(--el-color-info-light-7);
+}
+
+.avatar-icon :deep(.el-icon) {
+  font-size: 0.9em;
+  margin-right: 0px;
+
 }
 </style>

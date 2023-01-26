@@ -1,13 +1,13 @@
 // styles/element/index.scss
 /* just override what you need */
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
-  $font-family: (
-    "": "'Circular Std', sans-serif",
-  ),
   $colors: (
     "primary": (
-      "base": yellow,
+      "base": #ffd000,
     ),
+  ),
+  $font-family: (
+    "": "'Circular Std', sans-serif",
   )
 );
 

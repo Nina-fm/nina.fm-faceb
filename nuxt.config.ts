@@ -1,6 +1,8 @@
 import ElementPlus from "unplugin-element-plus/vite";
 import path from "node:path";
 
+const lifecycle = process.env.npm_lifecycle_event;
+
 const sitename = "Nina.fm • Face B";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -38,7 +40,7 @@ export default defineNuxtConfig({
 
   // build
   build: {
-    transpile: ["element-plus/es"],
+    transpile: lifecycle === "build" ? ["element-plus"] : [],
   },
 
   typescript: {
@@ -55,7 +57,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@use "~/styles/element/index.scss" as *; @use "~/styles/index.scss" as *;`,
+          additionalData: `@use "~/styles/element/index.scss" as *;`,
         },
       },
     },
@@ -79,6 +81,7 @@ export default defineNuxtConfig({
     ],
     "@element-plus/nuxt",
     "@nuxtjs/supabase",
+    "unplugin-icons/nuxt",
   ],
 
   imports: {

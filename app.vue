@@ -1,22 +1,15 @@
 <script lang="ts" setup>
+import "~/styles/index.scss";
 import { ID_INJECTION_KEY } from 'element-plus'
 import { storeToRefs } from 'pinia';
 import fr from "element-plus/dist/locale/fr.mjs"
 
-const { currentRoute } = useRouter()
-const { isLoggedIn } = storeToRefs(useAuthStore())
 const { isLoading } = storeToRefs(useLoadingStore())
 const locale = computed(() => fr)
 
 provide(ID_INJECTION_KEY, {
   prefix: 100,
   current: 0,
-})
-
-watchEffect(() => {
-  if (!isLoggedIn.value && currentRoute.value.name !== "login") {
-    // navigateTo("/login");
-  }
 })
 </script>
 
@@ -30,7 +23,7 @@ watchEffect(() => {
   </el-config-provider>
 </template>
 
-<style scoped>
+<style>
 .el-loading-parent--relative {
   position: fixed !important;
   top: 0;

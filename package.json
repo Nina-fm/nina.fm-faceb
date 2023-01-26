@@ -13,9 +13,8 @@
     "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts"
   },
   "dependencies": {
-    "element-plus": "^2.2.28",
-    "query-string": "^8.1.0",
-    "vue-fragment": "^1.6.0"
+    "postcss-loader": "^7.0.2",
+    "query-string": "^8.1.0"
   },
   "devDependencies": {
     "@element-plus/icons-vue": "^2.0.10",
@@ -25,6 +24,7 @@
     "@pinia/nuxt": "^0.4.6",
     "@unocss/nuxt": "^0.48.4",
     "@vueuse/nuxt": "^9.10.0",
+    "element-plus": "^2.2.28",
     "nuxt": "3.0.0",
     "pinia": "^2.0.28",
     "sass": "^1.57.1",

@@ -13,7 +13,7 @@ const form = reactive({
 
 onMounted(() => {
   setTimeout(() => {
-    console.log("onMounted", user.value)
+    // console.log("onMounted", user.value)
     if (!user.value) {
       navigateTo("/login")
     }

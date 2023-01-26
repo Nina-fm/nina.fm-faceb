@@ -20,8 +20,9 @@ export const useApi = () => {
   const apikey = config.public.supabase.key;
   const baseURL = config.public.supabase.functionsUrl;
 
-  const call = async (path: string, method?: Methods, options?: ApiOptions) =>
-    await $fetch(
+  const call = async (path: string, method?: Methods, options?: ApiOptions) => {
+    console.log({ token: token.value });
+    return await $fetch(
       queryString.stringifyUrl({
         url: path,
         query: options?.query,
@@ -36,6 +37,7 @@ export const useApi = () => {
         ...(options?.body ?? {}),
       }
     );
+  };
 
   const callGet = async (path: string, options?: ApiOptions) =>
     await call(path, Methods.GET, options);

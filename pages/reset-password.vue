@@ -2,9 +2,7 @@
 
 definePageMeta({ layout: "auth" });
 
-const config = useRuntimeConfig()
 const { sendPasswordRestEmail } = useAuthStore();
-const dialogVisible = ref(true)
 const form = reactive({
   email: '',
 })
@@ -23,12 +21,7 @@ const handleResetPassword = async () => {
 </script>
 
 <template>
-  <el-dialog class="auth-modal" v-model="dialogVisible" center align-center width="30%" :show-close="false"
-    :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
-    <template #title>
-      <span class="sitename">{{ config.public.sitename }}</span>
-      <span class="el-dialog-title">Mot de passe oublié</span>
-    </template>
+  <auth-box title="Mot de passe oublié">
     <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
       <el-form-item>
         <el-input v-model="form.email" type="email" placeholder="Votre email..." @keyup.enter="handleResetPassword" />
@@ -44,7 +37,7 @@ const handleResetPassword = async () => {
         </el-button>
       </span>
     </template>
-  </el-dialog>
+  </auth-box>
 </template>
 
 <style scoped>

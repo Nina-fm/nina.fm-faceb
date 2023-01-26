@@ -21,7 +21,6 @@ export const useApi = () => {
   const baseURL = config.public.supabase.functionsUrl;
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
-    console.log({ token: token.value });
     return await $fetch(
       queryString.stringifyUrl({
         url: path,

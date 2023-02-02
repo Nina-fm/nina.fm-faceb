@@ -1,18 +1,15 @@
 <script lang="ts" setup>
-interface FormModel {
-    name: String;
-    user_id: String | null;
-}
+import { AuthorParams } from '~~/types/supatypes';
 
 const { modelValue, edit } = defineProps<{
-    modelValue: FormModel,
+    modelValue: AuthorParams,
     edit?: boolean
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: FormModel): void
+    (e: 'update:modelValue', value: AuthorParams): void
     (e: 'cancel'): void
-    (e: 'submit', value: FormModel): void
+    (e: 'submit', value: AuthorParams): void
 }>()
 
 const valid = ref(false)

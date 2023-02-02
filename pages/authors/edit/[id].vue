@@ -14,7 +14,7 @@ const form = reactive({
 
 const handleSubmit = async () => {
     const { error } = await updateAuthor(id, form);
-    if (!error) navigateTo(`/authors/${id}`)
+    if (!error) navigateTo(`/authors`)
 }
 </script>
 

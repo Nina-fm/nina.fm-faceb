@@ -5,9 +5,14 @@ export const useLoadingStore = defineStore("loading", () => {
 
   const { isLoading: authIsLoading } = storeToRefs(useAuthStore());
   const { isLoading: mixtapesIsLoading } = storeToRefs(useMixtapesStore());
+  const { isLoading: authorsIsLoading } = storeToRefs(useAuthorsStore());
 
   const isLoading = computed<boolean>(
-    () => loading.value || authIsLoading.value || mixtapesIsLoading.value
+    () =>
+      loading.value ||
+      authIsLoading.value ||
+      mixtapesIsLoading.value ||
+      authorsIsLoading.value
   );
 
   const toggleLoading = () => {

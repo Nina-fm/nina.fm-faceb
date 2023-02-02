@@ -1,77 +1,95 @@
-import {
-  DType,
-  ResolveRelationQuery,
-} from "~~/supabase/functions/_types/database";
+import { AnyFn, MixtapeExt, MixtapeParams, ObjectOf } from "~~/types/supatypes";
 
-import { ElMessage } from "element-plus";
-
-const mixtapeAuthorsRelation = "mixtapes_authors(*)";
-
-export type MixtapeAuthors = ResolveRelationQuery<
-  typeof mixtapeAuthorsRelation,
-  "many"
->;
-export type Mixtape = DType<"mixtapes">;
-export type MixtapeExt = Mixtape & MixtapeAuthors;
-export type Author = DType<"authors">;
-export type AuthorExt = Author & {
-  avatar_url?: string | null;
-  mixtape_count?: number | null;
-};
+import { Ref } from "nuxt/dist/app/compat/capi";
 
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi();
   const isLoading = ref<boolean>(false);
-  const mixtapes = ref<MixtapeExt[]>([]);
-
-  const errorHandler = async (fn: AnyFn) => {
-    try {
-      isLoading.value = true;
-      return await fn();
-    } catch (error: any) {
-      console.log(error);
-      ElMessage.error({ message: error.error_description || error.message });
-    } finally {
-      isLoading.value = false;
-    }
-  };
+  const { process } = useProcess({ isLoading });
+  const data = ref<MixtapeExt[]>([]);
+  const index = ref<ObjectOf<MixtapeExt>>();
 
   const fetchMixtapes = async () =>
-    await errorHandler(async () => {
-      const data = await api.get(`/mixtapes`);
-      mixtapes.value = data as Mixtape[];
+    await process(async () => {
+      const result = await api.get(`/mixtapes`);
+      data.value = result as MixtapeExt[];
+      index.value = (result as MixtapeExt[]).reduce(
+        (r, m) => ({ ...r, [m.id]: m }),
+        {}
+      );
     });
 
   const loadMixtapeById = async (mixtapeId: string | number) =>
-    await errorHandler(async () => {
+    await process(async () => {
       let id = typeof mixtapeId === "number" ? mixtapeId : Number(mixtapeId);
-      const data = await api.get(`/mixtapes`, {
+      const result = await api.get(`/mixtapes`, {
         query: {
           id,
         },
       });
-      mixtapes.value = data as Mixtape[];
+      index.value = { ...index.value, [mixtapeId]: result as MixtapeExt };
     });
 
   const getById = async (mixtapeId: string | number) => {
     let id = typeof mixtapeId === "number" ? mixtapeId : Number(mixtapeId);
-
-    const mixtapeExists = mixtapes.value.find((m) => m.id === id);
-    if (!mixtapeExists) {
+    if (!index.value?.[id]) {
       await loadMixtapeById(id);
     }
 
-    if (!mixtapes.value.length) {
-      await fetchMixtapes();
-    }
-
-    return mixtapes.value.find((m) => m.id === id);
+    return index.value?.[id];
   };
+
+  const createMixtape = async (mixtapeData: MixtapeParams) =>
+    await process(
+      async () => {
+        const result: MixtapeExt = await api.post(`/mixtapes`, {
+          body: { data: mixtapeData },
+        });
+        data.value = [...data.value, result];
+        index.value = { ...index.value, [result.id]: result };
+        return data;
+      },
+      { successMsg: "Mixtape créée avec succès !" }
+    );
+
+  const updateMixtape = async (
+    mixtapeId: string | number,
+    mixtapeData: MixtapeParams
+  ) =>
+    await process(
+      async () => {
+        const result: MixtapeExt = await api.patch(`/mixtapes`, {
+          query: { id: mixtapeId },
+          body: { data: mixtapeData },
+        });
+        data.value = [...data.value.filter((a) => a.id !== mixtapeId), result];
+        index.value = { ...index.value, [mixtapeId]: result };
+        return data;
+      },
+      { successMsg: "Mixtape mise à jour avec succès !" }
+    );
+
+  const deleteMixtape = async (mixtapeId: string | number) =>
+    await process(
+      async () => {
+        const result = await api.delete(`/mixtapes`, {
+          query: { id: mixtapeId },
+        });
+        return result;
+      },
+      {
+        successMsg: "Mixtape supprimée avec succès !",
+      }
+    );
 
   return {
     isLoading,
-    mixtapes,
+    data,
+    index,
     fetchMixtapes,
+    createMixtape,
+    updateMixtape,
+    deleteMixtape,
     getById,
   };
 });

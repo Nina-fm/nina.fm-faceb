@@ -1,15 +1,36 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
 
 definePageMeta({ middleware: ["auth"] })
 
 const { params } = useRoute();
 const { getById } = useMixtapesStore();
-const { data } = await useAsyncData("mixtape", () => getById(params.id as string));
 
-
+const id = params.id as string;
+const { data } = await useAsyncData("mixtape", () => getById(id));
 const mixtape = computed(() => data.value)
-const authors = computed(() => data.value.authors.reduce((r: any, a: { name: any; }) => ([...r, a.name]), []));
+const headers = [
+  {
+    title: "Position",
+    key: "position",
+    sortable: false
+  },
+  {
+    title: "Artiste",
+    key: "artist",
+    sortable: false
+  },
+  {
+    title: "Titre",
+    key: "title",
+    sortable: false
+  },
+  {
+    title: "Durée",
+    key: "duration",
+    align: "end",
+    sortable: false
+  }
+]
 
 
 const handleBack = () => {
@@ -18,51 +39,63 @@ const handleBack = () => {
 </script>
 
 <template>
-  <el-page-header @back="handleBack">
-    <template #content>
-      <el-tag type="info">Mixtape</el-tag>
-      <span class="text-large font-600 mx-3"> {{ mixtape.name }} </span>
-    </template>
+  <PageHeader v-on:back="handleBack" title="La mixtape en détails">
     <template #extra>
       <div class="flex items-center">
-        <el-button type="primary" class="ml-2" disabled>Modifier</el-button>
+        <v-btn icon="mdi-pencil" class="mr-2" @click="navigateTo(`/mixtapes/edit/${id}`)"></v-btn>
+        <v-btn icon="mdi-plus" @click="navigateTo('/mixtapes/add')"></v-btn>
       </div>
     </template>
-  </el-page-header>
-  <el-container>
-    <el-main>
-      <el-descriptions direction="vertical" :column="5" border>
-        <el-descriptions-item label="ID">{{ mixtape.id }}</el-descriptions-item>
-        <el-descriptions-item label="Nom">{{ mixtape.name }}</el-descriptions-item>
-        <el-descriptions-item :label="authors.length > 1 ? 'Auteurs' : 'Auteur'">
-          {{ authors.join(", ") }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Année">
-          {{ mixtape.year }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tags">
-          <el-tag size="small">Style</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Cover" v-if="mixtape.cover_url" :span="5">
-          <img :src="mixtape.cover_url" :alt="mixtape.name" />
-        </el-descriptions-item>
-        <el-descriptions-item v-if="mixtape.comments" label="Comments" :span="5">
-          {{ mixtape.comments }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Pistes" :span="5">
-          <el-table :data="mixtape.tracks" table-layout="auto">
-            <el-table-column prop="position" label="" width="40" />
-            <el-table-column prop="title" label="Titre" />
-            <el-table-column prop="artist" label="Artiste(s)" />
-            <el-table-column prop="duration" label="Durée" width="100" />
-          </el-table>
-        </el-descriptions-item>
-      </el-descriptions>
-    </el-main>
-  </el-container>
-
+  </PageHeader>
+  <v-container class="n-page-content">
+    <v-card>
+      <div class="card-header">
+        <div class="card-texts">
+          <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
+          <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.authorNames }}</v-card-subtitle>
+          <v-card-subtitle v-if="mixtape.comment" class="mt-5">
+            {{ mixtape.comment }}
+          </v-card-subtitle>
+        </div>
+        <v-avatar class="mixtape-cover ma-3" size="250" rounded="0">
+          <v-img :src="mixtape.cover_url"></v-img>
+        </v-avatar>
+      </div>
+      <v-card-text>
+        <span class="text-h6">Pistes</span>
+        <v-data-table :headers="headers" :items="mixtape.tracks" items-per-page="-1" no-data-text="Aucune donnée." />
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
-<style scoped>
-.track-item {}
+<style lang="scss" scoped>
+:deep(.v-data-table-footer) {
+  display: none
+}
+
+.card-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.card-texts {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.mixtape-title {
+  font-size: 2rem;
+  margin-top: 0.2em;
+}
+
+.mixtape-cover {
+  flex: 1;
+  align-items: flex-end;
+}
+
+.mixtape-cover :deep(.v-img__img) {
+  object-position: right;
+}
 </style>

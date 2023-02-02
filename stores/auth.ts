@@ -1,30 +1,26 @@
-import { Provider, User } from "@supabase/supabase-js";
-
-import { ElMessage } from "element-plus";
+import { Provider } from "@supabase/supabase-js";
 
 export const useAuthStore = defineStore("auth", () => {
-  const { $auth } = useNuxtApp();
+  const { $supabase } = useNuxtApp();
+  const { snackError } = useSnackbarStore();
+  const user = useSupabaseUser();
+  const token = useSupabaseToken();
   const isLoading = ref<boolean>(false);
-  const user = useState<User | null>("supabase_user");
-  const isLoggedIn = computed(() => !!user.value);
+  const isLoggedIn = computed(() => !!user.value && !!token.value);
 
-  const refresh = () => {
-    setTimeout(() => {
-      const token = useSupabaseToken();
-      if (!token.value) {
-        user.value = null;
-      }
-    }, 1000);
-  };
-
-  refresh();
+  watchEffect(() => {
+    if (!isLoggedIn) {
+      return navigateTo("/login");
+    }
+  });
 
   /**
    * Listen for login state changes
    */
-  $auth.auth.onAuthStateChange((event, session) => {
+  $supabase.auth.onAuthStateChange((event, session) => {
+    console.log({ event, session });
     user.value = session?.user || null;
-    refresh();
+    token.value = session?.access_token || null;
     isLoading.value = false;
   });
 
@@ -36,7 +32,7 @@ export const useAuthStore = defineStore("auth", () => {
       return result;
     } catch (error: any) {
       console.log(error);
-      ElMessage.error({ message: error.error_description || error.message });
+      snackError(error.error_description || error.message);
     } finally {
       isLoading.value = false;
     }
@@ -48,7 +44,7 @@ export const useAuthStore = defineStore("auth", () => {
   const login = async ({ email, password }: SignInParams) =>
     await errorHandler(
       async () =>
-        await $auth.auth.signInWithPassword({
+        await $supabase.auth.signInWithPassword({
           email,
           password,
         })
@@ -58,7 +54,9 @@ export const useAuthStore = defineStore("auth", () => {
    * Login with email (magic)
    */
   const loginWithEmail = async ({ email }: Pick<SignInParams, "email">) =>
-    await errorHandler(async () => await $auth.auth.signInWithOtp({ email }));
+    await errorHandler(
+      async () => await $supabase.auth.signInWithOtp({ email })
+    );
 
   /**
    * Login with google, github, etc
@@ -67,7 +65,7 @@ export const useAuthStore = defineStore("auth", () => {
   const loginWithSocialProvider = async (provider: Provider) =>
     await errorHandler(
       async () =>
-        await $auth.auth.signInWithOAuth({
+        await $supabase.auth.signInWithOAuth({
           provider,
         })
     );
@@ -76,7 +74,7 @@ export const useAuthStore = defineStore("auth", () => {
    * Logout
    */
   const logout = async () =>
-    await errorHandler(async () => await $auth.auth.signOut());
+    await errorHandler(async () => await $supabase.auth.signOut());
 
   /**
    * Register
@@ -84,7 +82,7 @@ export const useAuthStore = defineStore("auth", () => {
   const register = async ({ email, password, ...meta }: SignUpParams) =>
     await errorHandler(
       async () =>
-        await $auth.auth.signUp({
+        await $supabase.auth.signUp({
           email,
           password,
         })
@@ -94,7 +92,7 @@ export const useAuthStore = defineStore("auth", () => {
    * Update user email, password, or meta data
    */
   const update = async (userData: Obj) =>
-    await errorHandler(async () => await $auth.auth.updateUser(userData));
+    await errorHandler(async () => await $supabase.auth.updateUser(userData));
 
   /**
    * Send user an email to reset their password
@@ -102,19 +100,20 @@ export const useAuthStore = defineStore("auth", () => {
    */
   const sendPasswordRestEmail = async (email: string) =>
     await errorHandler(
-      async () => await $auth.auth.resetPasswordForEmail(email)
+      async () => await $supabase.auth.resetPasswordForEmail(email)
     );
 
   const resetPassword = async (accessToken: string, newPassword: string) =>
     await errorHandler(
       async () =>
-        await $auth.auth.admin.updateUserById(accessToken, {
+        await $supabase.auth.admin.updateUserById(accessToken, {
           password: newPassword,
         })
     );
 
   return {
     user,
+    token,
     isLoading,
     login,
     loginWithEmail,

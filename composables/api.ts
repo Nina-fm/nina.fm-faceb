@@ -16,11 +16,15 @@ export interface ApiOptions {
 
 export const useApi = () => {
   const config = useRuntimeConfig();
-  const token = useSupabaseToken();
+  const { token } = storeToRefs(useAuthStore());
   const apikey = config.public.supabase.key;
   const baseURL = config.public.supabase.functionsUrl;
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
+    if (!token.value) {
+      return navigateTo("/login");
+    }
+
     return await $fetch(
       queryString.stringifyUrl({
         url: path,
@@ -31,9 +35,9 @@ export const useApi = () => {
         baseURL,
         headers: {
           apikey,
-          Authorization: `Bearer ${token.value}`,
+          ...(!!token.value ? { Authorization: `Bearer ${token.value}` } : {}),
         },
-        ...(options?.body ?? {}),
+        body: options?.body ?? null,
       }
     );
   };

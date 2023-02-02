@@ -16,7 +16,8 @@ INSERT INTO
 VALUES 
 ('ee7841ac-aa19-4f04-9560-28075f87a308', '2022-11-08 13:59:57.739+00', '120', null),
 (null, '2022-12-23 09:34:00.739+00', 'Costiloui', null),
-(null, '2022-12-20 09:34:00.739+00', 'Duc', null);
+(null, '2022-12-20 09:34:00.739+00', 'Duc', null),
+(null, '2022-12-20 09:34:00.739+00', 'Le Chapelier', null);
 
 -- Insert mixtapes
 INSERT INTO
@@ -25,7 +26,8 @@ VALUES
 ('Funky Soul Mix', '2022', '', '01 James Brown : Doing it to death (Part 1) (feat. Fred Wesley & the J.B.''s)\r\n02 Otis Redding : Security (Live)\r\n03 Mark Ronson : Valerie (feat. Amy Winehouse)\r\n04 Vigon : Harlem shuffle\r\n05 Otis Redding : I can''t turn you loose (Live)\r\n06 Rufus Thomas : Do the funky chicken\r\n07 Otis Redding : Papa''s got a brand new bag (Live)\r\n08 James Brown : There it is (Part 1)\r\n09 Amy Winehouse : Monkey man\r\n10 Macka B. : Roots Ragga\r\n11 James Brown : I got you (Feel good)\r\n12 Robert Parker : Barefootin''\r\n13 Otis Redding : I''m depending on you (Live)\r\n14 James Brown : (Get up I feel like being a) Sex machine\r\n15 The Bamboos : Step it up (feat. Alice Russell)\r\n16 Small Faces : Watcha gonna do about it\r\n17 The Contours : Do you love me\r\n18 Wilson Pickett : Land of 1000 dances\r\n19 Black Joe Lewis & The Honeybears : Sugarfoot\r\n20 Eli ''Paperboy'' Reed & The True Loves : (Doin'' the) Boom boom', '5a395f89beb2b.jpg', '2022-12-23 09:34:00.739+00', '2022-12-23 09:34:00.739+00'),
 ('Apophtegme Ducal', '2020', '', '', '5a070811b7534.jpg', '2020-12-23 09:34:00.739+00', '2020-12-23 09:34:00.739+00'),
 ('Un peu de son frais', '2019', '', '01 Nym : Et moi\n02 La Chica : Oasis\n03 Wedel Bikri : Untitled x2\n04 Jos\u00e9 Gonzalez : Teardrop\n05 Fatoumata Diawara : Sowa\n06 Fats Domino : Blueberry Hill\n07 Fanfare Ciocarlia : Asfalt tango\n08 Nana Mouskouri : Que je sois un ange\n09 Charles A. Chepkowny : Kilyano Ratanga\n10 Valaire : Golden rule (Do the Oobopopop)\n11 J.A. Adofo & City Boys Band : Baabi Dehyee\n12 Labelle : Grand Ma\u00eetre (feat. Ballak\u00e9 Sissoko)\n13 Dr. Orlando Owoh & His Omimah Band : Mo Baju Wo Oju Orun \/ Irawo Nii Ko Ni Ku', '5a070811b4b3f.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00'),
-('Vous êtes arrivés', '2019', '', 'Akua Nuru - The Block\nJoe Driscoll & Sekou Kouyate - Wonamati\nFaada Freddy - The Death Of Me\nBarbatuques - Voc\u00ea Chegou\n-M-, Toumani Diabat\u00e9, Sidiki Diabat\u00e9, Santigold, Hiba Tawaji, Ibrahim Maalouf, Seu Jorge, Nekfeu, Youssou N\u2019Dour, Sanjay Khan & ChaCha - Solidarit\u00e9\nGoran Bregovic - Cajesukarije Cocek', '5a070811b5872.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00');
+('Vous êtes arrivés', '2019', '', 'Akua Nuru - The Block\nJoe Driscoll & Sekou Kouyate - Wonamati\nFaada Freddy - The Death Of Me\nBarbatuques - Voc\u00ea Chegou\n-M-, Toumani Diabat\u00e9, Sidiki Diabat\u00e9, Santigold, Hiba Tawaji, Ibrahim Maalouf, Seu Jorge, Nekfeu, Youssou N\u2019Dour, Sanjay Khan & ChaCha - Solidarit\u00e9\nGoran Bregovic - Cajesukarije Cocek', '5a070811b5872.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00'),
+('Khéops', '2017', '', '', '5a4e18457ad30.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00');
 
 -- Insert mixtapes authors
 INSERT INTO
@@ -34,7 +36,9 @@ VALUES
 (1, 3, 0),
 (2, 3, 0),
 (3, 2, 0),
-(4, 2, 0);
+(4, 2, 0),
+(5, 1, 0),
+(5, 4, 1);
 
 -- Insert tracks
 INSERT INTO

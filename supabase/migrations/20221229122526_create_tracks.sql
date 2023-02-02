@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX tracks_pkey ON public.tracks USING btree (id);
 
 alter table "public"."tracks" add constraint "tracks_pkey" PRIMARY KEY using index "tracks_pkey";
 
-alter table "public"."tracks" add constraint "tracks_mixtape_id_fkey" FOREIGN KEY (mixtape_id) REFERENCES mixtapes(id) on delete cascade not valid;
+alter table "public"."tracks" add constraint "tracks_mixtape_id_fkey" FOREIGN KEY (mixtape_id) REFERENCES mixtapes(id) on delete cascade;
 
 alter table "public"."tracks" validate constraint "tracks_mixtape_id_fkey";
 

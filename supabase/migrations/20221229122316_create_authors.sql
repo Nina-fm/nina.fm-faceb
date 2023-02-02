@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX authors_pkey ON public.authors USING btree (id);
 
 alter table "public"."authors" add constraint "authors_pkey" PRIMARY KEY using index "authors_pkey";
 
-alter table "public"."authors" add constraint "name_length" CHECK ((char_length(name) >= 3)) not valid;
+alter table "public"."authors" add constraint "name_length" CHECK ((char_length(name) >= 2)) not valid;
 
 alter table "public"."authors" validate constraint "name_length";
 
@@ -62,6 +62,13 @@ as permissive
 for update
 to public
 using ((auth.uid() = user_id));
+
+create policy "Enable delete for anon."
+on "public"."authors"
+as permissive
+for delete
+to authenticated, anon
+using (true);
 
 
 

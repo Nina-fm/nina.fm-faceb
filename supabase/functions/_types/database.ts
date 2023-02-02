@@ -1,12 +1,11 @@
-/// <reference types="../_types/utils.d.ts" />
-
 import type { Database } from "../_types/supabase.ts";
-import type { GetResult } from "https://esm.sh/@supabase/postgrest-js@2/dist/module/select-query-parser";
+import type { GetResult } from "https://esm.sh/@supabase/postgrest-js@1.2.0/dist/module/select-query-parser";
+import { TypeFromPath } from "./utils.ts";
 
 export type DbTables = Database["public"]["Tables"];
 export type DbEnums = Database["public"]["Enums"];
 
-type GetDB<
+export type GetDB<
   T extends keyof DbTables,
   F extends keyof DbTables[T]
 > = DbTables[T][F];
@@ -20,12 +19,12 @@ export type Db<T extends string> = TypeFromPath<DbTables, T>;
 export type DParams<T extends keyof DbTables> = GetDB<T, "Update">;
 export type DType<T extends keyof DbTables> = GetDB<T, "Row">;
 
-type SplitRelStr_SuccessProps<T = keyof DbTables, Q = string> = {
+export type SplitRelStr_SuccessProps<T = keyof DbTables, Q = string> = {
   table: T;
   query: Q;
 };
 
-type SplitRelStr<RelStr extends string> =
+export type SplitRelStr<RelStr extends string> =
   RelStr extends `${infer T}(${infer Q})`
     ? T extends keyof DbTables
       ? SplitRelStr_SuccessProps<T, Q>
@@ -34,7 +33,7 @@ type SplitRelStr<RelStr extends string> =
         }
     : { error: "Cannot parse `RelationString`" };
 
-type GetResolvedResult<SP extends SplitRelStr_SuccessProps> = GetResult<
+export type GetResolvedResult<SP extends SplitRelStr_SuccessProps> = GetResult<
   Database["public"],
   DbTables[SP["table"]]["Row"],
   SP["query"]

@@ -15,7 +15,7 @@ alter table "public"."mixtapes_authors" add constraint "mixtapes_authors_author_
 
 alter table "public"."mixtapes_authors" validate constraint "mixtapes_authors_author_id_fkey";
 
-alter table "public"."mixtapes_authors" add constraint "mixtapes_authors_mixtape_id_fkey" FOREIGN KEY (mixtape_id) REFERENCES mixtapes(id) on delete cascade not valid;
+alter table "public"."mixtapes_authors" add constraint "mixtapes_authors_mixtape_id_fkey" FOREIGN KEY (mixtape_id) REFERENCES mixtapes(id) on delete cascade;
 
 alter table "public"."mixtapes_authors" validate constraint "mixtapes_authors_mixtape_id_fkey";
 

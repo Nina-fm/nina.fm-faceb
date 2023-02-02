@@ -2,145 +2,127 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-/// <reference types="../_types/utils.d.ts" />
+import { getParam, queryResponse } from "../_shared/utils.ts";
 
-import * as queryString from "https://deno.land/x/querystring@v1.0.2/mod.js";
-
-import type { DType, ResolveRelationQuery } from "../_types/database.ts";
-
+import { AuthorsService } from "../_services/authors.ts";
+import { Method } from "../_types/api.ts";
+import { MixtapesService } from "../_services/mixtapes.ts";
+import { TracksService } from "../_services/tracks.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import { createSupabaseClient } from "../_shared/supabaseClient.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const authorRelation = `authors(*)`;
-const mixtapeAuthorsRelation = `mixtapes_authors(*, authors(*))`;
-const tracksRelation = `tracks(*)`;
-
-type WithAuthor = ResolveRelationQuery<typeof authorRelation, "one">;
-type WithMixtapeAuthors = ResolveRelationQuery<
-  typeof mixtapeAuthorsRelation,
-  "many"
->;
-type WithTracks = ResolveRelationQuery<typeof tracksRelation, "many">;
-type Mixtape = DType<"mixtapes">;
-type Author = DType<"authors">;
-type MixtapeExt = Mixtape &
-  WithMixtapeAuthors &
-  WithTracks & {
-    cover_url?: string | null;
-  };
-type AuthorExt = Author &
-  WithAuthor & {
-    avatar_url?: string | null;
-    position?: number | null;
-  };
 
 console.log("=> Mixtapes Functions");
 
-const getParams = (url: string) => {
-  const paramBlock = `?${url.split("?")?.[1] ?? ""}`;
-  return queryString.parse(paramBlock);
-};
-
 serve((req: Request) => {
-  const supabaseClient = createSupabaseClient(req);
-
-  const formatAuthor = (author: Partial<AuthorExt>) => {
-    return {
-      ...author,
-      avatar_url: author.avatar
-        ? supabaseClient.storage.from("avatars").getPublicUrl(author.avatar)
-            .data.publicUrl
-        : null,
-    };
-  };
-
-  const formatMixtape = (mixtape: MixtapeExt) => {
-    const { mixtapes_authors, cover, ...rest } = mixtape;
-    return {
-      ...rest,
-      cover_url: cover
-        ? supabaseClient.storage.from("covers").getPublicUrl(cover).data
-            .publicUrl
-        : null,
-      authors: mixtapes_authors
-        ? mixtapes_authors.map(({ authors: author, position }) => {
-            return formatAuthor({
-              position,
-              ...author,
-            });
-          })
-        : [],
-      tracks: mixtape.tracks
-        ? mixtape.tracks.map(({ id, created_at, mixtape_id, ...track }) => ({
-            ...track,
-          }))
-        : [],
-    };
-  };
-
-  const queryResponse = async (callback: AnyFn) => {
-    try {
-      const result = await callback();
-      return new Response(JSON.stringify(result), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
-    } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
-    }
-  };
-
-  /**
-   * PROCESS
-   */
+  // Define services
+  const _mixtapes = new MixtapesService(req.headers);
+  const _authors = new AuthorsService(req.headers);
+  const _tracks = new TracksService(req.headers);
 
   // This is needed if you're planning to invoke your function from a browser.
-  if (req.method === "OPTIONS") {
+  if (req.method === Method.OPTIONS) {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const params = getParams(req.url);
-  const id = params?.id ? Number(params.id) : undefined;
+  // Get the request params (query string)
+  const id = getParam<number>("id", req.url);
 
-  /**
-   * GET mixtape
-   * @param id
-   */
-  if (id) {
-    return queryResponse(async () => {
-      console.log("Get mixtape", id);
-      const { data: mixtape, error } = await supabaseClient
-        .from("mixtapes")
-        .select(`*, ${mixtapeAuthorsRelation}, ${tracksRelation}`)
-        .eq("id", id)
-        .single();
-
-      if (error) throw error;
-
-      return formatMixtape(mixtape as MixtapeExt);
-    });
-  }
-
-  /**
-   * GET mixtapes
-   */
   return queryResponse(async () => {
-    console.log("Get all mixtapes");
-    // And we can run queries in the context of our authenticated user
-    const { data, error } = await supabaseClient
-      .from("mixtapes")
-      .select(`*, ${mixtapeAuthorsRelation}, ${tracksRelation}`);
+    switch (req.method) {
+      case Method.POST: {
+        /**
+         * Create a new Mixtape
+         */
+        const { data: postData } = await req.json();
+        console.log("[POST] /mixtapes", postData);
 
-    if (error) throw error;
+        const {
+          authors = [],
+          tracks = [],
+          ...data
+        } = _mixtapes.validateData(postData);
 
-    // console.log({ data });
-    return data.map((mixtape) => {
-      return formatMixtape(mixtape as MixtapeExt);
-    });
+        // Create the mixtape
+        const mixtape = await _mixtapes.create(data);
+        // List all authors and create new ones
+        const allAuthors = await Promise.all(
+          authors.map(async (author) =>
+            typeof author === "string"
+              ? await _authors.create({ name: author })
+              : author
+          )
+        );
+        // Reduce to authors IDs
+        const authorsIds = allAuthors.map((a) => a.id);
+        // Add authors to mixtape
+        await _mixtapes.addAuthors(mixtape.id, authorsIds);
+        // Create tracks and add to mixtape
+        await _tracks.createForMixtape(mixtape.id, tracks);
+        // Return the full mixtape
+        return await _mixtapes.find(mixtape.id);
+      }
+      case Method.PATCH: {
+        if (id) {
+          /**
+           * Update a mixtape by ID
+           */
+          const { data: postData } = await req.json();
+          console.log(`[PATCH] /mixtapes?id=${id}`, postData);
+
+          const {
+            authors = [],
+            tracks = [],
+            ...data
+          } = _mixtapes.validateData(postData);
+
+          // Update the mixtape
+          await _mixtapes.update(id, data);
+          // List all authors and create new ones
+          const allAuthors = await Promise.all(
+            authors.map(async (author) =>
+              typeof author === "string"
+                ? await _authors.create({ name: author })
+                : author
+            )
+          );
+          // Reduce to authors ids
+          const authorsIds = allAuthors.map((a) => a.id);
+          // Update mixtape authors
+          await _mixtapes.updateAuthors(id, authorsIds);
+          // Update mixtape tracks
+          await _tracks.updateForMixtape(id, tracks);
+          // Return the full mixtape
+          return await _mixtapes.find(id);
+        }
+        break;
+      }
+      case Method.DELETE: {
+        if (id) {
+          /**
+           * Delete a mixtape by ID
+           */
+          console.log(`[DELETE] /mixtapes?id=${id}`);
+          await _mixtapes.delete(id);
+          return { deleted: id };
+        }
+        break;
+      }
+      default:
+      case Method.GET: {
+        if (id) {
+          /**
+           * Find a mixtape by ID
+           */
+          console.log(`[GET] /mixtapes?id=${id}`);
+          return await _mixtapes.find(id);
+        }
+        /**
+         * Find all mixtapes
+         */
+        console.log("[GET] /mixtapes");
+        return await _mixtapes.findAll();
+      }
+    }
   });
 
   // return new Response("No route match", { headers: corsHeaders, status: 400 });

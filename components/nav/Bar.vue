@@ -1,55 +1,47 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue'
 
 const config = useRuntimeConfig()
 const { logout } = useAuthStore();
 const { user, isLoggedIn } = storeToRefs(useAuthStore());
-const route = useRoute()
-const activeRoute = ref(route.path || '/')
-
-const handleSelect = (key: string, keyPath: string[]) => {
-  if (key) {
-    activeRoute.value = key
-    navigateTo(key)
-  } else {
-    activeRoute.value = activeRoute.value
-  }
-}
 
 const handleLogout = async () => {
   await logout()
   navigateTo("/login")
 }
-
 </script>
 
 <template>
-  <client-only>
-    <el-menu :default-active="activeRoute" class="nina-navbar" mode="horizontal" :ellipsis="false"
-      @select="handleSelect">
-      <el-menu-item index="/" class="brand">
-        {{ config.public.sitename }}
-      </el-menu-item>
-      <div class="flex-grow" />
-      <el-menu-item index="/mixtapes">
-        Mixtapes
-      </el-menu-item>
-      <el-sub-menu v-if="isLoggedIn" index="">
-        <template #title>
-          <el-avatar class="avatar-icon" size="small" :icon="ElIconUserFilled" />
+  <v-app-bar>
+    <template #title>
+      <nuxt-link to="/">{{ config.public.sitename }}</nuxt-link>
+    </template>
+    <template v-slot:append>
+      <v-btn size="small" @click="navigateTo('/mixtapes')">Mixtapes</v-btn>
+      <v-btn size="small" @click="navigateTo('/authors')">DJ's</v-btn>
+
+      <v-menu v-if="isLoggedIn" open-on-hover>
+        <template v-slot:activator="{ props }">
+          <v-btn icon="mdi-account-circle" v-bind="props" variant="plain"></v-btn>
         </template>
-        <el-menu-item disabled>{{ user?.email }}</el-menu-item>
-        <el-menu-item @click="handleLogout" index="">Se déconnecter</el-menu-item>
-      </el-sub-menu>
-    </el-menu>
-  </client-only>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>{{ user?.email }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="handleLogout">
+            <v-list-item-title>Se déconnecter</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+    </template>
+  </v-app-bar>
 </template>
 
 <style scoped >
-.brand {
+:deep(.v-toolbar-title) {
   font-weight: bold;
-  font-size: 1rem;
+  letter-spacing: -0.04em;
 }
 
 .avatar-icon {

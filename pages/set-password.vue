@@ -1,21 +1,20 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 
-definePageMeta({ layout: "auth" });
+definePageMeta({ layout: "naked" });
 
 const { user } = storeToRefs(useAuthStore());
 const { update } = useAuthStore();
+const valid = ref(false);
 const form = reactive({
   password: '',
 })
 
-onMounted(() => {
-  setTimeout(() => {
-    if (!user.value) {
-      navigateTo("/login")
-    }
-  }, 1000);
-})
+watchEffect(() => {
+  if (!user.value) {
+    return navigateTo('/login');
+  }
+});
 
 const handleSavePassword = async () => {
   await update({ password: form.password });
@@ -25,17 +24,20 @@ const handleSavePassword = async () => {
 
 <template>
   <auth-box title="Mot de passe">
-    <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
-      <el-form-item>
-        <el-input v-model="form.password" type="password" placeholder="Choisissez votre mot de passe..."
-          @keyup.enter="handleSavePassword" />
-      </el-form-item>
-    </el-form>
+    <v-form v-model="valid" @submit.prevent>
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field v-model="form.password" type="password" label="Nouveau mot de passe" required></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="handleSavePassword">
-          Connexion
-        </el-button>
+        <v-btn color="primary" @click="handleSavePassword">
+          Continuer
+        </v-btn>
       </span>
     </template>
   </auth-box>

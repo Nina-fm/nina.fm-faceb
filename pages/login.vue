@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { ref, reactive } from 'vue';
+import { reactive } from 'vue';
 
-definePageMeta({ layout: "auth" });
+definePageMeta({ layout: "naked" });
 
 const { login } = useAuthStore()
 const { isLoggedIn } = storeToRefs(useAuthStore())
+const valid = ref(false);
 const form = reactive({
   email: '',
   password: ''
@@ -24,23 +25,29 @@ const handleLogin = async () => {
 
 <template>
   <auth-box title="Connexion">
-    <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
-      <el-form-item>
-        <el-input v-model="form.email" placeholder="Email..." @keyup.enter="handleLogin" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="form.password" type="password" placeholder="Password..." @keyup.enter="handleLogin" />
-      </el-form-item>
-    </el-form>
+    <v-form v-model="valid">
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field @keydown.enter="handleLogin" v-model="form.email" type="email" label="Email"
+              required></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field @keydown.enter="handleLogin" v-model="form.password" type="password" label="Mot de passe"
+              required></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-form>
+    <div class="pre-footer">
+      <nuxt-link to="/reset-password">Mot de passe oublié ?</nuxt-link>
+    </div>
     <template #footer>
-      <div class="pre-footer">
-        <nuxt-link to="/reset-password"><el-link type="info">Mot de passe oublié ?</el-link></nuxt-link>
-      </div>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="handleLogin">
-          Se connecter
-        </el-button>
-      </span>
+      <v-btn color="primary" @click="handleLogin">
+        Se connecter
+      </v-btn>
     </template>
   </auth-box>
 </template>

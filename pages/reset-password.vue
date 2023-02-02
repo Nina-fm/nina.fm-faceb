@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 
-definePageMeta({ layout: "auth" });
+definePageMeta({ layout: "naked" });
 
+const { snackSuccess } = useSnackbarStore()
 const { sendPasswordRestEmail } = useAuthStore();
+const valid = ref(false);
 const form = reactive({
   email: '',
 })
@@ -14,7 +16,7 @@ const handleCancel = () => {
 const handleResetPassword = async () => {
   const { error } = await sendPasswordRestEmail(form.email);
   if (!error) {
-    ElMessage.success({ message: "Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !", duration: 5000 })
+    snackSuccess("Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !")
   }
 }
 
@@ -22,19 +24,23 @@ const handleResetPassword = async () => {
 
 <template>
   <auth-box title="Mot de passe oublié">
-    <el-form :model="form" label-width="75px" @submit.prevent label-position="top">
-      <el-form-item>
-        <el-input v-model="form.email" type="email" placeholder="Votre email..." @keyup.enter="handleResetPassword" />
-      </el-form-item>
-    </el-form>
+    <v-form v-model="valid" @submit.prevent>
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field v-model="form.email" type="email" label="Email" required></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="info" @click="handleCancel">
+        <v-btn @click="handleCancel">
           Annuler
-        </el-button>
-        <el-button type="primary" @click="handleResetPassword">
+        </v-btn>
+        <v-btn color="primary" @click="handleResetPassword">
           Réinitialiser
-        </el-button>
+        </v-btn>
       </span>
     </template>
   </auth-box>

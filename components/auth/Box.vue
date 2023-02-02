@@ -1,28 +1,42 @@
 <script lang="ts" setup>
-const props = defineProps({
+defineProps({
   title: String
 })
 
 const config = useRuntimeConfig()
-const dialogVisible = ref(true)
 
 </script>
 
 <template>
-  <el-dialog class="auth-modal" v-model="dialogVisible" center align-center width="30%" :show-close="false"
-    :close-on-click-modal="false" :close-on-press-escape="false" :modal="false">
-    <template #title>
-      <span class="sitename">{{ config.public.sitename }}</span>
-      <span class="el-dialog-title">{{ title }}</span>
-    </template>
-    <slot />
-
-    <template #footer>
+  <v-card class="n-auth-box" :title="title" :subtitle="config.public.sitename">
+    <v-card-text>
+      <slot />
+    </v-card-text>
+    <v-card-actions>
       <slot name="footer" />
-    </template>
-  </el-dialog>
+    </v-card-actions>
+  </v-card>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.n-auth-box {
+  :deep(.v-card-title) {
+    text-align: center;
+  }
 
+  :deep(.v-card-subtitle) {
+    text-align: center;
+
+  }
+
+  :deep(.pre-footer) {
+    display: flex;
+    justify-content: center;
+  }
+
+  :deep(.v-card-actions) {
+    justify-content: center;
+    padding-bottom: 20px
+  }
+}
 </style>

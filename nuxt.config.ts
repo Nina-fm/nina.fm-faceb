@@ -1,7 +1,4 @@
-import ElementPlus from "unplugin-element-plus/vite";
-import path from "node:path";
-
-const lifecycle = process.env.npm_lifecycle_event;
+import vuetify from "vite-plugin-vuetify";
 
 const sitename = "Nina.fm • Face B";
 
@@ -38,58 +35,50 @@ export default defineNuxtConfig({
 
   ssr: false,
 
-  // build
-  build: {
-    transpile: lifecycle === "build" ? ["element-plus"] : [],
-  },
-
   typescript: {
     strict: true,
     shim: false,
   },
 
+  css: [
+    "assets/scss/variables.scss",
+    "@mdi/font/css/materialdesignicons.min.css",
+    "assets/scss/index.scss",
+  ],
+
+  build: {
+    transpile: ["vuetify"],
+  },
+
   vite: {
-    resolve: {
-      alias: {
-        "~/": `${path.resolve(__dirname, ".")}/`,
-      },
+    ssr: {
+      noExternal: ["vuetify"], // add the vuetify vite plugin
     },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@use "~/styles/element/index.scss" as *;`,
-        },
-      },
+    define: {
+      "process.env.DEBUG": false,
     },
-    plugins: [
-      ElementPlus({
-        useSource: true,
-        defaultLocale: "fr",
-      }),
-    ],
   },
 
   // build modules
   modules: [
     "@vueuse/nuxt",
-    "@unocss/nuxt",
     [
       "@pinia/nuxt",
       {
-        autoImports: ["defineStore", "acceptHMRUpdate"],
+        autoImports: ["defineStore", "storeToRefs", "acceptHMRUpdate"],
       },
     ],
-    "@element-plus/nuxt",
     "@nuxtjs/supabase",
-    "unplugin-icons/nuxt",
+    async (options, nuxt) => {
+      nuxt.hooks.hook("vite:extendConfig", (config) =>
+        // @ts-ignore
+        config.plugins.push(vuetify())
+      );
+    },
   ],
 
   imports: {
     dirs: ["stores"],
-  },
-
-  elementPlus: {
-    themes: ["dark"],
   },
 
   // auto import components

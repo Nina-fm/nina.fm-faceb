@@ -2,7 +2,7 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["element-plus/global", "@vueuse/nuxt"],
+    "types": ["@vueuse/nuxt"],
     "plugins": [
       {
         "name": "typescript-deno-plugin",

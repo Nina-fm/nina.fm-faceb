@@ -18,6 +18,11 @@ a {
   height: 100%;
 }
 
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .v-data-table {
   &.clickable {
     .v-data-table__tr {

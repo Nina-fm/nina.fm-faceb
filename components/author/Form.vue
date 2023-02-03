@@ -38,7 +38,7 @@ const rules = {
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <div class="buttons">
+                    <div class="form-buttons">
                         <v-btn class="mr-2" @click="handleCancel">Annuler</v-btn>
                         <v-btn color="primary" type="submit">{{ edit? "Mettre à jour": "Ajouter" }}</v-btn>
                     </div>
@@ -49,8 +49,5 @@ const rules = {
 </template>
 
 <style scoped>
-.buttons {
-    display: flex;
-    justify-content: flex-end;
-}
+
 </style>

@@ -29,6 +29,12 @@ const headers = [
     key: "duration",
     align: "end",
     sortable: false
+  },
+  {
+    title: "Début",
+    key: "start_at",
+    align: "end",
+    sortable: false
   }
 ]
 
@@ -43,7 +49,6 @@ const handleBack = () => {
     <template #extra>
       <div class="flex items-center">
         <v-btn icon="mdi-pencil" class="mr-2" @click="navigateTo(`/mixtapes/edit/${id}`)"></v-btn>
-        <v-btn icon="mdi-plus" @click="navigateTo('/mixtapes/add')"></v-btn>
       </div>
     </template>
   </PageHeader>
@@ -52,7 +57,7 @@ const handleBack = () => {
       <div class="card-header">
         <div class="card-texts">
           <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
-          <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.authorNames }}</v-card-subtitle>
+          <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.created_by }}</v-card-subtitle>
           <v-card-subtitle v-if="mixtape.comment" class="mt-5">
             {{ mixtape.comment }}
           </v-card-subtitle>

@@ -32,11 +32,33 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     directives,
     defaults: {
+      VInput: {
+        variant: "outlined",
+        hideDetails: "auto",
+      },
+      VField: {
+        variant: "outlined",
+        hideDetails: "auto",
+      },
       VTextField: {
         variant: "outlined",
+        hideDetails: "auto",
       },
       VTextarea: {
         variant: "outlined",
+        hideDetails: "auto",
+      },
+      VSelect: {
+        variant: "outlined",
+        hideDetails: "auto",
+      },
+      VAutocomplete: {
+        variant: "outlined",
+        hideDetails: "auto",
+      },
+      VCombobox: {
+        variant: "outlined",
+        hideDetails: "auto",
       },
     },
   });

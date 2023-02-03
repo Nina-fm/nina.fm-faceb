@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { AuthorExt } from '~~/stores/authors';
-import { MixtapeExt } from '~~/stores/mixtapes';
 
 definePageMeta({ middleware: ["auth"] })
 
@@ -21,7 +19,7 @@ const headers = [
   },
   {
     title: 'Par',
-    key: "authorNames",
+    key: "created_by",
   },
   {
     title: 'Année',

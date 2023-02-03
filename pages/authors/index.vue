@@ -4,6 +4,7 @@ import Confirm from '~~/components/Confirm.vue';
 
 definePageMeta({ middleware: ["auth"] })
 
+const { user } = storeToRefs(useAuthStore())
 const { fetchAuthors, deleteAuthor } = useAuthorsStore()
 const { data: authors } = storeToRefs(useAuthorsStore());
 const itemsPerPage = ref(-1)
@@ -20,7 +21,7 @@ const headers = [
     key: 'name',
   },
   {
-    title: "Admin",
+    title: "User",
     key: "user_id"
   },
   {
@@ -31,6 +32,9 @@ const headers = [
 ];
 
 // const formatDate = (date: string) => useDateFormat(date, 'DD/MM/YYYY', { locales: 'fr-FR' }).value
+
+const isMe = (userId: string) => user.value?.id === userId
+
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
   navigateTo(`/authors/${value.item.raw.id}`)
@@ -74,7 +78,8 @@ onMounted(() => fetchAuthors())
           :items="authors.sort((a: any, b: any) => b.id - a.id)" class="elevation-1 clickable"
           @click:row="handleRowClick" no-data-text="Aucune donnée.">
           <template v-slot:item.user_id="{ item }">
-            <v-badge :class="`${item.raw.user_id ? '' : 'outlined'}`" dot inline
+            <v-chip v-if="isMe(item.raw.user_id)" color="primary" size="small">Moi</v-chip>
+            <v-badge v-else :class="`${item.raw.user_id ? '' : 'outlined'}`" dot inline
               :color="item.raw.user_id ? 'primary' : 'default'" />
           </template>
           <template v-slot:item.actions="{ item }">

@@ -12,6 +12,10 @@ const form = reactive({
     user_id: author.value.user_id
 });
 
+const handleCancel = () => {
+    navigateTo('/authors')
+}
+
 const handleSubmit = async () => {
     const { error } = await updateAuthor(id, form);
     if (!error) navigateTo(`/authors`)
@@ -19,11 +23,11 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <PageHeader @back="navigateTo('/authors')" title="Mettre à jour le DJ" />
+    <PageHeader @back="navigateTo('/authors')" title="Modifier le DJ" />
     <v-container class="n-page-content">
         <v-card>
             <v-card-text>
-                <AuthorForm v-model="form" edit @cancel="navigateTo('/authors')" @submit="handleSubmit" />
+                <AuthorForm v-model="form" edit @cancel="handleCancel" @submit="handleSubmit" />
             </v-card-text>
         </v-card>
     </v-container>

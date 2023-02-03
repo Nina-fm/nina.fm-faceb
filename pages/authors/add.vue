@@ -19,11 +19,11 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <PageHeader @back="navigateTo('/authors')" title="Ajouter un DJ" />
+  <PageHeader @back="navigateTo('/authors')" title="Nouveau DJ" />
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <AuthorForm v-model="form" @cancel="handleCancel" @submit="handleSubmit" />
+        <AuthorForm v-model="form" edit @cancel="handleCancel" @submit="handleSubmit" />
       </v-card-text>
     </v-card>
   </v-container>

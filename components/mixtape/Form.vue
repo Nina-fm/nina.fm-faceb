@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { MixtapeParamsExt, TrackParams } from '~~/types/supatypes';
 
-const { modelValue } = defineProps<{
+const { modelValue, edit } = defineProps<{
   modelValue: MixtapeParamsExt,
   edit?: boolean
 }>();

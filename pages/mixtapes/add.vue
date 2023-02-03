@@ -24,7 +24,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <PageHeader @back="navigateTo('/mixtapes')" title="Ajouter une mixtape" />
+  <PageHeader @back="navigateTo('/mixtapes')" title="Nouvelle mixtape" />
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>

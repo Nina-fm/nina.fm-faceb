@@ -13,6 +13,23 @@ a {
   color: currentColor;
 }
 
+.background-image::before {
+  $margin: 20px;
+
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: $margin;
+  right: $margin;
+  top: $margin;
+  bottom: $margin;
+  background-image: url("/background-night.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.05;
+}
+
 .full-height {
   display: flex;
   height: 100%;

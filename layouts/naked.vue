@@ -2,7 +2,7 @@
 
 <template>
   <v-app>
-    <v-main>
+    <v-main class="background-image">
       <v-container class="full-height">
         <v-row align="center" justify="center">
           <v-col cols="6">

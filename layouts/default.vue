@@ -5,7 +5,7 @@
 
 <template>
   <v-app>
-    <NavBar />
+    <Navbar />
     <v-main class="background-image">
       <v-container>
         <slot />

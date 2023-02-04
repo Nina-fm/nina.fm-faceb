@@ -10,7 +10,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts"
+    "sb:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
+    "sb:reset": "supabase db reset",
+    "sb:deploy": "supabase db push"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

@@ -13,7 +13,13 @@ const form = reactive({
   comment: mixtape.value.comment,
   tracks_text: mixtape.value.tracks_text,
   authors: mixtape.value.authors,
-  tracks: mixtape.value.tracks
+  tracks: mixtape.value.tracks,
+  cover: mixtape.value.cover,
+  cover_url: mixtape.value.cover_url,
+  cover_file: {
+    filename: null,
+    data: null
+  }
 })
 
 const handleCancel = () => {

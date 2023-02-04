@@ -82,7 +82,12 @@ export default defineNuxtConfig({
   },
 
   // auto import components
-  components: true,
+  components: [
+    {
+      path: "~/components/",
+      pathPrefix: false,
+    },
+  ],
 
   // vueuse
   vueuse: {

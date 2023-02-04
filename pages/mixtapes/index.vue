@@ -33,11 +33,15 @@ const headers = [
 ];
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
+  console.log("handleRowClick", { event, value })
   navigateTo(`/mixtapes/${value.item.raw.id}`)
 }
 
+const handleEdit = (event: Event, id: string | number) => {
+  navigateTo(`/mixtapes/edit/${id}`)
+}
+
 const handleDelete = (event: Event, id: string | number) => {
-  event.stopPropagation()
   idToDelete.value = id;
   openConfirm.value = true;
 }
@@ -61,12 +65,12 @@ onMounted(() => fetchMixtapes())
 </script>
 
 <template>
-  <page-header title="Les mixtapes">
+  <PageHeader title="Les mixtapes">
     <template #extra>
       <v-btn icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
       <v-btn icon="mdi-plus" @click="navigateTo('/mixtapes/add')" />
     </template>
-  </page-header>
+  </PageHeader>
   <v-container>
     <v-row>
       <v-col cols="12">
@@ -74,7 +78,7 @@ onMounted(() => fetchMixtapes())
           class="elevation-1 clickable" @click:row="handleRowClick" no-data-text="Aucune donnée.">
           <template v-slot:item.actions="{ item }">
             <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
-              @click="navigateTo(`/authors/edit/${item.raw.id}`)" />
+              @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
             <v-btn icon="mdi-delete" color="default" size="small" variant="text"
               @click="(e: Event) => handleDelete(e, item.raw.id)" />
           </template>

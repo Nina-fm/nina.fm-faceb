@@ -27,7 +27,7 @@ VALUES
 ('Apophtegme Ducal', '2020', '', '', '5a070811b7534.jpg', '2020-12-23 09:34:00.739+00', '2020-12-23 09:34:00.739+00'),
 ('Un peu de son frais', '2019', '', '01 Nym : Et moi\n02 La Chica : Oasis\n03 Wedel Bikri : Untitled x2\n04 Jos\u00e9 Gonzalez : Teardrop\n05 Fatoumata Diawara : Sowa\n06 Fats Domino : Blueberry Hill\n07 Fanfare Ciocarlia : Asfalt tango\n08 Nana Mouskouri : Que je sois un ange\n09 Charles A. Chepkowny : Kilyano Ratanga\n10 Valaire : Golden rule (Do the Oobopopop)\n11 J.A. Adofo & City Boys Band : Baabi Dehyee\n12 Labelle : Grand Ma\u00eetre (feat. Ballak\u00e9 Sissoko)\n13 Dr. Orlando Owoh & His Omimah Band : Mo Baju Wo Oju Orun \/ Irawo Nii Ko Ni Ku', '5a070811b4b3f.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00'),
 ('Vous êtes arrivés', '2019', '', 'Akua Nuru - The Block\nJoe Driscoll & Sekou Kouyate - Wonamati\nFaada Freddy - The Death Of Me\nBarbatuques - Voc\u00ea Chegou\n-M-, Toumani Diabat\u00e9, Sidiki Diabat\u00e9, Santigold, Hiba Tawaji, Ibrahim Maalouf, Seu Jorge, Nekfeu, Youssou N\u2019Dour, Sanjay Khan & ChaCha - Solidarit\u00e9\nGoran Bregovic - Cajesukarije Cocek', '5a070811b5872.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00'),
-('Khéops', '2017', '', '', '5a4e18457ad30.png', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00');
+('Khéops', '2017', '', '', '', '2019-12-23 09:34:00.739+00', '2019-12-23 09:34:00.739+00');
 
 -- Insert mixtapes authors
 INSERT INTO
@@ -42,25 +42,25 @@ VALUES
 
 -- Insert tracks
 INSERT INTO
-"public"."tracks" ("title", "artist", "position", "mixtape_id", "start_at", "duration", "created_at")
+"public"."tracks" ("title", "artist", "position", "mixtape_id", "start_at", "created_at")
 VALUES
-('Doing it to death (Part 1) (feat. Fred Wesley & the J.B.''s)', 'James Brown', 1, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Security (Live)', 'Otis Redding', 2, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Valerie (feat. Amy Winehouse)', 'Mark Ronson', 3, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Harlem shuffle', 'Vigon', 4, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('I can''t turn you loose (Live)', 'Otis Redding', 5, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Do the funky chicken', 'Rufus Thomas', 6, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Papa''s got a brand new bag (Live)', 'Otis Redding', 7, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('There it is (Part 1)', 'James Brown', 8, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Monkey man', 'Amy Winehouse', 9, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Roots Ragga', 'Macka B.', 10, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('I got you (Feel good)', 'James Brown', 11, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Barefootin''', 'Robert Parker', 12, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('I''m depending on you (Live)', 'Otis Redding', 13, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('(Get up I feel like being a) Sex machine', 'James Brown', 14, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Step it up (feat. Alice Russell)', 'The Bamboos', 15, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Watcha gonna do about it', 'Small Faces', 16, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Do you love me', 'The Contours', 17, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Land of 1000 dances', 'Wilson Pickett', 18, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('Sugarfoot', 'Black Joe Lewis & The Honeybears', 19, 1, 0, null, '2022-11-08 13:59:57.739+00'),
-('(Doin'' the) Boom boom', 'Eli ''Paperboy'' Reed & The True Loves', 20, 1, 0, null, '2022-11-08 13:59:57.739+00');
+('Doing it to death (Part 1) (feat. Fred Wesley & the J.B.''s)', 'James Brown', 1, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Security (Live)', 'Otis Redding', 2, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Valerie (feat. Amy Winehouse)', 'Mark Ronson', 3, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Harlem shuffle', 'Vigon', 4, 1, 0, '2022-11-08 13:59:57.739+00'),
+('I can''t turn you loose (Live)', 'Otis Redding', 5, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Do the funky chicken', 'Rufus Thomas', 6, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Papa''s got a brand new bag (Live)', 'Otis Redding', 7, 1, 0, '2022-11-08 13:59:57.739+00'),
+('There it is (Part 1)', 'James Brown', 8, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Monkey man', 'Amy Winehouse', 9, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Roots Ragga', 'Macka B.', 10, 1, 0, '2022-11-08 13:59:57.739+00'),
+('I got you (Feel good)', 'James Brown', 11, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Barefootin''', 'Robert Parker', 12, 1, 0, '2022-11-08 13:59:57.739+00'),
+('I''m depending on you (Live)', 'Otis Redding', 13, 1, 0, '2022-11-08 13:59:57.739+00'),
+('(Get up I feel like being a) Sex machine', 'James Brown', 14, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Step it up (feat. Alice Russell)', 'The Bamboos', 15, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Watcha gonna do about it', 'Small Faces', 16, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Do you love me', 'The Contours', 17, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Land of 1000 dances', 'Wilson Pickett', 18, 1, 0, '2022-11-08 13:59:57.739+00'),
+('Sugarfoot', 'Black Joe Lewis & The Honeybears', 19, 1, 0, '2022-11-08 13:59:57.739+00'),
+('(Doin'' the) Boom boom', 'Eli ''Paperboy'' Reed & The True Loves', 20, 1, 0, '2022-11-08 13:59:57.739+00');

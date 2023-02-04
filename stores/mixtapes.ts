@@ -1,6 +1,13 @@
-import { AnyFn, MixtapeExt, MixtapeParams, ObjectOf } from "~~/types/supatypes";
+import {
+  AnyFn,
+  MixtapeExt,
+  MixtapeParams,
+  MixtapeParamsExt,
+  ObjectOf,
+} from "~~/types/supatypes";
 
 import { Ref } from "nuxt/dist/app/compat/capi";
+import { decode } from "base64-arraybuffer";
 
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi();
@@ -39,7 +46,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     return index.value?.[id];
   };
 
-  const createMixtape = async (mixtapeData: MixtapeParams) =>
+  const createMixtape = async (mixtapeData: MixtapeParamsExt) =>
     await process(
       async () => {
         const result: MixtapeExt = await api.post(`/mixtapes`, {
@@ -54,13 +61,16 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
 
   const updateMixtape = async (
     mixtapeId: string | number,
-    mixtapeData: MixtapeParams
+    { cover_url, created_by, ...mixtapeData }: MixtapeParamsExt
   ) =>
     await process(
       async () => {
+        console.log({ cover_file: mixtapeData.cover_file });
         const result: MixtapeExt = await api.patch(`/mixtapes`, {
           query: { id: mixtapeId },
-          body: { data: mixtapeData },
+          body: {
+            data: mixtapeData,
+          },
         });
         data.value = [...data.value.filter((a) => a.id !== mixtapeId), result];
         index.value = { ...index.value, [mixtapeId]: result };

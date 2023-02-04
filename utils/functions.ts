@@ -5,10 +5,13 @@ export const isEmpty = (obj: Object | null) => {
   return JSON.stringify(obj) === JSON.stringify(Object.create(null));
 };
 
-export const generateYears = () => {
+export const generateYears = (sinceYear: number = 1950) => {
   const years = [];
   let dateStart = DateTime.now();
-  const dateEnd = DateTime.fromObject({ ...dateStart.toObject(), year: 1980 });
+  const dateEnd = DateTime.fromObject({
+    ...dateStart.toObject(),
+    year: sinceYear,
+  });
   while (dateEnd.diff(dateStart, "years").years <= 0) {
     years.push(dateStart.toFormat("yyyy"));
     dateStart = dateStart.minus({ years: 1 });

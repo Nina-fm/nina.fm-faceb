@@ -11,7 +11,7 @@ export enum Methods {
 
 export interface ApiOptions {
   query?: StringifiableRecord | undefined;
-  body?: Obj;
+  body?: Object;
 }
 
 export const useApi = () => {

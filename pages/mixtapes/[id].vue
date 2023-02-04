@@ -25,12 +25,6 @@ const headers = [
     sortable: false
   },
   {
-    title: "Durée",
-    key: "duration",
-    align: "end",
-    sortable: false
-  },
-  {
     title: "Début",
     key: "start_at",
     align: "end",
@@ -58,9 +52,6 @@ const handleBack = () => {
         <div class="card-texts">
           <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
           <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.created_by }}</v-card-subtitle>
-          <v-card-subtitle v-if="mixtape.comment" class="mt-5">
-            {{ mixtape.comment }}
-          </v-card-subtitle>
         </div>
         <v-avatar class="mixtape-cover ma-3" size="250" rounded="0">
           <v-img :src="mixtape.cover_url"></v-img>
@@ -69,6 +60,9 @@ const handleBack = () => {
       <v-card-text>
         <span class="text-h6">Pistes</span>
         <v-data-table :headers="headers" :items="mixtape.tracks" items-per-page="-1" no-data-text="Aucune donnée." />
+      </v-card-text>
+      <v-card-text v-if="mixtape.comment" class="mt-5">
+        {{ mixtape.comment }}
       </v-card-text>
     </v-card>
   </v-container>

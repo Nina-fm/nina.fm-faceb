@@ -17,7 +17,7 @@ a {
   $margin: 20px;
 
   content: "";
-  position: absolute;
+  position: fixed;
   z-index: 0;
   left: $margin;
   right: $margin;
@@ -28,11 +28,7 @@ a {
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.05;
-}
-
-.full-height {
-  display: flex;
-  height: 100%;
+  pointer-events: none;
 }
 
 .form-buttons {

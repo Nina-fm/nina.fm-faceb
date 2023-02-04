@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import Confirm from '~~/components/Confirm.vue';
+import Confirm from '~~/components/ui/Confirm.vue';
 
 definePageMeta({ middleware: ["auth"] })
 
@@ -65,12 +65,12 @@ onMounted(() => fetchAuthors())
 </script>
 
 <template>
-  <page-header title="Les DJ's">
+  <PageHeader title="Les DJ's">
     <template #extra>
       <v-btn icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
       <v-btn icon="mdi-plus" @click="navigateTo('/authors/add')" />
     </template>
-  </page-header>
+  </PageHeader>
   <v-container>
     <v-row>
       <v-col cols="12">

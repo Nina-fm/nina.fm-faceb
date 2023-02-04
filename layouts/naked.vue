@@ -3,7 +3,7 @@
 <template>
   <v-app>
     <v-main class="background-image">
-      <v-container class="full-height">
+      <v-container class="h-100 d-flex">
         <v-row align="center" justify="center">
           <v-col cols="6">
             <slot />

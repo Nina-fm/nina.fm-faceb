@@ -2,10 +2,11 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-import { getParam, queryResponse } from "../_shared/utils.ts";
+import { dataURLtoFile, getParam, queryResponse } from "../_shared/utils.ts";
 
 import { AuthorsService } from "../_services/authors.ts";
 import { Method } from "../_types/api.ts";
+import { MixtapeParamsExt } from "../_types/mixtapes.ts";
 import { MixtapesService } from "../_services/mixtapes.ts";
 import { TracksService } from "../_services/tracks.ts";
 import { corsHeaders } from "../_shared/cors.ts";
@@ -66,17 +67,38 @@ serve((req: Request) => {
           /**
            * Update a mixtape by ID
            */
-          const { data: postData } = await req.json();
+          const { data: postData }: { data: MixtapeParamsExt } =
+            await req.json();
           console.log(`[PATCH] /mixtapes?id=${id}`, postData);
 
           const {
             authors = [],
             tracks = [],
+            cover_file,
             ...data
           } = _mixtapes.validateData(postData);
+          let cover = undefined;
+
+          // Upload cover if provided
+          if (cover_file?.data && cover_file?.filename) {
+            const file = dataURLtoFile(
+              String(cover_file?.data),
+              cover_file.filename
+            );
+            console.log({ file });
+            const { data: coverFilename, error: coverError } =
+              await _mixtapes.supabase.storage
+                .from("covers")
+                .upload(cover_file?.filename, file);
+            if (coverError) throw coverError;
+            cover = coverFilename;
+          }
 
           // Update the mixtape
-          await _mixtapes.update(id, data);
+          await _mixtapes.update(id, {
+            ...data,
+            ...(cover ? { cover: cover.path } : {}),
+          });
           // List all authors and create new ones
           const allAuthors = await Promise.all(
             authors.map(async (author) =>

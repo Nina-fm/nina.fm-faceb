@@ -19,7 +19,6 @@ const handleLogout = async () => {
     <template v-slot:append>
       <v-btn size="small" @click="navigateTo('/mixtapes')">Mixtapes</v-btn>
       <v-btn size="small" @click="navigateTo('/authors')">DJ's</v-btn>
-
       <v-menu v-if="isLoggedIn" open-on-hover>
         <template v-slot:activator="{ props }">
           <v-btn icon="mdi-account-circle" v-bind="props" variant="plain"></v-btn>

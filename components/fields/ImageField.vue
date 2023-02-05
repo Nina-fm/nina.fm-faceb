@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// https://github.com/Yaxian/vue3-dropzone
 import { FileRejectReason, useDropzone } from 'vue3-dropzone';
 import { FileModel } from '~~/types/supatypes';
 

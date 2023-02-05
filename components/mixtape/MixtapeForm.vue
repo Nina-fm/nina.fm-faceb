@@ -12,11 +12,9 @@ const emit = defineEmits<{
 
 const { fetchAuthors } = useAuthorsStore()
 const { data, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
-const isLoadingTags = false;
 const valid = ref(false);
 const years = generateYears(2007);
 const authors = computed(() => data.value.map(({ id, name }) => ({ id, name })));
-const tags = computed(() => []);
 const isEdit = computed(() => !!mixtape);
 const rules = {
   min2Char: (v: string) => v.length >= 2 || 'Doit comporter au moins 2 caractères',
@@ -29,7 +27,6 @@ const form = reactive({
   tracks_text: mixtape?.tracks_text ?? null,
   authors: mixtape?.authors ?? [],
   tracks: mixtape?.tracks ?? [],
-  tags: mixtape?.tags ?? [],
   cover: mixtape?.cover ?? null,
   cover_url: mixtape?.cover_url ?? null,
   cover_file: {
@@ -68,10 +65,6 @@ onMounted(() => fetchAuthors())
             </v-col>
             <v-col cols="12">
               <v-select v-model="form.year" label="Année" :items="years" variant="outlined" required></v-select>
-            </v-col>
-            <v-col cols="12">
-              <v-combobox v-model="form.tags" :loading="isLoadingTags" label="Tags" :items="tags" item-title="name"
-                item-value="id" chips closable-chips multiple variant="outlined"></v-combobox>
             </v-col>
           </v-row>
         </v-col>

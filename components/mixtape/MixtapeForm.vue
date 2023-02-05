@@ -30,8 +30,8 @@ const form = reactive({
   cover: mixtape?.cover ?? null,
   cover_url: mixtape?.cover_url ?? null,
   cover_file: {
-    filename: mixtape.cover ?? null,
-    data: mixtape.cover_url ?? null
+    filename: mixtape?.cover ?? null,
+    data: mixtape?.cover_url ?? null
   }
 });
 const emptyTrack: TrackParams = {

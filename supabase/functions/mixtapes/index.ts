@@ -53,7 +53,7 @@ serve((req: Request) => {
         // Create the mixtape
         const mixtape = await _mixtapes.create({
           ...data,
-          ...(cover ? { cover: cover.path } : {}),
+          ...(cover && cover.path ? { cover: cover.path } : {}),
         });
         // List all authors and create new ones
         const allAuthors = await Promise.all(

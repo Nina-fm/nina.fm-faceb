@@ -25,15 +25,21 @@ export class Service {
     );
   }
 
+  isFileDataBase64(fileString: string) {
+    return /^data:image/.test(fileString);
+  }
+
   async handleFile(fileModel: FileModel, bucket: string) {
     const filename = String(fileModel.filename);
-    const data = String(fileModel.data);
-    const file = dataURLtoFile(data, filename);
-    const { data: coverFilename, error: coverError } =
-      await this.supabase.storage
-        .from(bucket)
-        .upload(filename, file, { upsert: true });
+    const fileString = String(fileModel.data) || null;
+    if (!fileString || !this.isFileDataBase64(fileString)) {
+      return fileString;
+    }
+    const file = dataURLtoFile(fileString, filename);
+    const { data: coverFile, error: coverError } = await this.supabase.storage
+      .from(bucket)
+      .upload(filename, file, { upsert: true });
     if (coverError) throw coverError;
-    return coverFilename;
+    return coverFile.path;
   }
 }

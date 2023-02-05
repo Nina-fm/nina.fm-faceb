@@ -41,20 +41,17 @@ serve((req: Request) => {
           authors = [],
           tracks = [],
           cover_file,
+          cover: _cover,
           cover_url: _cover_url,
           ...data
         } = _mixtapes.validateData(postData);
 
-        // Upload cover if provided
-        let cover = undefined;
-        if (cover_file) {
-          cover = await _mixtapes.handleFile(cover_file, "covers");
-        }
-
-        // Create the mixtape
+        // Create the mixtape and upload cover if provided
         const mixtape = await _mixtapes.create({
           ...data,
-          ...(cover && cover.path ? { cover: cover.path } : {}),
+          cover: cover_file
+            ? await _mixtapes.handleFile(cover_file, "covers")
+            : null,
         });
         // List all authors and create new ones
         const allAuthors = await Promise.all(
@@ -86,20 +83,17 @@ serve((req: Request) => {
             authors = [],
             tracks = [],
             cover_file,
+            cover: _cover,
             cover_url: _cover_url,
             ...data
           } = _mixtapes.validateData(postData);
 
-          // Upload cover if provided
-          let cover = undefined;
-          if (cover_file) {
-            cover = await _mixtapes.handleFile(cover_file, "covers");
-          }
-
-          // Update the mixtape
+          // Update the mixtape and upload cover if provided
           await _mixtapes.update(id, {
             ...data,
-            ...(cover && cover.path ? { cover: cover.path } : {}),
+            cover: cover_file
+              ? await _mixtapes.handleFile(cover_file, "covers")
+              : null,
           });
           // List all authors and create new ones
           const allAuthors = await Promise.all(

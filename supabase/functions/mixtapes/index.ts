@@ -2,7 +2,7 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-import { dataURLtoFile, getParam, queryResponse } from "../_shared/utils.ts";
+import { getParam, queryResponse } from "../_shared/utils.ts";
 
 import { AuthorsService } from "../_services/authors.ts";
 import { Method } from "../_types/api.ts";
@@ -40,11 +40,21 @@ serve((req: Request) => {
         const {
           authors = [],
           tracks = [],
+          cover_file,
           ...data
         } = _mixtapes.validateData(postData);
 
+        // Upload cover if provided
+        let cover = undefined;
+        if (cover_file) {
+          cover = await _mixtapes.handleFile(cover_file, "covers");
+        }
+
         // Create the mixtape
-        const mixtape = await _mixtapes.create(data);
+        const mixtape = await _mixtapes.create({
+          ...data,
+          ...(cover ? { cover: cover.path } : {}),
+        });
         // List all authors and create new ones
         const allAuthors = await Promise.all(
           authors.map(async (author) =>
@@ -77,21 +87,11 @@ serve((req: Request) => {
             cover_file,
             ...data
           } = _mixtapes.validateData(postData);
-          let cover = undefined;
 
           // Upload cover if provided
-          if (cover_file?.data && cover_file?.filename) {
-            const file = dataURLtoFile(
-              String(cover_file?.data),
-              cover_file.filename
-            );
-            console.log({ file });
-            const { data: coverFilename, error: coverError } =
-              await _mixtapes.supabase.storage
-                .from("covers")
-                .upload(cover_file?.filename, file);
-            if (coverError) throw coverError;
-            cover = coverFilename;
+          let cover = undefined;
+          if (cover_file) {
+            cover = await _mixtapes.handleFile(cover_file, "covers");
           }
 
           // Update the mixtape

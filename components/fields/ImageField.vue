@@ -1,14 +1,10 @@
 <script lang="ts" setup>
 import { FileRejectReason, useDropzone } from 'vue3-dropzone';
-
-interface ImageFieldModel {
-  filename?: string | null;
-  data?: string | ArrayBuffer | null;
-}
+import { FileModel } from '~~/types/supatypes';
 
 const { modelValue, aspectRatio } = withDefaults(defineProps<{
   label: string,
-  modelValue: ImageFieldModel,
+  modelValue: FileModel,
   aspectRatio?: string | number,
   emptyText?: string
 }>(), {
@@ -17,7 +13,7 @@ const { modelValue, aspectRatio } = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: ImageFieldModel): void
+  (e: "update:modelValue", value: FileModel): void
 }>()
 
 const lightboxOpen = ref(false)

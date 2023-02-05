@@ -1,6 +1,8 @@
 import { Database } from "../_types/supabase.ts";
+import { FileModel } from "../_types/api.ts";
 import SupabaseClient from "https://esm.sh/v103/@supabase/supabase-js@2.4.0/dist/module/SupabaseClient";
 import { createClient } from "https://esm.sh/v103/@supabase/supabase-js@2.4.0/dist/module/index";
+import { dataURLtoFile } from "./utils.ts";
 
 export class Service {
   headers: Request["headers"];
@@ -21,5 +23,17 @@ export class Service {
         },
       }
     );
+  }
+
+  async handleFile(fileModel: FileModel, bucket: string) {
+    const filename = String(fileModel.filename);
+    const data = String(fileModel.data);
+    const file = dataURLtoFile(data, filename);
+    const { data: coverFilename, error: coverError } =
+      await this.supabase.storage
+        .from(bucket)
+        .upload(filename, file, { upsert: true });
+    if (coverError) throw coverError;
+    return coverFilename;
   }
 }

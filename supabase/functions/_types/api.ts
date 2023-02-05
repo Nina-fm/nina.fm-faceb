@@ -7,3 +7,8 @@ export enum Method {
   HEAD = "HEAD",
   OPTIONS = "OPTIONS",
 }
+
+export interface FileModel {
+  filename?: string | null;
+  data?: string | ArrayBuffer | null;
+}

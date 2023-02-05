@@ -1,7 +1,7 @@
 import { Author, AuthorExt, AuthorParams } from "../_types/authors.ts";
 
 import { Service } from "../_shared/service.ts";
-import { handleLocalStorageUrl } from "../_shared/utils.ts";
+import { handleLocalFileUrl } from "../_shared/utils.ts";
 
 export class AuthorsService extends Service {
   /**
@@ -24,7 +24,7 @@ export class AuthorsService extends Service {
     return {
       ...author,
       avatar_url: author.avatar
-        ? handleLocalStorageUrl(
+        ? handleLocalFileUrl(
             this.supabase.storage.from("avatars").getPublicUrl(author.avatar)
               .data.publicUrl
           )

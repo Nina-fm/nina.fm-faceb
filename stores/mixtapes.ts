@@ -6,9 +6,6 @@ import {
   ObjectOf,
 } from "~~/types/supatypes";
 
-import { Ref } from "nuxt/dist/app/compat/capi";
-import { decode } from "base64-arraybuffer";
-
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi();
   const isLoading = ref<boolean>(false);

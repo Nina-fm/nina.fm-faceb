@@ -29,7 +29,7 @@ export const queryResponse = async (callback: AnyFn) => {
   }
 };
 
-export const handleLocalStorageUrl = (url: string) =>
+export const handleLocalFileUrl = (url: string) =>
   url.replace(/supabase_kong_ninafm-api:8000/i, "localhost:54321");
 
 export const formatAuthorNames = (authors: AuthorParamsExt[]) =>

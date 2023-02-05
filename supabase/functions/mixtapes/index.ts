@@ -41,6 +41,7 @@ serve((req: Request) => {
           authors = [],
           tracks = [],
           cover_file,
+          cover_url: _cover_url,
           ...data
         } = _mixtapes.validateData(postData);
 
@@ -85,6 +86,7 @@ serve((req: Request) => {
             authors = [],
             tracks = [],
             cover_file,
+            cover_url: _cover_url,
             ...data
           } = _mixtapes.validateData(postData);
 
@@ -97,7 +99,7 @@ serve((req: Request) => {
           // Update the mixtape
           await _mixtapes.update(id, {
             ...data,
-            ...(cover ? { cover: cover.path } : {}),
+            ...(cover && cover.path ? { cover: cover.path } : {}),
           });
           // List all authors and create new ones
           const allAuthors = await Promise.all(

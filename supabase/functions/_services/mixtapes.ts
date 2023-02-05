@@ -3,7 +3,7 @@ import {
   MixtapeParams,
   MixtapeParamsExt,
 } from "../_types/mixtapes.ts";
-import { formatAuthorNames, handleLocalStorageUrl } from "../_shared/utils.ts";
+import { formatAuthorNames, handleLocalFileUrl } from "../_shared/utils.ts";
 import {
   mixtapeAuthorsWithAuthorsRelation,
   tracksRelation,
@@ -16,7 +16,7 @@ export class MixtapesService extends Service {
   /**
    * Validate mixtape POST Data or throwing errors
    */
-  validateData(data: Partial<MixtapeParamsExt>) {
+  validateData(data: MixtapeParamsExt) {
     const { authors, ..._mixtapeData } = data;
 
     if (!authors?.length) {
@@ -45,7 +45,7 @@ export class MixtapesService extends Service {
       ...rest,
       cover,
       cover_url: cover
-        ? handleLocalStorageUrl(
+        ? handleLocalFileUrl(
             this.supabase.storage.from("covers").getPublicUrl(cover).data
               .publicUrl
           )

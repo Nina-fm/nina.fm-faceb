@@ -43,6 +43,7 @@ export class MixtapesService extends Service {
 
     return {
       ...rest,
+      cover,
       cover_url: cover
         ? handleLocalStorageUrl(
             this.supabase.storage.from("covers").getPublicUrl(cover).data

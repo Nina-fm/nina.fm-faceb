@@ -1,23 +1,15 @@
 <script lang="ts" setup>
+import { MixtapeParamsExt } from '~~/types/supatypes';
+
 definePageMeta({ middleware: ["auth"] })
 
 const { createMixtape } = useMixtapesStore();
-
-const form = reactive({
-  name: null,
-  year: null,
-  comment: null,
-  tracks_text: null,
-  authors: [],
-  tracks: []
-})
 
 const handleCancel = () => {
   navigateTo("/mixtapes")
 }
 
-const handleSubmit = async () => {
-  console.log({ form })
+const handleSubmit = async (form: MixtapeParamsExt) => {
   const { error } = await createMixtape(form);
   if (!error) navigateTo("/mixtapes")
 }
@@ -28,7 +20,7 @@ const handleSubmit = async () => {
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <MixtapeForm v-model="form" @cancel="handleCancel" @submit="handleSubmit" />
+        <MixtapeForm @cancel="handleCancel" @submit="handleSubmit" />
       </v-card-text>
     </v-card>
   </v-container>

@@ -1,45 +1,53 @@
 <script lang="ts" setup>
-import { MixtapeParamsExt, TrackParams } from '~~/types/supatypes';
+import { MixtapeExt, MixtapeParamsExt, TrackParams } from '~~/types/supatypes';
 
-const { modelValue, edit } = defineProps<{
-  modelValue: MixtapeParamsExt,
-  edit?: boolean
+const { mixtape } = defineProps<{
+  mixtape?: MixtapeExt,
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: MixtapeParamsExt): void
   (e: 'cancel'): void
   (e: 'submit', value: MixtapeParamsExt): void
 }>()
 
 const { fetchAuthors } = useAuthorsStore()
-const { data, isLoading } = storeToRefs(useAuthorsStore())
-const valid = ref(false)
-
-const handleCancel = () => emit("cancel")
-const handleSubmit = () => emit("submit", modelValue);
-
+const { data, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
+const isLoadingTags = false;
+const valid = ref(false);
+const years = generateYears(2007);
+const authors = computed(() => data.value.map(({ id, name }) => ({ id, name })));
+const tags = computed(() => []);
+const isEdit = computed(() => !!mixtape);
 const rules = {
   min2Char: (v: string) => v.length >= 2 || 'Doit comporter au moins 2 caractères',
   eq4Chars: (v: string) => v.length === 4 || 'Doit comporter 4 caractères'
-}
-
-const authors = computed(() => data.value.map(({ id, name }) => ({ id, name })));
-const tags = computed(() => [])
-const years = generateYears(2007);
-const emptyTrack = {
+};
+const form = reactive({
+  name: mixtape?.name ?? null,
+  year: mixtape?.year ?? null,
+  comment: mixtape?.comment ?? null,
+  tracks_text: mixtape?.tracks_text ?? null,
+  authors: mixtape?.authors ?? [],
+  tracks: mixtape?.tracks ?? [],
+  tags: mixtape?.tags ?? [],
+  cover: mixtape?.cover ?? null,
+  cover_url: mixtape?.cover_url ?? null,
+  cover_file: {
+    filename: mixtape.cover ?? null,
+    data: mixtape.cover_url ?? null
+  }
+});
+const emptyTrack: TrackParams = {
   title: null,
   artist: null,
   start_at: null
-}
+};
 
-const handleAddTrack = () => {
-  modelValue.tracks.push({ ...emptyTrack })
-}
+const handleRemoveTrack = (index: number) => form.tracks.splice(index, 1)
 
-const handleRemoveTrack = (index: number) => {
-  modelValue.tracks.splice(index, 1)
-}
+const handleCancel = () => emit("cancel")
+
+const handleSubmit = () => emit("submit", form);
 
 onMounted(() => fetchAuthors())
 </script>
@@ -48,36 +56,32 @@ onMounted(() => fetchAuthors())
   <v-form v-model="valid" validate-on="blur">
     <v-container>
       <v-row>
-        <v-col lg="7">
+        <v-col cols="12" sm="7" lg="8">
           <v-row>
             <v-col cols="12">
-              <v-text-field v-model="modelValue.name" label="Nom" :rules="[rules.min2Char]" required />
+              <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" required />
             </v-col>
             <v-col cols="12">
-              <v-combobox v-model="modelValue.authors" :loading="isLoading" label="DJ's" :items="authors"
+              <v-combobox v-model="form.authors" :loading="isLoadingAuthors" label="DJ's" :items="authors"
                 item-title="name" item-value="id" chips closable-chips multiple variant="outlined"
                 required></v-combobox>
             </v-col>
             <v-col cols="12">
-              <v-select v-model="modelValue.year" label="Année" :items="years" variant="outlined" required></v-select>
+              <v-select v-model="form.year" label="Année" :items="years" variant="outlined" required></v-select>
             </v-col>
             <v-col cols="12">
-              <v-combobox v-model="modelValue.tags" :loading="isLoading" label="Tags" :items="tags" item-title="name"
+              <v-combobox v-model="form.tags" :loading="isLoadingTags" label="Tags" :items="tags" item-title="name"
                 item-value="id" chips closable-chips multiple variant="outlined"></v-combobox>
-            </v-col>
-            <v-col cols="12">
-              <v-textarea v-model="modelValue.comment" label="Commentaire" required />
             </v-col>
           </v-row>
         </v-col>
         <v-col>
-          <image-field v-model="modelValue.cover_file" label="Cover" :default-value="modelValue.cover_url" />
+          <image-field v-model="form.cover_file" label="Cover" :aspect-ratio="1.175" />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
-          <repeatable-field v-model="modelValue.tracks" title="Pistes" @add="handleAddTrack"
-            @remove="handleRemoveTrack">
+          <repeatable-field v-model="form.tracks" title="Pistes" :empty-item="emptyTrack" @remove="handleRemoveTrack">
             <template #item="{ item, index }: { item: TrackParams, index: number }">
               <v-row>
                 <v-col>
@@ -96,8 +100,11 @@ onMounted(() => fetchAuthors())
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12">
-          <v-textarea v-model="modelValue.tracks_text" label="Pistes (format texte)" required />
+        <v-col cols="12" lg="6">
+          <v-textarea v-model="form.tracks_text" label="Pistes (format texte)" required />
+        </v-col>
+        <v-col cols="12" lg="6">
+          <v-textarea v-model="form.comment" label="Commentaire" required />
         </v-col>
       </v-row>
       <v-row>
@@ -105,7 +112,7 @@ onMounted(() => fetchAuthors())
           <div class="form-buttons">
             <v-btn class="mr-2" @click="handleCancel">Annuler</v-btn>
             <v-btn color="primary" @click="handleSubmit"> {{
-              edit?" Mettre à jour": "Ajouter"
+              isEdit?" Mettre à jour": "Ajouter"
             }}</v-btn>
           </div>
         </v-col>

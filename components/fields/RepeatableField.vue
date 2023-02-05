@@ -1,17 +1,25 @@
 <script lang="ts" setup>
+import uniqid from 'uniqid'
 
-const { modelValue } = defineProps<{
-  modelValue: Object[],
+type ItemBase = {
+  key?: string;
+  position?: number;
+  [key: string]: unknown;
+}
+
+const { modelValue, emptyItem } = defineProps<{
+  emptyItem: ItemBase,
+  modelValue: ItemBase[],
   title: string
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Object[]): void,
+  (e: 'update:modelValue', value: ItemBase[]): void,
   (e: 'add'): void
   (e: 'remove', value: number): void
 }>();
 
-const data = reactive(modelValue);
+const data = reactive(modelValue.map((el) => ({ ...el, key: uniqid() })));
 
 watch(data, (value) => {
   emit('update:modelValue', value)
@@ -23,17 +31,23 @@ onMounted(() => {
   }
 })
 
+const handleAdd = () => {
+  emit('add')
+  data.push({ ...emptyItem, key: uniqid(), position: data.length + 1 })
+}
+
 const handleChangePosition = (event: any) => {
   const { element, oldIndex, newIndex } = event.moved;
   data.splice(oldIndex, 1)
   data.splice(newIndex, 0, element)
+  data.map((el, i) => ({ ...el, key: uniqid(), position: i + 1 }))
 }
 </script>
 
 <template>
-  <v-field class="repeatable-field" :label="title" append-inner-icon="mdi-plus" @click:appendInner="$emit('add')">
+  <v-field class="repeatable-field" :label="title" append-inner-icon="mdi-plus" @click:appendInner="handleAdd">
     <div class="repeatable-field__content mt-15">
-      <draggable v-model="data" @change="handleChangePosition">
+      <draggable :model-value="data" item-key="key" @change="handleChangePosition">
         <template #item="{ element, index }">
           <v-sheet>
             <div class="pt-0 pl-4 pb-4 d-flex">

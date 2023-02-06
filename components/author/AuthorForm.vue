@@ -16,7 +16,7 @@ const valid = ref(false)
 const isEdit = computed(() => !!author);
 const form = reactive({
     name: author?.name ?? null,
-    user_id: author.user_id ?? null
+    user_id: author?.user_id ?? null
 });
 
 const handleCancel = () => emit("cancel")

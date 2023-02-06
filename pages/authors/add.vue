@@ -20,7 +20,7 @@ const handleSubmit = async (form: AuthorParamsExt) => {
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <AuthorForm edit @cancel="handleCancel" @submit="handleSubmit" />
+        <AuthorForm @cancel="handleCancel" @submit="handleSubmit" />
       </v-card-text>
     </v-card>
   </v-container>

@@ -120,8 +120,7 @@ serve((req: Request) => {
            * Delete a mixtape by ID
            */
           console.log(`[DELETE] /mixtapes?id=${id}`);
-          await _mixtapes.delete(id);
-          return { deleted: id };
+          return await _mixtapes.delete(id);
         }
         break;
       }

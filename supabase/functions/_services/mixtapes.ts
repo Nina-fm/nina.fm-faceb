@@ -122,7 +122,7 @@ export class MixtapesService extends Service {
     const { data: existing } = await this.supabase
       .from("mixtapes_authors")
       .select("*")
-      .eq("mixtape_id", id);
+      .match({ mixtape_id: id });
 
     const toDeleteIds = existing?.length
       ? existing
@@ -187,10 +187,7 @@ export class MixtapesService extends Service {
       .delete()
       .match({ id });
 
-    console.log({ error });
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return true;
   }

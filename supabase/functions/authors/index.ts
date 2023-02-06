@@ -60,8 +60,7 @@ serve((req: Request) => {
            * Delete an author by ID
            */
           console.log(`[DELETE] /authors?id=${id}`);
-          await _authors.delete(id);
-          return { deleted: id };
+          return await _authors.delete(id);
         }
         break;
       }

@@ -57,7 +57,7 @@ export class AuthorsService extends Service {
     const { data: author, error } = await this.supabase
       .from("authors")
       .select("*")
-      .eq("id", id)
+      .match({ id })
       .single();
 
     if (error) throw new Error(error.message);
@@ -101,10 +101,10 @@ export class AuthorsService extends Service {
     const { data: author, error } = await this.supabase
       .from("authors")
       .update({ ...authorData, updated_at: new Date() })
-      .eq("id", id)
+      .match({ id })
       .select();
 
-    if (error) throw new Error(error.message);
+    if (error) throw error;
 
     return author;
   }
@@ -113,9 +113,12 @@ export class AuthorsService extends Service {
    * Delete an author by ID
    */
   async delete(id: number) {
-    const { error } = await this.supabase.from("authors").delete().eq("id", id);
+    const { error } = await this.supabase
+      .from("authors")
+      .delete()
+      .match({ id });
 
-    if (error) throw new Error(error.message);
+    if (error) throw error;
 
     return true;
   }

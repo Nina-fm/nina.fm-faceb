@@ -113,12 +113,17 @@ export class AuthorsService extends Service {
    * Delete an author by ID
    */
   async delete(id: number) {
-    const { error } = await this.supabase
+    const { data, error } = await this.supabase
       .from("authors")
       .delete()
-      .match({ id });
+      .match({ id })
+      .select();
 
     if (error) throw error;
+
+    if (!data.length) {
+      throw new Error("Author with associated mixtapes cannot be deleted.");
+    }
 
     return { deleted: id };
   }

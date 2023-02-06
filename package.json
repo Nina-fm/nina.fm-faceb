@@ -12,7 +12,7 @@
     "postinstall": "nuxt prepare",
     "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
     "reset:db": "supabase db reset",
-    "deploy:db": "supabase db push",
+    "push:db": "supabase db push",
     "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors",
     "serve:authors": "supabase functions serve authors",
     "serve:mixtapes": "supabase functions serve mixtapes"

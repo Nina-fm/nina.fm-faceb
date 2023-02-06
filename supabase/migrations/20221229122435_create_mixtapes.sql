@@ -23,21 +23,21 @@ for select
 to public
 using (true);
 
-create policy "Enable insert for anon."
+create policy "Enable insert for authenticated or anon."
 on "public"."mixtapes"
 as permissive
 for insert
 to authenticated, anon
 with check (true);
 
-create policy "Enable update for anon."
+create policy "Enable update for authenticated or anon."
 on "public"."mixtapes"
 as permissive
 for update
 to authenticated, anon
 using (true);
 
-create policy "Enable delete for anon."
+create policy "Enable delete for authenticated or anon."
 on "public"."mixtapes"
 as permissive
 for delete

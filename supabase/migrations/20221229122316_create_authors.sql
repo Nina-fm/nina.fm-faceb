@@ -42,14 +42,14 @@ for insert
 to public
 with check ((auth.uid() = user_id));
 
-create policy "Enable insert for anon."
+create policy "Enable insert for authenticated or anon."
 on "public"."authors"
 as permissive
 for insert
 to authenticated, anon
 with check (true);
 
-create policy "Enable update for anon."
+create policy "Enable update for authenticated or anon."
 on "public"."authors"
 as permissive
 for update
@@ -63,7 +63,7 @@ for update
 to public
 using ((auth.uid() = user_id));
 
-create policy "Enable delete for anon."
+create policy "Enable delete for authenticated or anon."
 on "public"."authors"
 as permissive
 for delete

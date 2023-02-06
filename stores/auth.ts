@@ -20,7 +20,6 @@ export const useAuthStore = defineStore("auth", () => {
    * Listen for login state changes
    */
   $supabase.auth.onAuthStateChange((event, session) => {
-    console.log({ event, session });
     user.value = session?.user || null;
     token.value = session?.access_token || null;
     isLoading.value = false;

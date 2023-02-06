@@ -41,11 +41,9 @@ export class Service {
   }
 
   async handleFile(fileModel: FileModel, bucket: string) {
-    console.log("handleFile");
     const filename = fileModel.filename ?? "";
     const fileString = fileModel.data;
     const fileExists = await this.fileExists(filename, bucket);
-    console.log({ fileExists });
     // If no data, data not base64 or file exists, simply return file path
     if (!fileString || !this.isFileDataBase64(fileString) || fileExists) {
       return filename;

@@ -62,7 +62,6 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   ) =>
     await process(
       async () => {
-        console.log({ cover_file: mixtapeData.cover_file });
         const result: MixtapeExt = await api.patch(`/mixtapes`, {
           query: { id: mixtapeId },
           body: {

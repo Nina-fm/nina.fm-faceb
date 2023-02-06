@@ -46,7 +46,6 @@ export class TracksService extends Service {
     mixtapeId: string | number,
     tracksData: TrackParams[]
   ) {
-    console.log({ tracksData, mixtapeId });
     const tracksDataIds = tracksData.reduce(
       (r, t) => [...r, ...(t.id ? [t.id] : [])],
       [] as (string | number)[]

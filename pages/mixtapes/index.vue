@@ -47,7 +47,6 @@ const headers = [
 ];
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
-  console.log("handleRowClick", { event, value })
   navigateTo(`/mixtapes/${value.item.raw.id}`)
 }
 

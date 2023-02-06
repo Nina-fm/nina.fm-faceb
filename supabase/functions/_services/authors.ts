@@ -13,13 +13,13 @@ export class AuthorsService extends Service {
    * Validate author POST Data or throwing errors
    */
   validateData(data: AuthorParamsExt) {
-    const { name } = data;
+    const { name, user_id } = data;
 
     if (!name) {
       throw new Error("Author should have at least a name.");
     }
 
-    return data;
+    return { ...data, user_id: user_id || null };
   }
 
   /**
@@ -117,7 +117,6 @@ export class AuthorsService extends Service {
 
     if (error) throw new Error(error.message);
 
-    console.log({ error });
     return true;
   }
 }

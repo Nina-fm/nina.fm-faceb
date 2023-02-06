@@ -10,6 +10,7 @@ const emit = defineEmits<{
     (e: 'submit', value: AuthorParamsExt): void
 }>()
 
+const { user } = storeToRefs(useAuthStore());
 const rules = useFieldRules()
 const valid = ref(false)
 const isEdit = computed(() => !!author);
@@ -22,6 +23,10 @@ const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form);
 
+const handleMe = () => {
+    form.user_id = user.value?.id
+}
+
 </script>
 
 <template>
@@ -33,8 +38,15 @@ const handleSubmit = () => emit("submit", form);
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="12">
+                <v-col cols="11">
                     <v-text-field v-model="form.user_id" label="Admin (userId)" />
+                </v-col>
+                <v-col cols="1" align-self="center">
+                    <v-tooltip activator="parent" location="start" text="C'est moi">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" variant="plain" icon="mdi-hand-front-left" @click="handleMe" />
+                        </template>
+                    </v-tooltip>
                 </v-col>
             </v-row>
             <v-row>

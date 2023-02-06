@@ -11,10 +11,13 @@ const emit = defineEmits<{
 }>()
 
 const { fetchAuthors } = useAuthorsStore()
-const { data, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
+const { fetchTags } = useTagsStore()
+const { data: authorsData, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
+const { data: tagsData, isLoading: isLoadingTags } = storeToRefs(useTagsStore())
 const valid = ref(false);
 const years = generateYears(2007);
-const authors = computed(() => data.value.map(({ id, name }) => ({ id, name })));
+const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })));
+const tags = computed(() => tagsData.value.map(({ id, name }) => ({ id, name })));
 const isEdit = computed(() => !!mixtape);
 const rules = {
   min2Char: (v: string) => v.length >= 2 || 'Doit comporter au moins 2 caractères',
@@ -26,6 +29,7 @@ const form = reactive({
   comment: mixtape?.comment ?? null,
   tracks_text: mixtape?.tracks_text ?? null,
   authors: mixtape?.authors ?? [],
+  tags: mixtape?.tags ?? [],
   tracks: mixtape?.tracks ?? [],
   cover: mixtape?.cover ?? null,
   cover_url: mixtape?.cover_url ?? null,
@@ -46,7 +50,10 @@ const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form);
 
-onMounted(() => fetchAuthors())
+onMounted(() => {
+  fetchAuthors();
+  fetchTags();
+})
 </script>
 
 <template>
@@ -65,6 +72,10 @@ onMounted(() => fetchAuthors())
             </v-col>
             <v-col cols="12">
               <v-select v-model="form.year" label="Année" :items="years" variant="outlined" required></v-select>
+            </v-col>
+            <v-col cols="12">
+              <v-combobox v-model="form.tags" :loading="isLoadingTags" label="Tags" :items="tags" item-title="name"
+                item-value="id" chips closable-chips multiple variant="outlined" required></v-combobox>
             </v-col>
           </v-row>
         </v-col>

@@ -106,6 +106,40 @@ export interface Database {
           position?: number | null
         }
       }
+      mixtapes_tags: {
+        Row: {
+          mixtape_id: number
+          tag_id: number
+        }
+        Insert: {
+          mixtape_id: number
+          tag_id: number
+        }
+        Update: {
+          mixtape_id?: number
+          tag_id?: number
+        }
+      }
+      tags: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: number
+          name?: string
+        }
+      }
       tracks: {
         Row: {
           artist: string | null

@@ -1,4 +1,6 @@
-create policy "Allow delete if not linked to any mixtape."
+drop policy "Enable delete for authenticated or anon." on "public"."authors";
+
+create policy "Enable delete for authenticated or anon."
 on "public"."authors"
 as permissive
 for delete

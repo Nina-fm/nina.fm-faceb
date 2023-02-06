@@ -4,16 +4,16 @@
 
 import { getParam, queryResponse } from "../_shared/utils.ts";
 
-import { AuthorsService } from "../_services/authors.ts";
 import { Method } from "../_types/api.ts";
+import { TagsService } from "../_services/tags.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-console.log("=> Authors Functions");
+console.log("=> Tags Functions");
 
 serve((req: Request) => {
   // Define services
-  const _authors = new AuthorsService(req.headers);
+  const _tags = new TagsService(req.headers);
 
   // This is needed if you're planning to invoke your function from a browser.
   if (req.method === Method.OPTIONS) {
@@ -28,40 +28,32 @@ serve((req: Request) => {
     switch (req.method) {
       case Method.POST: {
         /**
-         * Create new author
+         * Create new tag
          */
         const { data: postData } = await req.json();
-        console.log("[POST] /authors", postData);
-        const {
-          avatar_url: _avatar_url,
-          position: _position,
-          ...data
-        } = _authors.validateData(postData);
-        return await _authors.create(data);
+        console.log("[POST] /tags", postData);
+        const data = _tags.validateData(postData);
+        return await _tags.create(data);
       }
       case Method.PATCH: {
         if (id) {
           /**
-           * Update an author by ID
+           * Update an tag by ID
            */
           const { data: postData } = await req.json();
-          console.log(`[PATCH] /authors?id=${id}`, postData);
-          const {
-            avatar_url: _avatar_url,
-            position: _position,
-            ...data
-          } = _authors.validateData(postData);
-          return _authors.update(id, data);
+          console.log(`[PATCH] /tags?id=${id}`, postData);
+          const data = _tags.validateData(postData);
+          return _tags.update(id, data);
         }
         break;
       }
       case Method.DELETE: {
         if (id) {
           /**
-           * Delete an author by ID
+           * Delete an tag by ID
            */
-          console.log(`[DELETE] /authors?id=${id}`);
-          return await _authors.delete(id);
+          console.log(`[DELETE] /tags?id=${id}`);
+          return await _tags.delete(id);
         }
         break;
       }
@@ -69,23 +61,23 @@ serve((req: Request) => {
       case Method.GET: {
         if (id) {
           /**
-           * Find an author by ID
+           * Find an tag by ID
            */
-          console.log(`[GET] /authors?id=${id}`);
-          return await _authors.findByID(id);
+          console.log(`[GET] /tags?id=${id}`);
+          return await _tags.findByID(id);
         }
         if (name) {
           /**
            * Find an tag by name
            */
-          console.log(`[GET] /authors?name=${name}`);
-          return await _authors.findByName(name);
+          console.log(`[GET] /tags?name=${name}`);
+          return await _tags.findByName(name);
         }
         /**
-         * Find all authors
+         * Find all tags
          */
-        console.log("[GET] /authors");
-        return await _authors.findAll();
+        console.log("[GET] /tags");
+        return await _tags.findAll();
       }
     }
   });
@@ -95,6 +87,6 @@ serve((req: Request) => {
 
 // To invoke:
 // curl -i --location --request POST 'http://localhost:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
+//   --header 'Tagization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
 //   --header 'Content-Type: application/json' \
 //   --data '{"name":"Functions"}'

@@ -37,6 +37,19 @@ export class AuthorsService extends Service {
     };
   }
 
+  async getIdsOrCreate(authors: (AuthorParamsExt | string)[]) {
+    // List all authors and create new ones
+    const allAuthors = await Promise.all(
+      authors.map(async (author) =>
+        typeof author === "string"
+          ? await this.create({ name: author })
+          : author
+      )
+    );
+    // Reduce to authors ids
+    return allAuthors.map((a) => a.id);
+  }
+
   /**
    * Fetch all authors
    */
@@ -122,7 +135,7 @@ export class AuthorsService extends Service {
     if (error) throw error;
 
     if (!data.length) {
-      throw new Error("Author with associated mixtapes cannot be deleted.");
+      throw new Error("Author associated to mixtapes cannot be deleted.");
     }
 
     return { deleted: id };

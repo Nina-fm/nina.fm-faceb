@@ -52,6 +52,9 @@ const handleBack = () => {
         <div class="card-texts">
           <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
           <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.created_by }}</v-card-subtitle>
+          <v-card-text>
+            <v-chip v-for="tag in mixtape.tags" density="comfortable">{{ tag.name }}</v-chip>
+          </v-card-text>
         </div>
         <v-avatar class="mixtape-cover ma-3" size="250" rounded="0">
           <v-img :src="mixtape.cover_url"></v-img>

@@ -13,8 +13,9 @@
     "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
     "reset:db": "supabase db reset",
     "push:db": "supabase db push",
-    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors",
+    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags",
     "serve:authors": "supabase functions serve authors",
+    "serve:tags": "supabase functions serve tags",
     "serve:mixtapes": "supabase functions serve mixtapes"
   },
   "dependencies": {

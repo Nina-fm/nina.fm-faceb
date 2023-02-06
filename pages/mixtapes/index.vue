@@ -36,12 +36,17 @@ const headers = [
   },
   {
     title: 'Par',
-    key: "created_by",
+    key: 'created_by',
   },
   {
-    title: "Actions",
-    key: "actions",
-    align: "end",
+    title: 'Tags',
+    key: 'tags',
+    width: 60
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    align: 'end',
     sortable: false
   }
 ];
@@ -103,6 +108,21 @@ onMounted(() => fetchMixtapes())
             <v-chip density="comfortable" :color="item.raw.tracks.length ? 'primary' : 'warning'">{{
               item.raw.tracks.length
             }}</v-chip>
+          </template>
+          <template v-slot:item.tags="{ item }">
+            <v-tooltip location="bottom" content-class="bg-grey-darken-3">
+              <template v-slot:activator="{ props }">
+                <v-chip v-bind="props" :color="!!item.raw.tags.length ? 'primary' : 'default'" density="comfortable">{{
+                  item.raw.tags.length
+                }}</v-chip>
+              </template>
+              <template v-slot:default>
+                <v-chip v-for="tag in item.raw.tags" color="primary" variant="flat" size="small" density="comfortable"
+                  class="mx-1">{{
+                    tag.name
+                  }}</v-chip>
+              </template>
+            </v-tooltip>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn icon="mdi-pencil" color="default" size="small" variant="text"

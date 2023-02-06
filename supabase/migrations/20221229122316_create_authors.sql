@@ -35,13 +35,6 @@ for select
 to public
 using (true);
 
-create policy "Users can insert their own author profile."
-on "public"."authors"
-as permissive
-for insert
-to public
-with check ((auth.uid() = user_id));
-
 create policy "Enable insert for authenticated or anon."
 on "public"."authors"
 as permissive
@@ -55,13 +48,6 @@ as permissive
 for update
 to authenticated, anon
 using (true);
-
-create policy "Users can update own author profile."
-on "public"."authors"
-as permissive
-for update
-to public
-using ((auth.uid() = user_id));
 
 create policy "Enable delete for authenticated or anon."
 on "public"."authors"

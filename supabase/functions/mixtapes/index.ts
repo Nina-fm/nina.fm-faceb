@@ -39,6 +39,7 @@ serve((req: Request) => {
 
         const {
           authors = [],
+          tags = [],
           tracks = [],
           cover_file,
           cover: _cover,
@@ -46,28 +47,15 @@ serve((req: Request) => {
           ...data
         } = _mixtapes.validateData(postData);
 
-        // Create the mixtape and upload cover if provided
         const mixtape = await _mixtapes.create({
           ...data,
           cover: cover_file
             ? await _mixtapes.handleFile(cover_file, "covers")
             : null,
         });
-        // List all authors and create new ones
-        const allAuthors = await Promise.all(
-          authors.map(async (author) =>
-            typeof author === "string"
-              ? await _authors.create({ name: author })
-              : author
-          )
-        );
-        // Reduce to authors IDs
-        const authorsIds = allAuthors.map((a) => a.id);
-        // Add authors to mixtape
-        await _mixtapes.addAuthors(mixtape.id, authorsIds);
-        // Create tracks and add to mixtape
+        await _mixtapes.addAuthors(mixtape.id, authors);
+        await _mixtapes.addTags(mixtape.id, tags);
         await _tracks.createForMixtape(mixtape.id, tracks);
-        // Return the full mixtape
         return await _mixtapes.find(mixtape.id);
       }
       case Method.PATCH: {
@@ -81,6 +69,7 @@ serve((req: Request) => {
 
           const {
             authors = [],
+            tags = [],
             tracks = [],
             cover_file,
             cover: _cover,
@@ -95,18 +84,11 @@ serve((req: Request) => {
               ? await _mixtapes.handleFile(cover_file, "covers")
               : null,
           });
-          // List all authors and create new ones
-          const allAuthors = await Promise.all(
-            authors.map(async (author) =>
-              typeof author === "string"
-                ? await _authors.create({ name: author })
-                : author
-            )
-          );
-          // Reduce to authors ids
-          const authorsIds = allAuthors.map((a) => a.id);
+
           // Update mixtape authors
-          await _mixtapes.updateAuthors(id, authorsIds);
+          await _mixtapes.updateAuthors(id, authors);
+          // Update mixtape tags
+          await _mixtapes.updateTags(id, tags);
           // Update mixtape tracks
           await _tracks.updateForMixtape(id, tracks);
           // Return the full mixtape

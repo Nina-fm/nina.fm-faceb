@@ -1,10 +1,4 @@
-import {
-  AnyFn,
-  MixtapeExt,
-  MixtapeParams,
-  MixtapeParamsExt,
-  ObjectOf,
-} from "~~/types/supatypes";
+import { MixtapeExt, MixtapeParamsExt, ObjectOf } from "~~/types/supatypes";
 
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi();

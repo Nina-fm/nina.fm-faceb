@@ -75,3 +75,9 @@ a {
     box-shadow: none;
   }
 }
+
+.v-chip {
+  &.v-chip--density-compact {
+    font-size: 0.8em;
+  }
+}

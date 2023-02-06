@@ -6,11 +6,15 @@ import {
 import { formatAuthorNames, handleLocalFileUrl } from "../_shared/utils.ts";
 import {
   mixtapeAuthorsWithAuthorsRelation,
+  mixtapeTagsWithTagsRelation,
   tracksRelation,
 } from "../_shared/relations.ts";
 
+import { AuthorParamsExt } from "../_types/authors.ts";
 import { AuthorsService } from "./authors.ts";
 import { Service } from "../_shared/service.ts";
+import { TagParams } from "../_types/tags.ts";
+import { TagsService } from "./tags.ts";
 
 export class MixtapesService extends Service {
   /**
@@ -31,13 +35,20 @@ export class MixtapesService extends Service {
    */
   format(mixtape: MixtapeExt) {
     const _authors = new AuthorsService(this.headers);
-    const { mixtapes_authors, cover, ...rest } = mixtape;
+    const { mixtapes_authors, mixtapes_tags, cover, ...rest } = mixtape;
     const authors = mixtapes_authors
       ? mixtapes_authors.map(({ authors: author, position }) => {
           return _authors.format({
             position,
             ...author,
           });
+        })
+      : [];
+    const tags = mixtapes_tags
+      ? mixtapes_tags.map(({ tags: tag }) => {
+          return {
+            ...tag,
+          };
         })
       : [];
 
@@ -51,6 +62,7 @@ export class MixtapesService extends Service {
           )
         : null,
       authors,
+      tags,
       created_by: formatAuthorNames(authors),
       tracks: mixtape.tracks
         ? mixtape.tracks.map(
@@ -72,7 +84,9 @@ export class MixtapesService extends Service {
   async findAll() {
     const { data: mixtapes, error } = await this.supabase
       .from("mixtapes")
-      .select(`*, ${mixtapeAuthorsWithAuthorsRelation}, ${tracksRelation}`);
+      .select(
+        `*, ${mixtapeAuthorsWithAuthorsRelation}, ${mixtapeTagsWithTagsRelation}, ${tracksRelation}`
+      );
 
     if (error) throw error;
 
@@ -85,7 +99,9 @@ export class MixtapesService extends Service {
   async find(id: string | number) {
     const { data: mixtape, error } = await this.supabase
       .from("mixtapes")
-      .select(`*, ${mixtapeAuthorsWithAuthorsRelation}, ${tracksRelation}`)
+      .select(
+        `*, ${mixtapeAuthorsWithAuthorsRelation}, ${mixtapeTagsWithTagsRelation}, ${tracksRelation}`
+      )
       .match({ id })
       .single();
 
@@ -103,7 +119,12 @@ export class MixtapesService extends Service {
   /**
    * Add authors to mixtape
    */
-  async addAuthors(id: string | number, authorIds: unknown[] = []) {
+  async addAuthors(
+    id: string | number,
+    authors: (AuthorParamsExt | string)[] = []
+  ) {
+    const _authors = new AuthorsService(this.headers);
+    const authorIds = await _authors.getIdsOrCreate(authors);
     const { error } = await this.supabase.from("mixtapes_authors").insert(
       authorIds.map((authorId, position) => ({
         author_id: authorId,
@@ -118,7 +139,12 @@ export class MixtapesService extends Service {
   /**
    * Update authors to mixtape
    */
-  async updateAuthors(id: string | number, authorIds: unknown[] = []) {
+  async updateAuthors(
+    id: string | number,
+    authors: (AuthorParamsExt | string)[] = []
+  ) {
+    const _authors = new AuthorsService(this.headers);
+    const authorIds = await _authors.getIdsOrCreate(authors);
     const { data: existing } = await this.supabase
       .from("mixtapes_authors")
       .select("*")
@@ -143,6 +169,56 @@ export class MixtapesService extends Service {
         position,
       })),
       { onConflict: "mixtape_id,author_id" }
+    );
+
+    if (error) throw error;
+  }
+
+  /**
+   * Add tags to mixtape
+   */
+  async addTags(id: string | number, tags: (TagParams | string)[] = []) {
+    const _tags = new TagsService(this.headers);
+    const tagIds = await _tags.getIdsOrCreate(tags);
+    const { error } = await this.supabase.from("mixtapes_tags").insert(
+      tagIds.map((tagId) => ({
+        tag_id: tagId,
+        mixtape_id: id,
+      }))
+    );
+
+    if (error) throw error;
+  }
+
+  /**
+   * Update tags to mixtape
+   */
+  async updateTags(id: string | number, tags: (TagParams | string)[] = []) {
+    const _tags = new TagsService(this.headers);
+    const tagIds = await _tags.getIdsOrCreate(tags);
+    const { data: existing } = await this.supabase
+      .from("mixtapes_tags")
+      .select("*")
+      .match({ mixtape_id: id });
+
+    const toDeleteIds = existing?.length
+      ? existing
+          .filter((ma) => !tagIds.includes(ma.tag_id))
+          .reduce((res, ma) => [...res, ma.tag_id], [])
+      : [];
+
+    const { error: _deleteError } = await this.supabase
+      .from("mixtapes_tags")
+      .delete()
+      .eq("mixtape_id", id)
+      .in("tag_id", toDeleteIds);
+
+    const { error } = await this.supabase.from("mixtapes_tags").upsert(
+      tagIds.map((tagId) => ({
+        tag_id: tagId,
+        mixtape_id: id,
+      })),
+      { onConflict: "mixtape_id,tag_id" }
     );
 
     if (error) throw error;

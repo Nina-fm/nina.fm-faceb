@@ -120,6 +120,6 @@ export class AuthorsService extends Service {
 
     if (error) throw error;
 
-    return true;
+    return { deleted: id };
   }
 }

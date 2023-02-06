@@ -189,6 +189,6 @@ export class MixtapesService extends Service {
 
     if (error) throw error;
 
-    return true;
+    return { deleted: id };
   }
 }

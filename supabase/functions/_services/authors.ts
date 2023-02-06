@@ -1,4 +1,9 @@
-import { Author, AuthorExt, AuthorParams } from "../_types/authors.ts";
+import {
+  Author,
+  AuthorExt,
+  AuthorParams,
+  AuthorParamsExt,
+} from "../_types/authors.ts";
 
 import { Service } from "../_shared/service.ts";
 import { handleLocalFileUrl } from "../_shared/utils.ts";
@@ -7,7 +12,7 @@ export class AuthorsService extends Service {
   /**
    * Validate author POST Data or throwing errors
    */
-  validateData(data: Partial<AuthorParams>) {
+  validateData(data: AuthorParamsExt) {
     const { name } = data;
 
     if (!name) {

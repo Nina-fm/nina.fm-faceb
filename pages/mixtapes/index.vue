@@ -25,8 +25,9 @@ const headers = [
     key: 'name',
   },
   {
-    title: 'Par',
-    key: "created_by",
+    title: "Pistes",
+    key: 'tracks',
+    width: 60
   },
   {
     title: 'Année',
@@ -34,9 +35,8 @@ const headers = [
     width: 60
   },
   {
-    title: "Pistes",
-    key: 'tracks',
-    width: 60
+    title: 'Par',
+    key: "created_by",
   },
   {
     title: "Actions",
@@ -80,9 +80,13 @@ onMounted(() => fetchMixtapes())
 
 <template>
   <PageHeader title="Les mixtapes">
+    <template #content>
+      <v-text-field v-model="search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify"
+        placeholder="Rechercher..." single-line hide-details clearable />
+    </template>
     <template #extra>
-      <v-btn icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
-      <v-btn icon="mdi-plus" @click="navigateTo('/mixtapes/add')" />
+      <v-btn variant="text" icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
+      <v-btn variant="text" icon="mdi-plus" @click="navigateTo('/mixtapes/add')" />
     </template>
   </PageHeader>
   <v-container>
@@ -90,13 +94,6 @@ onMounted(() => fetchMixtapes())
       <v-col cols="12">
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="mixtapes" :search="search"
           class="elevation-1 clickable" @click:row="handleRowClick" no-data-text="Aucune donnée.">
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-text-field v-model="search" variant="solo" prepend-inner-icon="mdi-magnify" label="Rechercher"
-                density="comfortable" single-line hide-details clearable class="mx-2" />
-
-            </v-toolbar>
-          </template>
           <template v-slot:item.cover="{ item }">
             <v-avatar rounded color="grey-darken-3">
               <v-img v-if="item.raw.cover_url" :src="item.raw.cover_url" cover />
@@ -112,7 +109,7 @@ onMounted(() => fetchMixtapes())
             <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
               @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
             <v-btn icon="mdi-delete" color="default" size="small" variant="text"
-              @click="(e: Event) => handleDelete(e, item.raw.id)" />
+              @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
           </template>
         </v-data-table>
       </v-col>

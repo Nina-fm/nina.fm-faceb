@@ -1,6 +1,6 @@
 import vuetify from "vite-plugin-vuetify";
 
-const sitename = "Nina.fm • Face B";
+const sitename = "Face B • Nina.fm";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({

@@ -1,3 +1,5 @@
+import { AnyFn, Obj } from "~~/types/supatypes";
+
 import { Provider } from "@supabase/supabase-js";
 
 export const useAuthStore = defineStore("auth", () => {

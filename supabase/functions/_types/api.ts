@@ -10,5 +10,5 @@ export enum Method {
 
 export interface FileModel {
   filename?: string | null;
-  data?: string | ArrayBuffer | null;
+  data?: string | null;
 }

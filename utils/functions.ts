@@ -5,6 +5,9 @@ export const isEmpty = (obj: Object | null) => {
   return JSON.stringify(obj) === JSON.stringify(Object.create(null));
 };
 
+export const formatDate = (date: string) =>
+  useDateFormat(date, "DD/MM/YYYY", { locales: "fr-FR" }).value;
+
 export const generateYears = (sinceYear: number = 1950) => {
   const years = [];
   let dateStart = DateTime.now();

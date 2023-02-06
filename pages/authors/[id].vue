@@ -14,8 +14,8 @@ const author = computed(() => data.value)
   <PageHeader @back="navigateTo('/authors')" title="Le DJ en détails">
     <template #extra>
       <div class="flex items-center">
-        <v-btn icon="mdi-pencil" class="mr-2" @click="navigateTo(`/authors/edit/${id}`)"></v-btn>
-        <v-btn icon="mdi-plus" @click="navigateTo('/authors/add')"></v-btn>
+        <v-btn variant="text" icon="mdi-pencil" class="mr-2" @click="navigateTo(`/authors/edit/${id}`)"></v-btn>
+        <v-btn variant="text" icon="mdi-plus" @click="navigateTo('/authors/add')"></v-btn>
       </div>
     </template>
   </PageHeader>

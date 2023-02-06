@@ -31,17 +31,25 @@ serve((req: Request) => {
          */
         const { data: postData } = await req.json();
         console.log("[POST] /authors", postData);
-        const data = _authors.validateData(postData);
+        const {
+          avatar_url: _avatar_url,
+          position: _position,
+          ...data
+        } = _authors.validateData(postData);
         return await _authors.create(data);
       }
       case Method.PATCH: {
-        /**
-         * Update an author by ID
-         */
         if (id) {
+          /**
+           * Update an author by ID
+           */
           const { data: postData } = await req.json();
           console.log(`[PATCH] /authors?id=${id}`, postData);
-          const data = _authors.validateData(postData);
+          const {
+            avatar_url: _avatar_url,
+            position: _position,
+            ...data
+          } = _authors.validateData(postData);
           return _authors.update(id, data);
         }
         break;

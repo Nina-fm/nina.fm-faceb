@@ -8,6 +8,7 @@ const { user } = storeToRefs(useAuthStore())
 const { fetchAuthors, deleteAuthor } = useAuthorsStore()
 const { data: authors } = storeToRefs(useAuthorsStore());
 const itemsPerPage = ref(-1)
+const search = ref(null);
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
 const headers = [
@@ -31,17 +32,17 @@ const headers = [
   }
 ];
 
-// const formatDate = (date: string) => useDateFormat(date, 'DD/MM/YYYY', { locales: 'fr-FR' }).value
-
 const isMe = (userId: string) => user.value?.id === userId
-
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
   navigateTo(`/authors/${value.item.raw.id}`)
 }
 
+const handleEdit = (event: Event, id: string | number) => {
+  navigateTo(`/authors/edit/${id}`)
+}
+
 const handleDelete = (event: Event, id: string | number) => {
-  event.stopPropagation()
   idToDelete.value = id;
   openConfirm.value = true;
 }
@@ -66,15 +67,19 @@ onMounted(() => fetchAuthors())
 
 <template>
   <PageHeader title="Les DJ's">
+    <template #content>
+      <v-text-field v-model="search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify"
+        placeholder="Rechercher..." single-line hide-details clearable />
+    </template>
     <template #extra>
-      <v-btn icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
-      <v-btn icon="mdi-plus" @click="navigateTo('/authors/add')" />
+      <v-btn variant="text" icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
+      <v-btn variant="text" icon="mdi-plus" @click="navigateTo('/authors/add')" />
     </template>
   </PageHeader>
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers"
+        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :search="search"
           :items="authors.sort((a: any, b: any) => b.id - a.id)" class="elevation-1 clickable"
           @click:row="handleRowClick" no-data-text="Aucune donnée.">
           <template v-slot:item.user_id="{ item }">
@@ -84,9 +89,9 @@ onMounted(() => fetchAuthors())
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
-              @click="navigateTo(`/authors/edit/${item.raw.id}`)" />
+              @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
             <v-btn icon="mdi-delete" color="default" size="small" variant="text"
-              @click="(e: Event) => handleDelete(e, item.raw.id)" />
+              @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
           </template>
         </v-data-table>
       </v-col>

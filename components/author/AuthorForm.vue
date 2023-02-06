@@ -1,46 +1,47 @@
 <script lang="ts" setup>
-import { AuthorParams } from '~~/types/supatypes';
+import { AuthorExt, AuthorParamsExt } from '~~/types/supatypes';
 
-const { modelValue, edit } = defineProps<{
-    modelValue: AuthorParams,
-    edit?: boolean
+const { author } = defineProps<{
+    author?: AuthorExt
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: AuthorParams): void
     (e: 'cancel'): void
-    (e: 'submit', value: AuthorParams): void
+    (e: 'submit', value: AuthorParamsExt): void
 }>()
 
+const rules = useFieldRules()
 const valid = ref(false)
+const isEdit = computed(() => !!author);
+const form = reactive({
+    name: author?.name ?? null,
+    user_id: author.user_id ?? null
+});
 
 const handleCancel = () => emit("cancel")
-const handleSubmit = () => emit("submit", modelValue);
 
-const rules = {
-    min2Char: (v: string) => v.length >= 2 || 'Le nom doit comporter au moins 2 caractères'
-}
+const handleSubmit = () => emit("submit", form);
 
 </script>
 
 <template>
-    <v-form v-model="valid" @submit.prevent="handleSubmit" validate-on="blur">
+    <v-form v-model="valid" validate-on="blur">
         <v-container>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="modelValue.name" label="Nom" :rules="[rules.min2Char]" required />
+                    <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" required />
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field v-model="modelValue.user_id" label="Admin (userId)" />
+                    <v-text-field v-model="form.user_id" label="Admin (userId)" />
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
                     <div class="form-buttons">
                         <v-btn class="mr-2" @click="handleCancel">Annuler</v-btn>
-                        <v-btn color="primary" type="submit">{{ edit? "Mettre à jour": "Ajouter" }}</v-btn>
+                        <v-btn color="primary" @click="handleSubmit">{{ isEdit? "Mettre à jour": "Ajouter" }}</v-btn>
                     </div>
                 </v-col>
             </v-row>

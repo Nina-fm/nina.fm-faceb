@@ -68,3 +68,9 @@ a {
     }
   }
 }
+
+.v-input.elevation-0 {
+  .v-field--variant-solo {
+    box-shadow: none;
+  }
+}

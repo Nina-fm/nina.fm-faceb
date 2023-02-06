@@ -5,6 +5,7 @@ import * as directives from "vuetify/directives";
 import { ThemeDefinition, createVuetify } from "vuetify";
 
 import { VDataTable } from "vuetify/labs/VDataTable";
+import { fr } from "vuetify/locale";
 
 const NinaTheme: ThemeDefinition = {
   dark: true,
@@ -20,6 +21,10 @@ const NinaTheme: ThemeDefinition = {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
+    locale: {
+      locale: "fr",
+      messages: { fr },
+    },
     theme: {
       defaultTheme: "NinaTheme",
       themes: {

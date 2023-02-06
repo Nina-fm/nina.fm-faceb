@@ -45,7 +45,9 @@ const handleUpload = (acceptedFiles: any[], rejectReasons: FileRejectReason[]) =
     const file = acceptedFiles[0];
     const reader = new FileReader();
     reader.onload = (e: ProgressEvent<FileReader>) => {
-      modelValue.data = e.target?.result
+      if (!(e.target?.result instanceof ArrayBuffer)) {
+        modelValue.data = e.target?.result
+      }
     };
     reader.readAsDataURL(file);
     modelValue.filename = file.name

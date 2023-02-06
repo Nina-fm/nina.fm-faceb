@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { AuthorParamsExt } from '~~/types/supatypes';
+
 definePageMeta({ middleware: ["auth"] })
 
 const { params } = useRoute();
@@ -7,16 +9,12 @@ const { updateAuthor, getById } = useAuthorsStore();
 const id = params.id as string
 const { data } = await useAsyncData("author", () => getById(id));
 const author = computed(() => data.value);
-const form = reactive({
-    name: author.value.name,
-    user_id: author.value.user_id
-});
 
 const handleCancel = () => {
     navigateTo('/authors')
 }
 
-const handleSubmit = async () => {
+const handleSubmit = async (form: AuthorParamsExt) => {
     const { error } = await updateAuthor(id, form);
     if (!error) navigateTo(`/authors`)
 }
@@ -27,7 +25,7 @@ const handleSubmit = async () => {
     <v-container class="n-page-content">
         <v-card>
             <v-card-text>
-                <AuthorForm v-model="form" edit @cancel="handleCancel" @submit="handleSubmit" />
+                <AuthorForm :author="author" edit @cancel="handleCancel" @submit="handleSubmit" />
             </v-card-text>
         </v-card>
     </v-container>

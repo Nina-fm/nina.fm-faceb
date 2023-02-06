@@ -7,6 +7,7 @@ import {
 } from "../_shared/relations.ts";
 
 import { AuthorParams } from "./authors.ts";
+import { FileModel } from "./api.ts";
 import { TrackParams } from "./tracks.ts";
 
 export type WithAuthor = ResolveRelationQuery<typeof authorRelation, "one">;
@@ -36,8 +37,5 @@ export type MixtapeParamsExt = MixtapeParams & {
   authors?: (Pick<AuthorParams, "id" | "name"> | string)[];
   tracks?: Omit<TrackParams, "created_at" | "mixtape_id">[];
   cover_url?: string | null;
-  cover_file?: {
-    data?: string | ArrayBuffer | null;
-    filename?: string;
-  };
+  cover_file?: FileModel;
 };

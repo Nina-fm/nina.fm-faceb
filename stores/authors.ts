@@ -1,10 +1,4 @@
-import {
-  AnyFn,
-  Author,
-  AuthorExt,
-  AuthorParams,
-  ObjectOf,
-} from "~~/types/supatypes";
+import { AuthorExt, AuthorParams, ObjectOf } from "~~/types/supatypes";
 
 export const useAuthorsStore = defineStore("authors", () => {
   const api = useApi();

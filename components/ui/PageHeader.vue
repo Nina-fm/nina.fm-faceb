@@ -22,9 +22,12 @@ onMounted(() => {
         <v-btn variant="text" @click="$emit('back')" icon="mdi-arrow-left" size="small"></v-btn>
       </v-col>
       <v-col align-self="center">
-        <slot name="content">
+        <slot name="title">
           <span class="text-h5">{{ title }}</span>
         </slot>
+      </v-col>
+      <v-col align-self="center">
+        <slot name="content" />
       </v-col>
       <v-col class="extra" align-self="center">
         <slot name="extra" />

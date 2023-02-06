@@ -92,7 +92,7 @@ onMounted(() => fetchMixtapes())
     <v-row>
       <v-col cols="12">
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="mixtapes" :search="search"
-          class="elevation-1 clickable" @click:row="handleRowClick" no-data-text="Aucune donnée.">
+          class="clickable" @click:row="handleRowClick">
           <template v-slot:item.cover="{ item }">
             <v-avatar rounded color="grey-darken-3">
               <v-img v-if="item.raw.cover_url" :src="item.raw.cover_url" cover />

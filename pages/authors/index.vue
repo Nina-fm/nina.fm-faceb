@@ -80,8 +80,7 @@ onMounted(() => fetchAuthors())
     <v-row>
       <v-col cols="12">
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :search="search"
-          :items="authors.sort((a: any, b: any) => b.id - a.id)" class="elevation-1 clickable"
-          @click:row="handleRowClick" no-data-text="Aucune donnée.">
+          :items="authors.sort((a: any, b: any) => b.id - a.id)" class="clickable" @click:row="handleRowClick">
           <template v-slot:item.user_id="{ item }">
             <v-chip v-if="isMe(item.raw.user_id)" color="primary" size="small">Moi</v-chip>
             <v-badge v-else :class="`${item.raw.user_id ? '' : 'outlined'}`" dot inline

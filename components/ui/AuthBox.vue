@@ -8,7 +8,7 @@ const config = useRuntimeConfig()
 </script>
 
 <template>
-  <v-card class="n-auth-box" :title="title" :subtitle="config.public.sitename">
+  <v-card class="n-auth-box" rounded="xl" :title="title" :subtitle="config.public.sitename">
     <v-card-text>
       <slot />
     </v-card-text>

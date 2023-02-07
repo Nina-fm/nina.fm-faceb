@@ -35,10 +35,10 @@ const handleResetPassword = async () => {
     </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <v-btn @click="handleCancel">
+        <v-btn variant="text" @click="handleCancel">
           Annuler
         </v-btn>
-        <v-btn color="primary" @click="handleResetPassword">
+        <v-btn variant="tonal" @click="handleResetPassword">
           Réinitialiser
         </v-btn>
       </span>

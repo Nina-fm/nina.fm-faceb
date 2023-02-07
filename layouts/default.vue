@@ -7,7 +7,7 @@
   <v-app>
     <Navbar />
     <v-main class="background-image">
-      <v-container>
+      <v-container class="h-100">
         <slot />
       </v-container>
     </v-main>

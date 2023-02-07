@@ -12,7 +12,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <v-app-bar>
+  <v-app-bar color="primary">
     <template #title>
       <nuxt-link to="/">{{ config.public.sitename }}</nuxt-link>
     </template>
@@ -25,7 +25,9 @@ const handleLogout = async () => {
         </template>
         <v-list>
           <v-list-item>
-            <v-list-item-title>{{ user?.email }}</v-list-item-title>
+            <v-list-item-title><v-chip color="primary" size="small">{{
+              user?.email
+            }}</v-chip></v-list-item-title>
           </v-list-item>
           <v-list-item @click="handleLogout">
             <v-list-item-title>Se déconnecter</v-list-item-title>

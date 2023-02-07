@@ -3,15 +3,34 @@ definePageMeta({ middleware: ["auth"] })
 </script>
 
 <template>
-  <el-container class="content">
-    <h1>Welcome!</h1>
-    <p>Bienvenue sur <b>Face B</b>, la face caché de Nina…</p>
-    <p>L'admin de Nina.fm quoi !</p>
+  <el-container class="d-flex h-100 align-center">
+    <v-row align-content="center">
+      <v-col class="d-flex justify-center">
+        <v-avatar color="primary" :size="300">
+          <div class="rotate d-flex flex-column align-center">
+            <h1>Face B</h1>
+            <v-avatar color="background" :size="30" class="my-5" />
+            <p>Vous êtes sur</p>
+            <p>l'admin de Nina.fm</p>
+          </div>
+        </v-avatar>
+      </v-col>
+    </v-row>
   </el-container>
 </template>
 
-<style scoped>
-.content {
-  text-align: center;
+<style lang="scss" scoped>
+.rotate {
+  animation: rotation 8s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

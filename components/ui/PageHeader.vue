@@ -1,6 +1,11 @@
 <script lang="ts" setup>
 defineProps<{
-  title?: string
+  title?: string,
+  actions?: {
+    icon?: string,
+    variant?: string,
+    onClick?: (e: Event) => void
+  }[]
 }>()
 
 defineEmits<{
@@ -23,14 +28,17 @@ onMounted(() => {
       </v-col>
       <v-col align-self="center">
         <slot name="title">
-          <span class="text-h5">{{ title }}</span>
+          <span class="text-h5 text-primary">{{ title }}</span>
         </slot>
       </v-col>
       <v-col align-self="center">
         <slot name="content" />
       </v-col>
       <v-col class="extra" align-self="center">
-        <slot name="extra" />
+        <slot name="extra">
+          <v-btn v-for="action in actions" variant="text" color="primary" :icon="action.icon" class="ml-2"
+            @click="action.onClick" />
+        </slot>
       </v-col>
     </v-row>
   </v-container>

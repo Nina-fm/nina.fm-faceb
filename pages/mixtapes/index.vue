@@ -83,14 +83,13 @@ onMounted(() => fetchMixtapes())
 </script>
 
 <template>
-  <PageHeader title="Les mixtapes">
+  <PageHeader title="Les mixtapes" :actions="[
+    { icon: 'mdi-refresh', onClick: handleRefresh },
+    { icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') }
+  ]">
     <template #content>
       <v-text-field v-model="search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify"
         placeholder="Rechercher..." single-line hide-details clearable />
-    </template>
-    <template #extra>
-      <v-btn variant="text" icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
-      <v-btn variant="text" icon="mdi-plus" @click="navigateTo('/mixtapes/add')" />
     </template>
   </PageHeader>
   <v-container>
@@ -105,19 +104,19 @@ onMounted(() => fetchMixtapes())
             </v-avatar>
           </template>
           <template v-slot:item.tracks="{ item }">
-            <v-chip density="comfortable" :color="item.raw.tracks.length ? 'primary' : 'warning'">{{
+            <v-chip density="comfortable" :color="item.raw.tracks.length ? 'success' : 'error'">{{
               item.raw.tracks.length
             }}</v-chip>
           </template>
           <template v-slot:item.tags="{ item }">
-            <v-tooltip location="bottom" content-class="bg-grey-darken-3">
+            <v-tooltip location="bottom" content-class="bg-grey-darken-3" :disabled="!item.raw.tags.length">
               <template v-slot:activator="{ props }">
-                <v-chip v-bind="props" :color="!!item.raw.tags.length ? 'primary' : 'default'" density="comfortable">{{
+                <v-chip v-bind="props" :color="!!item.raw.tags.length ? 'info' : 'default'" density="comfortable">{{
                   item.raw.tags.length
                 }}</v-chip>
               </template>
               <template v-slot:default>
-                <v-chip v-for="tag in item.raw.tags" color="primary" variant="flat" size="small" density="comfortable"
+                <v-chip v-for="tag in   item.raw.tags" color="info" variant="flat" size="small" density="comfortable"
                   class="mx-1">{{
                     tag.name
                   }}</v-chip>

@@ -10,7 +10,7 @@ import { fr } from "vuetify/locale";
 const NinaTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    primary: "#2196F3",
+    primary: "#FFB300",
     secondary: "#FFC107",
     error: "#B00020",
     info: "#2196F3",

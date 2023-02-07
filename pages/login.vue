@@ -45,7 +45,7 @@ const handleLogin = async () => {
       <nuxt-link to="/reset-password">Mot de passe oublié ?</nuxt-link>
     </div>
     <template #footer>
-      <v-btn color="primary" @click="handleLogin">
+      <v-btn variant="tonal" @click="handleLogin">
         Se connecter
       </v-btn>
     </template>

@@ -66,14 +66,13 @@ onMounted(() => fetchAuthors())
 </script>
 
 <template>
-  <PageHeader title="Les DJ's">
+  <PageHeader title="Les DJ's" :actions="[
+    { icon: 'mdi-refresh', onClick: handleRefresh },
+    { icon: 'mdi-plus', onClick: () => navigateTo('/authors/add') }
+  ]">
     <template #content>
       <v-text-field v-model="search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify"
         placeholder="Rechercher..." single-line hide-details clearable />
-    </template>
-    <template #extra>
-      <v-btn variant="text" icon="mdi-refresh" class="mr-2" @click="handleRefresh" />
-      <v-btn variant="text" icon="mdi-plus" @click="navigateTo('/authors/add')" />
     </template>
   </PageHeader>
   <v-container>

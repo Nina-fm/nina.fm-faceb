@@ -39,13 +39,9 @@ const handleBack = () => {
 </script>
 
 <template>
-  <PageHeader v-on:back="handleBack" title="La mixtape en détails">
-    <template #extra>
-      <div class="flex items-center">
-        <v-btn variant="text" icon="mdi-pencil" class="mr-2" @click="navigateTo(`/mixtapes/edit/${id}`)"></v-btn>
-      </div>
-    </template>
-  </PageHeader>
+  <PageHeader v-on:back="handleBack" title="La mixtape en détails" :actions="[
+    { icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) }
+  ]" />
   <v-container class="n-page-content">
     <v-card>
       <div class="card-header">

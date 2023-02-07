@@ -35,7 +35,7 @@ const handleSavePassword = async () => {
     </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <v-btn color="primary" @click="handleSavePassword">
+        <v-btn variant="tonal" @click="handleSavePassword">
           Continuer
         </v-btn>
       </span>

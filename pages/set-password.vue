@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-
 definePageMeta({ layout: "naked" });
 
 const route = useRoute();

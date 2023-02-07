@@ -3,15 +3,16 @@ import { storeToRefs } from 'pinia';
 
 definePageMeta({ layout: "naked" });
 
-const { user } = storeToRefs(useAuthStore());
+const route = useRoute();
+
 const { update } = useAuthStore();
 const valid = ref(false);
 const form = reactive({
   password: '',
 })
 
-watchEffect(() => {
-  if (!user.value) {
+onMounted(() => {
+  if (!route.hash) {
     return navigateTo('/login');
   }
 });

@@ -8,15 +8,17 @@ type ItemBase = {
   [key: string]: unknown;
 }
 
-const { modelValue, emptyItem, importable } = defineProps<{
+const { modelValue, textValue, emptyItem, importable } = defineProps<{
   emptyItem: ItemBase,
   modelValue: ItemBase[],
+  textValue: string | null,
   title: string,
   importable?: boolean
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: ItemBase[], text?: string): void,
+  (e: 'update:modelValue', value: ItemBase[]): void,
+  (e: 'update:textValue', value: string | null): void,
   (e: 'add'): void
   (e: 'remove', value: number): void
 }>();
@@ -25,11 +27,16 @@ const active = ref(false);
 const importTracksOpen = ref(false);
 const loadingImport = ref(false);
 const loadingDeletion = ref(false);
-const text = ref<string | undefined>(undefined);
+const text = ref<string | null>(textValue);
 const data = reactive(modelValue.map((el) => ({ ...el, key: uniqid() } as ItemBase)));
 
 watch(data, (value) => {
-  emit('update:modelValue', value, text.value)
+  const tracks = value.map(({ key, ...track }) => ({ ...track }));
+  emit('update:modelValue', tracks)
+})
+
+watch(text, (value) => {
+  emit('update:textValue', value)
 })
 
 onMounted(() => {
@@ -39,7 +46,7 @@ onMounted(() => {
 })
 
 const handleCancelTracksImport = () => {
-  text.value = undefined;
+  text.value = null;
   importTracksOpen.value = false;
 }
 
@@ -66,7 +73,7 @@ const handleOpenImport = () => {
 
 const handleClear = () => {
   loadingDeletion.value = true;
-  text.value = undefined;
+  text.value = null;
   data.splice(0, data.length);
   loadingDeletion.value = false;
 }

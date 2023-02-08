@@ -85,8 +85,8 @@ onMounted(() => {
       </v-row>
       <v-row>
         <v-col cols="12">
-          <repeatable-field v-model="form.tracks" title="Pistes" :empty-item="emptyTrack" @remove="handleRemoveTrack"
-            importable>
+          <repeatable-field v-model:model-value="form.tracks" v-model:text-value="form.tracks_text" title="Pistes"
+            :empty-item="emptyTrack" @remove="handleRemoveTrack" importable>
             <template #item="{ item, index }: { item: TrackParams, index: number }">
               <v-row>
                 <v-col>
@@ -105,7 +105,7 @@ onMounted(() => {
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" lg="6">
+        <v-col cols="12">
           <v-textarea v-model="form.comment" label="Commentaire" required />
         </v-col>
       </v-row>

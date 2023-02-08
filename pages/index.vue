@@ -3,7 +3,7 @@ definePageMeta({ middleware: ["auth"] })
 </script>
 
 <template>
-  <el-container class="d-flex h-100 align-center">
+  <v-container class="d-flex h-100 align-center">
     <v-row align-content="center">
       <v-col class="d-flex justify-center">
         <v-avatar color="primary" :size="300">
@@ -16,7 +16,7 @@ definePageMeta({ middleware: ["auth"] })
         </v-avatar>
       </v-col>
     </v-row>
-  </el-container>
+  </v-container>
 </template>
 
 <style lang="scss" scoped>

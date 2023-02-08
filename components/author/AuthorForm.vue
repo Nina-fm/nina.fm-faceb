@@ -53,7 +53,10 @@ const handleMe = () => {
                 <v-col cols="12">
                     <div class="form-buttons">
                         <v-btn class="mr-2" @click="handleCancel">Annuler</v-btn>
-                        <v-btn color="primary" @click="handleSubmit">{{ isEdit? "Mettre à jour": "Ajouter" }}</v-btn>
+                        <v-btn variant="tonal" color="primary" @click="handleSubmit">{{
+                            isEdit? "Mettre à jour":
+                                "Ajouter"
+                        }}</v-btn>
                     </div>
                 </v-col>
             </v-row>

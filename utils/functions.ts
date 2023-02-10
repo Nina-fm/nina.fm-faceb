@@ -21,3 +21,13 @@ export const generateYears = (sinceYear: number = 1950) => {
   }
   return years;
 };
+
+export const findAuthorNames = (str: string) =>
+  str
+    .replaceAll(" & ", ", ")
+    .replaceAll(" et ", ", ")
+    .replaceAll(" and ", ", ")
+    .replaceAll(" vs ", ", ")
+    .replaceAll(" feat ", ", ")
+    .replaceAll(" feat. ", ", ")
+    .split(", ");

@@ -14,9 +14,7 @@
     "reset:db": "supabase db reset",
     "push:db": "supabase db push",
     "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags",
-    "serve:authors": "supabase functions serve authors",
-    "serve:tags": "supabase functions serve tags",
-    "serve:mixtapes": "supabase functions serve mixtapes"
+    "serve": "supabase functions serve localdev"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

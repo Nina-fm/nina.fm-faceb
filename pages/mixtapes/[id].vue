@@ -40,7 +40,7 @@ const handleBack = () => {
 
 <template>
   <PageHeader v-on:back="handleBack" title="La mixtape en détails" :actions="[
-    { icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) }
+    { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) }
   ]" />
   <v-container class="n-page-content">
     <v-card>

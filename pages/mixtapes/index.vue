@@ -84,8 +84,8 @@ onMounted(() => fetchMixtapes())
 
 <template>
   <PageHeader title="Les mixtapes" :actions="[
-    { icon: 'mdi-refresh', onClick: handleRefresh },
-    { icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') }
+    { tooltip: 'Rafraîchir', icon: 'mdi-refresh', onClick: handleRefresh },
+    { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') }
   ]">
     <template #content>
       <v-text-field v-model="search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify"

@@ -37,13 +37,11 @@ export class AuthorsService extends Service {
     };
   }
 
-  async getIdsOrCreate(authors: (AuthorParamsExt | string)[]) {
+  async getIdsOrCreate(authors: AuthorParamsExt[]) {
     // List all authors and create new ones
     const allAuthors = await Promise.all(
       authors.map(async (author) =>
-        typeof author === "string"
-          ? await this.create({ name: author })
-          : author
+        !author?.id ? await this.create({ name: author.name }) : author
       )
     );
     // Reduce to authors ids

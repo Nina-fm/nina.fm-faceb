@@ -1,6 +1,5 @@
-import { Tag, TagParams } from "../_types/tags.ts";
-
 import { Service } from "../_shared/service.ts";
+import { TagParams } from "../_types/tags.ts";
 
 export class TagsService extends Service {
   /**

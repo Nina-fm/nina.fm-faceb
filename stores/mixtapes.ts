@@ -47,7 +47,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         index.value = { ...index.value, [result.id]: result };
         return data;
       },
-      { successMsg: "Mixtape créée avec succès !" }
+      { successMsg: `Merci d'avoir ajouté ${mixtapeData.name} !` }
     );
 
   const updateMixtape = async (
@@ -66,7 +66,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         index.value = { ...index.value, [mixtapeId]: result };
         return data;
       },
-      { successMsg: "Mixtape mise à jour avec succès !" }
+      { successMsg: `Merci d'avoir mis ${mixtapeData.name} à jour !` }
     );
 
   const deleteMixtape = async (mixtapeId: string | number) =>
@@ -78,7 +78,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         return result;
       },
       {
-        successMsg: "Mixtape supprimée avec succès !",
+        successMsg: "Merci d'avoir fait du ménage !",
       }
     );
 

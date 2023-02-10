@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <div class="n-loading">
     <v-overlay :model-value="modelValue" absolute :persistent="true" :close-on-back="false"
-      :close-on-content-click="false" :z-index="2000">
+      :close-on-content-click="false">
       <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
     </v-overlay>
   </div>

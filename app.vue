@@ -12,10 +12,8 @@ const { snackbars } = storeToRefs(useSnackbarStore())
     <NuxtLoadingIndicator />
     <NuxtPage />
   </NuxtLayout>
-  <v-snackbar v-for="snack in snackbars" :model-value="true" :timeout="snack.duration" :color="snack.color">
-    {{ snack.message }}
-  </v-snackbar>
   <Loading v-model="isLoading" />
+  <Notifier v-model="snackbars" />
 </template>
 
 <style>

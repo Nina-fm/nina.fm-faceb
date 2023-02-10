@@ -2,6 +2,7 @@
 defineProps<{
   title?: string,
   actions?: {
+    tooltip?: string,
     icon?: string,
     variant?: string,
     onClick?: (e: Event) => void
@@ -36,8 +37,14 @@ onMounted(() => {
       </v-col>
       <v-col class="extra" align-self="center">
         <slot name="extra">
-          <v-btn v-for="action in actions" variant="text" color="primary" :icon="action.icon" class="ml-2"
-            @click="action.onClick" />
+          <template v-for="action in actions">
+            <v-tooltip :text="action.tooltip" :disabled="!action.tooltip" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn variant="text" color="primary" :icon="action.icon" class="ml-2" @click="action.onClick"
+                  v-bind="props" />
+              </template>
+            </v-tooltip>
+          </template>
         </slot>
       </v-col>
     </v-row>

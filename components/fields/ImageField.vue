@@ -3,7 +3,7 @@
 import { FileRejectReason, useDropzone } from 'vue3-dropzone';
 import { FileModel } from '~~/types/supatypes';
 
-const { modelValue, aspectRatio } = withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   label: string,
   modelValue: FileModel,
   aspectRatio?: string | number,
@@ -17,17 +17,18 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: FileModel): void
 }>()
 
+const { aspectRatio, modelValue } = toRefs(props);
 const lightboxOpen = ref(false)
-const preview = computed(() => (typeof modelValue?.data === 'string' && modelValue?.data))
-const ratio = computed(() => aspectRatio ?? 1)
+const preview = computed(() => (typeof modelValue.value.data === 'string' && modelValue.value.data))
+const ratio = computed(() => aspectRatio.value ?? 1)
 const isFieldActive = computed(() => !!preview.value || isDragActive.value || isFocused.value)
 const isLoading = ref(false);
 
 const handleDelete = () => {
   isLoading.value = true
-  modelValue.data = null;
-  modelValue.filename = null;
-  emit('update:modelValue', modelValue)
+  modelValue.value.data = null;
+  modelValue.value.filename = null;
+  emit('update:modelValue', modelValue.value)
   isLoading.value = false
 }
 
@@ -46,15 +47,15 @@ const handleUpload = (acceptedFiles: any[], rejectReasons: FileRejectReason[]) =
     const reader = new FileReader();
     reader.onload = (e: ProgressEvent<FileReader>) => {
       if (!(e.target?.result instanceof ArrayBuffer)) {
-        modelValue.data = e.target?.result
+        modelValue.value.data = e.target?.result
       }
     };
     reader.readAsDataURL(file);
-    modelValue.filename = file.name
+    modelValue.value.filename = file.name
   } else {
-    modelValue.data = null;
+    modelValue.value.data = null;
   }
-  emit('update:modelValue', modelValue)
+  emit('update:modelValue', modelValue.value)
   isLoading.value = false
 }
 
@@ -95,9 +96,7 @@ const { getRootProps, getInputProps, isDragActive, isFocused, open } = useDropzo
     </v-sheet>
     <input v-bind="getInputProps()" />
   </v-field>
-  <vue-easy-lightbox :visible="lightboxOpen" :imgs="preview || ''" :index="0" @hide="handleCloseLightBox">
-    <!-- <template v-slot:toolbar="{ toolbarMethods }"></template> -->
-  </vue-easy-lightbox>
+  <vue-easy-lightbox :visible="lightboxOpen" :imgs="preview || ''" :index="0" @hide="handleCloseLightBox" />
 </template>
 
 <style lang="scss" scoped>

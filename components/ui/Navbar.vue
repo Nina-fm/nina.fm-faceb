@@ -44,7 +44,6 @@ const handleLogout = async () => {
 
 <style lang="scss" scoped >
 :deep(.v-toolbar-title) {
-
   .brand {
     font-weight: bold;
     letter-spacing: -0.04em;

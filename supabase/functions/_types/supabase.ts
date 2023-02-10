@@ -59,6 +59,7 @@ export interface Database {
       }
       mixtapes: {
         Row: {
+          authors_text: string | null
           comment: string | null
           cover: string | null
           created_at: string | null
@@ -69,6 +70,7 @@ export interface Database {
           year: string | null
         }
         Insert: {
+          authors_text?: string | null
           comment?: string | null
           cover?: string | null
           created_at?: string | null
@@ -79,6 +81,7 @@ export interface Database {
           year?: string | null
         }
         Update: {
+          authors_text?: string | null
           comment?: string | null
           cover?: string | null
           created_at?: string | null

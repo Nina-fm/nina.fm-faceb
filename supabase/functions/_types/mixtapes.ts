@@ -52,7 +52,7 @@ export type MixtapeExt = Mixtape &
     cover_url?: string | null;
   };
 export type MixtapeParamsExt = MixtapeParams & {
-  authors?: (Pick<AuthorParams, "id" | "name"> | string)[];
+  authors?: Pick<AuthorParams, "id" | "name">[];
   tags?: (Pick<TagParams, "id" | "name"> | string)[];
   tracks?: Omit<TrackParams, "created_at" | "mixtape_id">[];
   cover_url?: string | null;

@@ -46,7 +46,7 @@ a {
 }
 
 .v-overlay__scrim {
-  opacity: 0.7 !important;
+  opacity: 0.8 !important;
   background: rgb(var(--v-theme-background)) !important;
 }
 
@@ -80,4 +80,12 @@ a {
   &.v-chip--density-compact {
     font-size: 0.8em;
   }
+}
+
+.field-inner-button {
+  margin-top: -12px;
+}
+
+.field-button {
+  margin-top: -10px;
 }

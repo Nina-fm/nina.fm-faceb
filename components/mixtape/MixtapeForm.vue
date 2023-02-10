@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { MixtapeExt, MixtapeParamsExt, TrackParams } from '~~/types/supatypes';
 
-const { mixtape } = defineProps<{
+const props = defineProps<{
   mixtape?: MixtapeExt,
 }>();
 
@@ -10,27 +10,21 @@ const emit = defineEmits<{
   (e: 'submit', value: MixtapeParamsExt): void
 }>()
 
-const { fetchAuthors } = useAuthorsStore()
+const { mixtape } = props;
 const { fetchTags } = useTagsStore()
-const { data: authorsData, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
-const { data: tagsData, isLoading: isLoadingTags } = storeToRefs(useTagsStore())
+const rules = useFieldRules()
 const valid = ref(false);
 const years = generateYears(2007);
-const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })));
-const tags = computed(() => tagsData.value.map(({ id, name }) => ({ id, name })));
 const isEdit = computed(() => !!mixtape);
-const rules = {
-  min2Char: (v: string) => v.length >= 2 || 'Doit comporter au moins 2 caractères',
-  eq4Chars: (v: string) => v.length === 4 || 'Doit comporter 4 caractères'
-};
-const form = reactive({
+const form: MixtapeParamsExt = reactive({
   name: mixtape?.name ?? null,
   year: mixtape?.year ?? null,
   comment: mixtape?.comment ?? null,
-  tracks_text: mixtape?.tracks_text ?? null,
+  authors_text: mixtape?.authors_text ?? null,
   authors: mixtape?.authors ?? [],
-  tags: mixtape?.tags ?? [],
+  tracks_text: mixtape?.tracks_text ?? null,
   tracks: mixtape?.tracks ?? [],
+  tags: mixtape?.tags ?? [],
   cover: mixtape?.cover ?? null,
   cover_url: mixtape?.cover_url ?? null,
   cover_file: {
@@ -38,20 +32,12 @@ const form = reactive({
     data: mixtape?.cover_url ?? null
   }
 });
-const emptyTrack: TrackParams = {
-  title: null,
-  artist: null,
-  start_at: null
-};
-
-const handleRemoveTrack = (index: number) => form.tracks.splice(index, 1)
 
 const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form);
 
 onMounted(() => {
-  fetchAuthors();
   fetchTags();
 })
 </script>
@@ -66,16 +52,15 @@ onMounted(() => {
               <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" required />
             </v-col>
             <v-col cols="12">
-              <v-combobox v-model="form.authors" :loading="isLoadingAuthors" label="DJ's" :items="authors"
-                item-title="name" item-value="id" chips closable-chips multiple variant="outlined"
-                required></v-combobox>
+              <authors-field v-model:model-value="form.authors" v-model:text-value="form.authors_text" label="DJ's"
+                required />
             </v-col>
             <v-col cols="12">
-              <v-select v-model="form.year" label="Année" :items="years" variant="outlined" required></v-select>
+              <v-autocomplete v-model="form.year" label="Année" :items="years" variant="outlined"
+                required></v-autocomplete>
             </v-col>
             <v-col cols="12">
-              <v-combobox v-model="form.tags" :loading="isLoadingTags" label="Tags" :items="tags" item-title="name"
-                item-value="id" chips closable-chips multiple variant="outlined" required></v-combobox>
+              <tags-field v-model="form.tags" label="Tags" />
             </v-col>
           </v-row>
         </v-col>
@@ -85,9 +70,8 @@ onMounted(() => {
       </v-row>
       <v-row>
         <v-col cols="12">
-          <repeatable-field v-model:model-value="form.tracks" v-model:text-value="form.tracks_text" title="Pistes"
-            :empty-item="emptyTrack" @remove="handleRemoveTrack" importable>
-            <template #item="{ item, index }: { item: TrackParams, index: number }">
+          <tracks-field v-model:model-value="form.tracks" v-model:text-value="form.tracks_text" label="Pistes">
+            <template #item="{ item }: { item: TrackParams }">
               <v-row>
                 <v-col>
                   <v-text-field variant="underlined" v-model="item.artist" label="Artiste" density="compact" required />
@@ -101,7 +85,7 @@ onMounted(() => {
                 </v-col>
               </v-row>
             </template>
-          </repeatable-field>
+          </tracks-field>
         </v-col>
       </v-row>
       <v-row>
@@ -109,17 +93,8 @@ onMounted(() => {
           <v-textarea v-model="form.comment" label="Commentaire" required />
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12">
-          <div class="form-buttons">
-            <v-btn variant="text" class="mr-2" @click="handleCancel">Annuler</v-btn>
-            <v-btn variant="tonal" color="primary" @click="handleSubmit"> {{
-              isEdit?" Mettre à jour": "Ajouter"
-            }}</v-btn>
-          </div>
-        </v-col>
-      </v-row>
     </v-container>
+    <submit-buttons :edit="isEdit" @cancel="handleCancel" @submit="handleSubmit" />
   </v-form>
 </template>
 

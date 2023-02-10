@@ -86,7 +86,8 @@ export class MixtapesService extends Service {
       .from("mixtapes")
       .select(
         `*, ${mixtapeAuthorsWithAuthorsRelation}, ${mixtapeTagsWithTagsRelation}, ${tracksRelation}`
-      );
+      )
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
@@ -119,10 +120,7 @@ export class MixtapesService extends Service {
   /**
    * Add authors to mixtape
    */
-  async addAuthors(
-    id: string | number,
-    authors: (AuthorParamsExt | string)[] = []
-  ) {
+  async addAuthors(id: string | number, authors: AuthorParamsExt[] = []) {
     const _authors = new AuthorsService(this.headers);
     const authorIds = await _authors.getIdsOrCreate(authors);
     const { error } = await this.supabase.from("mixtapes_authors").insert(
@@ -139,10 +137,7 @@ export class MixtapesService extends Service {
   /**
    * Update authors to mixtape
    */
-  async updateAuthors(
-    id: string | number,
-    authors: (AuthorParamsExt | string)[] = []
-  ) {
+  async updateAuthors(id: string | number, authors: AuthorParamsExt[] = []) {
     const _authors = new AuthorsService(this.headers);
     const authorIds = await _authors.getIdsOrCreate(authors);
     const { data: existing } = await this.supabase

@@ -1,26 +1,27 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { Tag } from '~~/types/supatypes';
 
 definePageMeta({ middleware: ["auth"] })
 
-// interface TagFilter {
-//   tag_id: number;
-//   exclude?: boolean;
-// }
+interface TagFilter {
+  tag_id: number;
+  exclude?: boolean;
+}
 
-// interface Filters {
-//   tags: TagFilter[]
-// }
+interface Filters {
+  tags: TagFilter[]
+}
 
 const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
 const { data: mixtapes } = storeToRefs(useMixtapesStore());
-// const { fetchTags } = useTagsStore()
-// const { data: tags } = storeToRefs(useTagsStore());
+const { fetchTags } = useTagsStore()
+const { data: tags } = storeToRefs(useTagsStore());
 const search = ref(null);
-// const filters: Filters = reactive({
-//   tags: []
-// })
+const filters: Filters = reactive({
+  tags: []
+})
 const itemsPerPage = ref(50)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
@@ -65,6 +66,32 @@ const headers = computed(() => {
     (!("show" in h) || h.show === "mdAndUp" && mdAndUp.value || h.show === "smAndUp" && smAndUp.value)
   )
 })
+const activeTags = computed(() => filters.tags.reduce((r, t) => [...r, t.tag_id], [] as number[]));
+const filteredMixtapes = computed(() => mixtapes.value.filter((m) => {
+  if (activeTags.value.length) {
+    return m.tags.reduce((r: boolean, t: Tag) => {
+      return activeTags.value.includes(t.id)
+    }, false);
+  }
+  return true;
+}))
+
+const isFilterActive = (tagId: number) => !!filters.tags.find((t) => t.tag_id === tagId);
+
+const handleAddFilter = (tag: Tag) => {
+  const index = filters.tags.findIndex((t) => t.tag_id === tag.id)
+  if (index >= 0) {
+    filters.tags.splice(index, 1);
+  } else {
+    filters.tags.push({
+      tag_id: tag.id,
+    })
+  }
+}
+
+const handleClearTagFilters = () => {
+  filters.tags.splice(0, filters.tags.length)
+}
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
   navigateTo(`/mixtapes/${value.item.raw.id}`)
@@ -96,7 +123,7 @@ const handleRefresh = async () => {
 
 onMounted(() => {
   fetchMixtapes()
-  // fetchTags()
+  fetchTags()
   document.body.addEventListener('resize', () => update())
 })
 </script>
@@ -114,15 +141,19 @@ onMounted(() => {
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="mixtapes" :search="search"
-          class="clickable" @click:row="handleRowClick">
-          <!-- <template v-slot:top>
+        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="filteredMixtapes"
+          :search="search" class="clickable" @click:row="handleRowClick">
+          <template v-slot:top>
             <v-toolbar class="px-4" color="transparent">
-              <v-chip-group>
-                <v-chip v-for="tag in tags" size="small">{{ tag.name }}</v-chip>
+              <v-chip-group multiple>
+                <v-chip v-for="tag in tags" :filter="isFilterActive(tag.id)" size="small"
+                  @click="() => handleAddFilter(tag)">{{ tag.name }}</v-chip>
               </v-chip-group>
+              <v-spacer></v-spacer>
+              <v-btn v-if="activeTags.length" icon="mdi-close-circle" size="small" variant="plain"
+                @click="handleClearTagFilters" />
             </v-toolbar>
-          </template> -->
+          </template>
           <template v-slot:item.name="{ item }">
             <div class="d-flex flex-row align-center">
               <v-avatar rounded color="grey-darken-3" class="mr-4" v-if="smAndUp">

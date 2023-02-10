@@ -8,10 +8,12 @@ export type ItemBase = {
 <script lang="ts" setup>
 import uniqid from 'uniqid'
 
-const { modelValue, emptyItem, label } = defineProps<{
+const { modelValue, emptyItem, label, emptySuggestion, onClick } = defineProps<{
   emptyItem: ItemBase,
   modelValue: ItemBase[],
   label: string,
+  emptySuggestion?: boolean,
+  onClick?: (e: Event) => void,
 }>();
 
 const emit = defineEmits<{
@@ -33,7 +35,7 @@ watch(data, (value) => {
 })
 
 onMounted(() => {
-  if (!data.length) {
+  if (!data.length && emptySuggestion) {
     handleAdd()
   }
 })
@@ -61,17 +63,17 @@ const handleChangePosition = (event: any) => {
 </script>
 
 <template>
-  <v-field class="repeatable-field" :label="label" :active="active">
+  <v-field class="repeatable-field" :label="label" :active="active" @click="onClick">
     <template v-slot:append-inner>
       <slot name="prepend-buttons" />
       <v-tooltip text="Ajouter une piste" location="top">
         <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-plus" variant="plain" class="field-inner-button" @click="handleAdd" v-bind="props" />
+          <v-btn icon="mdi-plus" variant="plain" class="field-inner-button" @click.stop="handleAdd" v-bind="props" />
         </template>
       </v-tooltip>
       <v-tooltip text="Tout supprimer" location="top">
         <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-playlist-remove" variant="plain" class="field-inner-button" @click="handleClear"
+          <v-btn icon="mdi-playlist-remove" variant="plain" class="field-inner-button" @click.stop="handleClear"
             v-bind="props" />
         </template>
       </v-tooltip>
@@ -92,7 +94,7 @@ const handleChangePosition = (event: any) => {
                 </v-tooltip>
                 <v-tooltip text="Supprimer la piste" location="top">
                   <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-delete" size="small" variant="plain" @click="() => handleRemove(index)"
+                    <v-btn icon="mdi-delete" size="small" variant="plain" @click.stop="() => handleRemove(index)"
                       v-bind="props" />
                   </template>
                 </v-tooltip>

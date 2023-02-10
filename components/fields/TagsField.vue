@@ -40,7 +40,8 @@ onMounted(() => {
     <v-row>
         <v-col cols="12">
             <v-combobox v-model="data.tags" :hide-no-data="false" :loading="isLoadingTags" :label="label" :items="tags"
-                item-title="name" item-value="id" chips closable-chips multiple variant="outlined" :required="required">
+                item-title="name" item-value="id" chips closable-chips multiple variant="outlined" :required="required"
+                hide-selected>
                 <template v-slot:no-data>
                     <select-no-data data-type="Tag" />
                 </template>

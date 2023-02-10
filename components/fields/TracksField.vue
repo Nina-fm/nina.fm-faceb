@@ -56,11 +56,11 @@ const handleImport = () => {
 </script>
 
 <template>
-    <repeatable-field v-model="data" :label="label" :empty-item="emptyTrack">
+    <repeatable-field v-model="data" :label="label" :empty-item="emptyTrack" @click="handleOpenImport">
         <template v-slot:prepend-buttons>
             <v-tooltip text="Importer au format texte" location="top">
                 <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-import" variant="plain" class="field-inner-button" @click="handleOpenImport"
+                    <v-btn icon="mdi-import" variant="plain" class="field-inner-button" @click.stop="handleOpenImport"
                         v-bind="props" />
                 </template>
             </v-tooltip>

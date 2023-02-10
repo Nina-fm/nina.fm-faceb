@@ -70,8 +70,8 @@ onMounted(() => {
   <v-row>
     <v-col cols="12">
       <v-combobox v-model="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label"
-        :items="authors" item-title="name" item-value="id" chips closable-chips multiple variant="outlined"
-        :required="required">
+        :items="authors" item-title="name" item-value="id" chips readonly multiple variant="outlined"
+        :required="required" @click="handleOpenImport">
         <template v-slot:append-inner>
           <v-tooltip text="Importer au format texte" location="top">
             <template v-slot:activator="{ props }">

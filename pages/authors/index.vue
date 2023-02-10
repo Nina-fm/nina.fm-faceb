@@ -13,11 +13,6 @@ const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
 const headers = [
   {
-    title: 'ID',
-    key: 'id',
-    width: 30
-  },
-  {
     title: 'Nom',
     key: 'name',
   },
@@ -86,10 +81,12 @@ onMounted(() => fetchAuthors())
               :color="item.raw.user_id ? 'primary' : 'default'" />
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
-              @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
-            <v-btn icon="mdi-delete" color="default" size="small" variant="text"
-              @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
+            <div class="d-flex flex-row justify-end">
+              <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
+                @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
+              <v-btn icon="mdi-delete" color="default" size="small" variant="text"
+                @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
+            </div>
           </template>
         </v-data-table>
       </v-col>

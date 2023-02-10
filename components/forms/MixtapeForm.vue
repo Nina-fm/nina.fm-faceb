@@ -40,6 +40,8 @@ const handleSubmit = () => emit("submit", form);
 onMounted(() => {
   fetchTags();
 })
+
+const hint = "Attention à bien respecter le format AirTime !";
 </script>
 
 <template>
@@ -49,7 +51,7 @@ onMounted(() => {
         <v-col cols="12" sm="7" lg="8">
           <v-row>
             <v-col cols="12">
-              <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" required />
+              <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" :hint="hint" required />
             </v-col>
             <v-col cols="12">
               <authors-field v-model:model-value="form.authors" v-model:text-value="form.authors_text" label="DJ's"

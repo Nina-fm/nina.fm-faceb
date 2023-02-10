@@ -47,7 +47,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         index.value = { ...index.value, [result.id]: result };
         return data;
       },
-      { successMsg: "Auteur créé avec succès !" }
+      { successMsg: `Merci d'avoir ajouté ${authorData.name} !` }
     );
 
   const updateAuthor = async (
@@ -64,7 +64,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         index.value = { ...index.value, [authorId]: result };
         return data;
       },
-      { successMsg: "Auteur mis à jour avec succès !" }
+      { successMsg: `Merci d'avoir mis ${authorData.name} à jour !` }
     );
 
   const deleteAuthor = async (authorId: string | number) =>
@@ -75,9 +75,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         });
         return result;
       },
-      {
-        successMsg: "Auteur supprimé avec succès !",
-      }
+      { successMsg: "Merci d'avoir fait du ménage !" }
     );
 
   return {

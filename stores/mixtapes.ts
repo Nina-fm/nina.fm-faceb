@@ -77,9 +77,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         });
         return result;
       },
-      {
-        successMsg: "Merci d'avoir fait du ménage !",
-      }
+      { successMsg: "Merci d'avoir fait du ménage !" }
     );
 
   return {

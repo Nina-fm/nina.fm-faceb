@@ -15,7 +15,7 @@
     "push:db": "supabase db push",
     "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags",
     "serve": "supabase functions serve localdev",
-    "deploy": "yarn db:push && yarn deploy:functions"
+    "deploy": "yarn push:db && yarn deploy:functions"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

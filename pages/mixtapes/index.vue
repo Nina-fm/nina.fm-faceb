@@ -1,27 +1,26 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
-import { Body } from '~~/.nuxt/components';
 
 definePageMeta({ middleware: ["auth"] })
 
-interface TagFilter {
-  tag_id: number;
-  exclude?: boolean;
-}
+// interface TagFilter {
+//   tag_id: number;
+//   exclude?: boolean;
+// }
 
-interface Filters {
-  tags: TagFilter[]
-}
+// interface Filters {
+//   tags: TagFilter[]
+// }
 
 const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
 const { data: mixtapes } = storeToRefs(useMixtapesStore());
-const { fetchTags } = useTagsStore()
-const { data: tags } = storeToRefs(useTagsStore());
+// const { fetchTags } = useTagsStore()
+// const { data: tags } = storeToRefs(useTagsStore());
 const search = ref(null);
-const filters: Filters = reactive({
-  tags: []
-})
+// const filters: Filters = reactive({
+//   tags: []
+// })
 const itemsPerPage = ref(50)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
@@ -97,7 +96,7 @@ const handleRefresh = async () => {
 
 onMounted(() => {
   fetchMixtapes()
-  fetchTags()
+  // fetchTags()
   document.body.addEventListener('resize', () => update())
 })
 </script>
@@ -117,13 +116,13 @@ onMounted(() => {
       <v-col cols="12">
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="mixtapes" :search="search"
           class="clickable" @click:row="handleRowClick">
-          <template v-slot:top>
+          <!-- <template v-slot:top>
             <v-toolbar class="px-4" color="transparent">
               <v-chip-group>
                 <v-chip v-for="tag in tags" size="small">{{ tag.name }}</v-chip>
               </v-chip-group>
             </v-toolbar>
-          </template>
+          </template> -->
           <template v-slot:item.name="{ item }">
             <div class="d-flex flex-row align-center">
               <v-avatar rounded color="grey-darken-3" class="mr-4" v-if="smAndUp">

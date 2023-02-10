@@ -1,16 +1,21 @@
 import pkg from "~~/package.json";
-import { useStorage } from "@vueuse/core";
 
 export default defineNuxtPlugin((nuxtApp) => {
+  const key = "faceb-app-version";
   const current = pkg.version;
-  const versionStored = useStorage("faceb-nina-version", current);
+  const previous = localStorage.getItem(key);
+  const isNew = !previous || current !== previous;
+
+  if (isNew) {
+    localStorage.setItem(key, current);
+  }
 
   return {
     provide: {
       version: {
         current,
-        previous: versionStored.value,
-        isNew: current !== versionStored.value,
+        previous,
+        isNew,
       },
     },
   };

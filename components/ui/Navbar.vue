@@ -5,19 +5,28 @@ const { $version } = useNuxtApp();
 const config = useRuntimeConfig()
 const { logout } = useAuthStore();
 const { user, isLoggedIn } = storeToRefs(useAuthStore());
+const showNewVersion = ref(false);
 
 const handleLogout = async () => {
   await logout()
   navigateTo("/login")
 }
+
+onMounted(() => {
+  if ($version.isNew) {
+    setTimeout(() => showNewVersion.value = true, 5000)
+  }
+})
 </script>
 
 <template>
   <v-app-bar color="primary">
     <template #title>
       <nuxt-link class="brand" to="/">{{ config.public.sitename }}</nuxt-link>
-      <v-chip class="ml-4" size="small" density="comfortable" variant="text">{{ $version.current }}</v-chip>
-      <v-chip v-if="$version.isNew" color="info" size="small" density="comfortable" variant="flat">New</v-chip>
+      <v-chip class="ml-4" density="comfortable" variant="text">{{ $version.current }}</v-chip>
+      <v-slide-x-reverse-transition>
+        <v-chip v-if="showNewVersion" color="info" size="small" density="comfortable" variant="flat">New !</v-chip>
+      </v-slide-x-reverse-transition>
     </template>
     <template v-slot:append>
       <v-btn size="small" @click="navigateTo('/mixtapes')">Mixtapes</v-btn>
@@ -47,16 +56,6 @@ const handleLogout = async () => {
   .brand {
     font-weight: bold;
     letter-spacing: -0.04em;
-  }
-}
-
-.avatar-icon {
-  background-color: var(--el-color-info-light-7);
-
-  :deep(.el-icon) {
-    font-size: 0.9em;
-    margin-right: 0px;
-
   }
 }
 </style>

@@ -4,9 +4,11 @@ definePageMeta({ middleware: ["auth"] })
 
 const { params } = useRoute();
 const { getById } = useMixtapesStore();
+const { deleteMixtape } = useMixtapesStore()
 
 const id = params.id as string;
 const { data } = await useAsyncData("mixtape", () => getById(id));
+const openConfirm = ref(false);
 const mixtape = computed(() => data.value)
 const headers = [
   {
@@ -32,15 +34,28 @@ const headers = [
   }
 ]
 
-
 const handleBack = () => {
   navigateTo("/mixtapes")
+}
+
+const handleDelete = () => {
+  openConfirm.value = true;
+}
+
+const handleCloseConfirm = () => { openConfirm.value = false }
+
+const handleConfirmDelete = async () => {
+  const { error } = await deleteMixtape(id);
+  if (!error) {
+    navigateTo("/mixtapes")
+  }
 }
 </script>
 
 <template>
   <PageHeader v-on:back="handleBack" title="La mixtape en détails" :actions="[
-    { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) }
+    { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) },
+    { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete }
   ]" />
   <v-container class="n-page-content">
     <v-card>
@@ -64,6 +79,10 @@ const handleBack = () => {
         {{ mixtape.comment }}
       </v-card-text>
     </v-card>
+    <Confirm v-model="openConfirm" @close="handleCloseConfirm" @confirm="handleConfirmDelete">
+      <p>La mixtape sera supprimée définitivement.</p>
+      <p>Confirmez-vous l'action ?</p>
+    </Confirm>
   </v-container>
 </template>
 

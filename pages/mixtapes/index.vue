@@ -1,25 +1,32 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
+import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { Body } from '~~/.nuxt/components';
 
 definePageMeta({ middleware: ["auth"] })
 
+interface TagFilter {
+  tag_id: number;
+  exclude?: boolean;
+}
+
+interface Filters {
+  tags: TagFilter[]
+}
+
 const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
 const { data: mixtapes } = storeToRefs(useMixtapesStore());
+const { fetchTags } = useTagsStore()
+const { data: tags } = storeToRefs(useTagsStore());
 const search = ref(null);
+const filters: Filters = reactive({
+  tags: []
+})
 const itemsPerPage = ref(50)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
-const headers = [
-  {
-    title: 'ID',
-    key: 'id',
-    width: 60
-  },
-  {
-    title: 'Cover',
-    key: 'cover',
-    width: 60
-  },
+const { smAndUp, mdAndUp, update } = useDisplay();
+const headersDefinition = [
   {
     title: 'Mixtape',
     key: 'name',
@@ -27,12 +34,14 @@ const headers = [
   {
     title: "Pistes",
     key: 'tracks',
-    width: 60
+    width: 60,
+    show: "mdAndUp"
   },
   {
     title: 'Année',
     key: 'year',
-    width: 60
+    width: 60,
+    show: "smAndUp"
   },
   {
     title: 'Par',
@@ -41,7 +50,8 @@ const headers = [
   {
     title: 'Tags',
     key: 'tags',
-    width: 60
+    width: 60,
+    show: "mdAndUp"
   },
   {
     title: 'Actions',
@@ -50,6 +60,12 @@ const headers = [
     sortable: false
   }
 ];
+const headers = computed(() => {
+  update();
+  return headersDefinition.filter((h) =>
+    (!("show" in h) || h.show === "mdAndUp" && mdAndUp.value || h.show === "smAndUp" && smAndUp.value)
+  )
+})
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
   navigateTo(`/mixtapes/${value.item.raw.id}`)
@@ -79,7 +95,11 @@ const handleRefresh = async () => {
   await fetchMixtapes();
 }
 
-onMounted(() => fetchMixtapes())
+onMounted(() => {
+  fetchMixtapes()
+  fetchTags()
+  document.body.addEventListener('resize', () => update())
+})
 </script>
 
 <template>
@@ -97,11 +117,21 @@ onMounted(() => fetchMixtapes())
       <v-col cols="12">
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="mixtapes" :search="search"
           class="clickable" @click:row="handleRowClick">
-          <template v-slot:item.cover="{ item }">
-            <v-avatar rounded color="grey-darken-3">
-              <v-img v-if="item.raw.cover_url" :src="item.raw.cover_url" cover />
-              <v-icon v-else icon="mdi-image-off" color="grey-darken-2" />
-            </v-avatar>
+          <template v-slot:top>
+            <v-toolbar class="px-4" color="transparent">
+              <v-chip-group>
+                <v-chip v-for="tag in tags" size="small">{{ tag.name }}</v-chip>
+              </v-chip-group>
+            </v-toolbar>
+          </template>
+          <template v-slot:item.name="{ item }">
+            <div class="d-flex flex-row align-center">
+              <v-avatar rounded color="grey-darken-3" class="mr-4" v-if="smAndUp">
+                <v-img v-if="item.raw.cover_url" :src="item.raw.cover_url" cover />
+                <v-icon v-else icon="mdi-image-off" color="grey-darken-2" />
+              </v-avatar>
+              <div>{{ item.raw.name }}</div>
+            </div>
           </template>
           <template v-slot:item.tracks="{ item }">
             <v-chip density="comfortable" :color="item.raw.tracks.length ? 'success' : 'error'">{{
@@ -124,10 +154,12 @@ onMounted(() => fetchMixtapes())
             </v-tooltip>
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
-              @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
-            <v-btn icon="mdi-delete" color="default" size="small" variant="text"
-              @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
+            <div class="d-flex flex-row justify-end">
+              <v-btn icon="mdi-pencil" color="default" size="small" variant="text"
+                @click.stop="(e: Event) => handleEdit(e, item.raw.id)" />
+              <v-btn icon="mdi-delete" color="default" size="small" variant="text"
+                @click.stop="(e: Event) => handleDelete(e, item.raw.id)" />
+            </div>
           </template>
         </v-data-table>
       </v-col>

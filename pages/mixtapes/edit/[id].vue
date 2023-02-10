@@ -5,7 +5,6 @@ definePageMeta({ middleware: ["auth"] })
 
 const { params } = useRoute();
 const { updateMixtape, getById } = useMixtapesStore();
-
 const id = params.id as string
 const { data } = await useAsyncData("mixtape", () => getById(id));
 const mixtape = computed(() => data.value);

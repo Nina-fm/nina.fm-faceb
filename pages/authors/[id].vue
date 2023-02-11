@@ -28,6 +28,7 @@ const handleConfirmDelete = async () => {
   <PageHeader @back="navigateTo('/authors')" title="Le DJ en détails" :actions="[
     { icon: 'mdi-pencil', onClick: () => navigateTo(`/authors/edit/${id}`) },
     { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete }
+    { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo(`/authors/add`) }
   ]" />
   <v-container class="n-page-content">
     <v-card>

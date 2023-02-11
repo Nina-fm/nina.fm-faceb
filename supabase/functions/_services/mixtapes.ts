@@ -118,6 +118,29 @@ export class MixtapesService extends Service {
   }
 
   /**
+   * Find a mixtape by Authors and Name
+   */
+  async findByInfos({ authors, name }: { authors: string; name: string }) {
+    const { data: mixtape, error } = await this.supabase
+      .from("mixtapes")
+      .select(
+        `*, ${mixtapeAuthorsWithAuthorsRelation}, ${mixtapeTagsWithTagsRelation}, ${tracksRelation}`
+      )
+      .match({ name, authors_text: authors })
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        throw new Error("Resource not found");
+      } else {
+        throw error;
+      }
+    }
+
+    return this.format(mixtape);
+  }
+
+  /**
    * Add authors to mixtape
    */
   async addAuthors(id: string | number, authors: AuthorParamsExt[] = []) {

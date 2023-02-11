@@ -13,6 +13,7 @@ const handlers = {
   authors: await import("../authors/handler.ts").then((it) => it.handler),
   mixtapes: await import("../mixtapes/handler.ts").then((it) => it.handler),
   tags: await import("../tags/handler.ts").then((it) => it.handler),
+  metadata: await import("../metadata/handler.ts").then((it) => it.handler),
 } as Record<string, Handler>;
 
 function localdevHandler(req: Request, connInfo: ConnInfo) {

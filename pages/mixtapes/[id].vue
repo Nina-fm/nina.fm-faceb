@@ -55,7 +55,8 @@ const handleConfirmDelete = async () => {
 <template>
   <PageHeader v-on:back="handleBack" title="La mixtape en détails" :actions="[
     { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) },
-    { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete }
+    { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete },
+    { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo(`/mixtapes/add`) }
   ]" />
   <v-container class="n-page-content">
     <v-card>

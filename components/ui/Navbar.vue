@@ -31,16 +31,33 @@ onMounted(() => {
     <template v-slot:append>
       <v-btn size="small" @click="navigateTo('/mixtapes')">Mixtapes</v-btn>
       <v-btn size="small" @click="navigateTo('/authors')">DJ's</v-btn>
+      <v-menu open-on-hover>
+        <template v-slot:activator="{ props }">
+          <v-btn icon="mdi-dots-vertical" v-bind="props" variant="plain"></v-btn>
+        </template>
+        <v-list>
+          <v-list-item :href="config.public.siteurl" target="_blank">
+            <v-list-item-title>Voir le site</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="() => navigateTo('/mixtapes/import')">
+            <v-list-item-title>Import de mixtapes</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-menu v-if="isLoggedIn" open-on-hover>
         <template v-slot:activator="{ props }">
           <v-btn icon="mdi-account-circle" v-bind="props" variant="plain"></v-btn>
         </template>
         <v-list>
           <v-list-item>
-            <v-list-item-title><v-chip color="primary" size="small">{{
-              user?.email
-            }}</v-chip></v-list-item-title>
+            <v-list-item-title>
+              Bienvenue !
+            </v-list-item-title>
+            <v-list-item-subtitle class="my-2">
+              <v-chip color="primary" size="small">{{ user?.email }}</v-chip>
+            </v-list-item-subtitle>
           </v-list-item>
+          <v-divider />
           <v-list-item @click="handleLogout">
             <v-list-item-title>Se déconnecter</v-list-item-title>
           </v-list-item>

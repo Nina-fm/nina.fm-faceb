@@ -37,7 +37,12 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     return index.value?.[id];
   };
 
-  const createMixtape = async (mixtapeData: MixtapeParamsExt) =>
+  const createMixtape = async (
+    mixtapeData: MixtapeParamsExt,
+    options?: {
+      withMessages?: boolean;
+    }
+  ) =>
     await process(
       async () => {
         const result: MixtapeExt = await api.post(`/mixtapes`, {
@@ -47,7 +52,10 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         index.value = { ...index.value, [result.id]: result };
         return data;
       },
-      { successMsg: `Merci d'avoir ajouté ${mixtapeData.name} !` }
+      {
+        successMsg: `Merci d'avoir ajouté ${mixtapeData.name} !`,
+        withMessages: options?.withMessages ?? true,
+      }
     );
 
   const updateMixtape = async (

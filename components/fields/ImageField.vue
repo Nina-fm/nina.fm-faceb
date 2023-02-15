@@ -43,17 +43,9 @@ const handleCloseLightBox = () => {
 const handleUpload = (acceptedFiles: any[], rejectReasons: FileRejectReason[]) => {
   isLoading.value = true
   if (acceptedFiles.length) {
-    const file = acceptedFiles[0];
-    const reader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      if (!(e.target?.result instanceof ArrayBuffer)) {
-        modelValue.value.data = e.target?.result
-      }
-    };
-    reader.readAsDataURL(file);
-    modelValue.value.filename = file.name
-  } else {
-    modelValue.value.data = null;
+    const { filename, data } = getFileStringFromBuffer(acceptedFiles[0]);
+    modelValue.value.filename = filename
+    modelValue.value.data = data
   }
   emit('update:modelValue', modelValue.value)
   isLoading.value = false

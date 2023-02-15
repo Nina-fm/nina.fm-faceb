@@ -13,6 +13,11 @@ import { FileModel } from "./api.ts";
 import { TagParams } from "./tags.ts";
 import { TrackParams } from "./tracks.ts";
 
+export interface CoverFile {
+  data: File | string | null;
+  filename: string | null;
+}
+
 export type WithAuthor = ResolveRelationQuery<typeof authorRelation, "one">;
 export type WithMixtapeAuthors = ResolveRelationQuery<
   typeof mixtapeAuthorsRelation,
@@ -53,8 +58,9 @@ export type MixtapeExt = Mixtape &
   };
 export type MixtapeParamsExt = MixtapeParams & {
   authors?: Pick<AuthorParams, "id" | "name">[];
-  tags?: (Pick<TagParams, "id" | "name"> | string)[];
+  tags?: Pick<TagParams, "id" | "name">[];
   tracks?: Omit<TrackParams, "created_at" | "mixtape_id">[];
   cover_url?: string | null;
   cover_file?: FileModel;
+  key?: string;
 };

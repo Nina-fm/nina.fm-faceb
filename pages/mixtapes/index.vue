@@ -130,6 +130,7 @@ onMounted(() => {
 
 <template>
   <PageHeader title="Les mixtapes" :actions="[
+    { tooltip: 'Import', icon: 'mdi-database-arrow-up', onClick: () => navigateTo('/mixtapes/import') },
     { tooltip: 'Rafraîchir', icon: 'mdi-refresh', onClick: handleRefresh },
     { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') }
   ]">
@@ -144,8 +145,8 @@ onMounted(() => {
         <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="filteredMixtapes"
           :search="search" class="clickable" @click:row="handleRowClick">
           <template v-slot:top>
-            <v-toolbar class="px-4" color="transparent">
-              <v-chip-group multiple>
+            <v-toolbar class="pa-4" color="transparent">
+              <v-chip-group multiple column>
                 <v-chip v-for="tag in tags" :filter="isFilterActive(tag.id)" size="small"
                   @click="() => handleAddFilter(tag)">{{ tag.name }}</v-chip>
               </v-chip-group>

@@ -14,7 +14,11 @@ alter table "public"."mixtapes" enable row level security;
 
 CREATE UNIQUE INDEX mixtapes_pkey ON public.mixtapes USING btree (id);
 
+CREATE UNIQUE INDEX mixtapes_name_key ON public.mixtapes USING btree (name);
+
 alter table "public"."mixtapes" add constraint "mixtapes_pkey" PRIMARY KEY using index "mixtapes_pkey";
+
+alter table "public"."mixtapes" add constraint "mixtapes_name_key" UNIQUE using index "mixtapes_name_key";
 
 create policy "Public mixtapes are viewable by everyone."
 on "public"."mixtapes"

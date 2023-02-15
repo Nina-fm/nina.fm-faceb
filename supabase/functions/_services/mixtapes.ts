@@ -141,6 +141,34 @@ export class MixtapesService extends Service {
   }
 
   /**
+   * Find mixtapes by name
+   */
+  async findByName(name: string) {
+    const { data: mixtapes, error } = await this.supabase
+      .from("mixtapes")
+      .select("*")
+      .ilike("name", `%${name}%`);
+
+    if (error) throw new Error(error.message);
+
+    return mixtapes.map((a) => this.format(a));
+  }
+
+  /**
+   * Find mixtapes by exact name
+   */
+  async findByExactName(name: string) {
+    const { data: mixtapes, error } = await this.supabase
+      .from("mixtapes")
+      .select("*")
+      .ilike("name", name);
+
+    if (error) throw new Error(error.message);
+
+    return mixtapes.map((a) => this.format(a));
+  }
+
+  /**
    * Add authors to mixtape
    */
   async addAuthors(id: string | number, authors: AuthorParamsExt[] = []) {
@@ -195,7 +223,7 @@ export class MixtapesService extends Service {
   /**
    * Add tags to mixtape
    */
-  async addTags(id: string | number, tags: (TagParams | string)[] = []) {
+  async addTags(id: string | number, tags: TagParams[] = []) {
     const _tags = new TagsService(this.headers);
     const tagIds = await _tags.getIdsOrCreate(tags);
     const { error } = await this.supabase.from("mixtapes_tags").insert(
@@ -211,7 +239,7 @@ export class MixtapesService extends Service {
   /**
    * Update tags to mixtape
    */
-  async updateTags(id: string | number, tags: (TagParams | string)[] = []) {
+  async updateTags(id: string | number, tags: TagParams[] = []) {
     const _tags = new TagsService(this.headers);
     const tagIds = await _tags.getIdsOrCreate(tags);
     const { data: existing } = await this.supabase

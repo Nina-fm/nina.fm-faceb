@@ -67,8 +67,10 @@ const handleImport = () => {
               </v-alert>
             </v-card-text>
             <v-card-text>
-              <v-textarea v-if="multiline" v-model="data.text" :label="`${label} (format text)`" :rows="10" />
-              <v-text-field v-else v-model="data.text" :label="`${label} (format text)`" />
+              <v-textarea v-if="multiline" v-model="data.text" :label="`${label} (format text)`" :rows="10"
+                @keydown.enter="handleImport" />
+              <v-text-field v-else v-model="data.text" :label="`${label} (format text)`"
+                @keydown.enter="handleImport" />
             </v-card-text>
             <v-card-actions>
               <v-btn variant="plain" @click="handleCancel">{{ cancelText ?? "Annuler" }}</v-btn>

@@ -15,15 +15,23 @@ export class TagsService extends Service {
     return data;
   }
 
-  async getIdsOrCreate(tags: (TagParams | string)[]) {
+  async getIdsOrCreate(tags: TagParams[]) {
     // List all tags and create new ones
     const allTags = await Promise.all(
-      tags.map(async (tag) =>
-        typeof tag === "string" ? await this.create({ name: tag }) : tag
-      )
+      tags.map(async (tag) => {
+        if (!tag?.id) {
+          const find = tag?.name ? await this.findByExactName(tag.name) : [];
+          const exists = !!find.length;
+          if (!exists) {
+            return await this.create({ name: tag.name });
+          }
+          return find[0];
+        }
+        return tag;
+      })
     );
     // Reduce to tags ids
-    return allTags.map((t) => t.id);
+    return allTags.map((a) => a.id);
   }
 
   /**
@@ -60,6 +68,20 @@ export class TagsService extends Service {
       .from("tags")
       .select("*")
       .ilike("name", `%${name}%`);
+
+    if (error) throw error;
+
+    return tags;
+  }
+
+  /**
+   * Find tags by exact name
+   */
+  async findByExactName(name: string) {
+    const { data: tags, error } = await this.supabase
+      .from("tags")
+      .select("*")
+      .ilike("name", `${name}`);
 
     if (error) throw error;
 

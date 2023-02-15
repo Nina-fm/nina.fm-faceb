@@ -28,7 +28,7 @@ const data: Data = reactive({
 })
 
 watch(() => data.tags, (value) => {
-    emit('update:modelValue', value)
+    emit('update:modelValue', value.map((v) => (typeof v === "string" ? { name: v } : v)))
 })
 
 onMounted(() => {

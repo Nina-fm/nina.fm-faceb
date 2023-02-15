@@ -27,6 +27,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       sitename,
+      siteurl: process.env.SITE_URL,
       supabase: {
         functionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
       },

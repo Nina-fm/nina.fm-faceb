@@ -22,6 +22,7 @@ const emit = defineEmits<{
   (e: 'update:textValue', value: string | null): void,
 }>();
 
+const { parseAuthors } = useImport();
 const { modelValue, textValue } = toRefs(props)
 const { fetchAuthors } = useAuthorsStore()
 const { data: authorsData, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
@@ -50,15 +51,7 @@ const handleCancelImport = () => {
 
 const handleImport = () => {
   openImport.value = false;
-  const authorNames = findAuthorNames(data.text ?? "");
-  const newAuthors = authorNames.map((name) => {
-    const author = authors.value.find((a) => a.name === name);
-    return {
-      name: author ? author.name : name,
-      ...(author ? { id: author.id } : {})
-    };
-  })
-  data.authors.splice(0, data.authors.length, ...newAuthors);
+  data.authors.splice(0, data.authors.length, ...parseAuthors(data.text));
 }
 
 onMounted(() => {

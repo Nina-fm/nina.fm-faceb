@@ -40,9 +40,19 @@ export class AuthorsService extends Service {
   async getIdsOrCreate(authors: AuthorParamsExt[]) {
     // List all authors and create new ones
     const allAuthors = await Promise.all(
-      authors.map(async (author) =>
-        !author?.id ? await this.create({ name: author.name }) : author
-      )
+      authors.map(async (author) => {
+        if (!author?.id) {
+          const find = author?.name
+            ? await this.findByExactName(author.name)
+            : [];
+          const exists = !!find.length;
+          if (!exists) {
+            return await this.create({ name: author.name });
+          }
+          return find[0];
+        }
+        return author;
+      })
     );
     // Reduce to authors ids
     return allAuthors.map((a) => a.id);
@@ -84,6 +94,20 @@ export class AuthorsService extends Service {
       .from("authors")
       .select("*")
       .ilike("name", `%${name}%`);
+
+    if (error) throw new Error(error.message);
+
+    return authors.map((a) => this.format(a));
+  }
+
+  /**
+   * Find authors by exact name
+   */
+  async findByExactName(name: string) {
+    const { data: authors, error } = await this.supabase
+      .from("authors")
+      .select("*")
+      .ilike("name", name);
 
     if (error) throw new Error(error.message);
 

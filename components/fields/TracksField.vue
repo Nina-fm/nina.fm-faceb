@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { TrackParams } from '~~/types/supatypes';
 import { ItemBase } from './RepeatableField.vue';
 
 const props = defineProps<{
@@ -13,6 +12,7 @@ const emit = defineEmits<{
     (e: 'update:textValue', value: string | null): void,
 }>();
 
+const { parseTracksText } = useImport({ init: false })
 const { modelValue, textValue } = toRefs(props);
 const { label } = props;
 const openImport = ref(false);
@@ -42,16 +42,7 @@ const handleCancelImport = () => {
 
 const handleImport = () => {
     openImport.value = false;
-    const lines: string[] = text.value?.split(/\r?\n/) ?? [];
-    const newLines: ItemBase[] = lines.map((line, i) => {
-        const infos = /(\d+)\s(.*)\s:\s(.*)/g.exec(line);
-        return {
-            position: i,
-            artist: infos?.[2],
-            title: infos?.[3]
-        };
-    });
-    data.splice(0, data.length, ...newLines);
+    data.splice(0, data.length, ...parseTracksText(text.value));
 }
 </script>
 

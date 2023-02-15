@@ -30,7 +30,7 @@ interface PreviousMixtape {
 }
 
 export const useImport = (params?: { init?: boolean }) => {
-  const { loadingOn, loadingOff, setLoadingPercent } = useLoadingStore();
+  const { loadingOn, loadingOff, incrementLoadingPercent } = useLoadingStore();
   const { fetchTags } = useTagsStore();
   const { fetchAuthors } = useAuthorsStore();
   const { createMixtape } = useMixtapesStore();
@@ -129,27 +129,26 @@ export const useImport = (params?: { init?: boolean }) => {
   });
 
   const fetchFromUrl = async (url: string) => {
-    loadingOn(0);
+    loadingOn();
     urlToImport.value = url.replace(/\/$/, "");
     const res = await $fetch(`/api/oldMetadata?url=${url}`);
-    console.log({ res });
     const previous = res as PreviousMixtape[];
     const data = previous; //.slice(310, 321);
+    loadingOn(data.length);
     json.value = data;
     const mixtapes: MixtapeParamsExt[] = await Promise.all(
       data.map(async (item, index) => {
         const createdMixtape = await createMixtapeModel(item);
-        setLoadingPercent(getPercent(index, data.length));
+        incrementLoadingPercent();
         return createdMixtape;
       })
     );
     loadingOff();
-    console.log({ mixtapes });
     return mixtapes;
   };
 
   const importData = async (data: MixtapeParamsExt[]) => {
-    loadingOn(0);
+    loadingOn(data.length);
 
     const response = await data.reduce(
       async (acc, { key, ...value }, index) => {
@@ -158,7 +157,7 @@ export const useImport = (params?: { init?: boolean }) => {
           const { data: mixtapeData, error } = await createMixtape(value, {
             withMessages: false,
           });
-          setLoadingPercent(getPercent(index, data.length));
+          incrementLoadingPercent();
           if (error) throw error;
           keysImported.value.push(key);
           return {
@@ -178,7 +177,6 @@ export const useImport = (params?: { init?: boolean }) => {
         errors: [],
       })
     );
-    console.log({ response });
 
     loadingOff();
     return response;

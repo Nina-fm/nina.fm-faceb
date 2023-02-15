@@ -3,6 +3,8 @@ import { defineStore, storeToRefs } from "pinia";
 export const useLoadingStore = defineStore("loading", () => {
   const loading = ref<boolean>(false);
   const loadingPercent = ref<number | null>(null);
+  const loadingPercentInc = ref<number | null>(null);
+  const loadingPercentTotal = ref<number | null>(null);
 
   const { isLoading: authIsLoading } = storeToRefs(useAuthStore());
   const { isLoading: mixtapesIsLoading } = storeToRefs(useMixtapesStore());
@@ -16,6 +18,15 @@ export const useLoadingStore = defineStore("loading", () => {
       authorsIsLoading.value
   );
 
+  watch(loadingPercentInc, (value: number | null) => {
+    if (
+      typeof value === "number" &&
+      typeof loadingPercentTotal.value === "number"
+    ) {
+      loadingPercent.value = getPercent(value, loadingPercentTotal.value);
+    }
+  });
+
   const toggleLoading = () => {
     loading.value = !loading.value;
   };
@@ -24,15 +35,22 @@ export const useLoadingStore = defineStore("loading", () => {
     loadingPercent.value = percent;
   };
 
-  const loadingOn = (percent?: number | null) => {
-    if (typeof percent === "number") {
-      loadingPercent.value = percent;
+  const incrementLoadingPercent = () => {
+    loadingPercentInc.value = (loadingPercentInc.value ?? 0) + 1;
+  };
+
+  const loadingOn = (total?: number | null) => {
+    if (typeof total === "number") {
+      loadingPercentTotal.value = total;
+      loadingPercentInc.value = 0;
     }
     loading.value = true;
   };
 
   const loadingOff = () => {
     loadingPercent.value = null;
+    loadingPercentInc.value = null;
+    loadingPercentTotal.value = null;
     loading.value = false;
   };
 
@@ -44,5 +62,6 @@ export const useLoadingStore = defineStore("loading", () => {
     loadingOff,
     loadingOn,
     setLoadingPercent,
+    incrementLoadingPercent,
   };
 });

@@ -20,7 +20,7 @@ export default defineNuxtConfig({
         },
         {
           "http-equiv": "Content-Security-Policy",
-          content: "default-src 'self' *.nina.fm; img-src *",
+          content: "default-src 'self' *",
         },
       ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.png" }],

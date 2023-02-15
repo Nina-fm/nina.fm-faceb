@@ -39,7 +39,7 @@ export const useImport = (params?: { init?: boolean }) => {
   const json = ref<Object[]>([]);
   const urlToImport = ref<string | null>(null);
   const keysImported = ref<string[]>([]);
-  const keysNotImported = ref<string[]>([]);
+  const keysWithErrors = ref<string[]>([]);
 
   onMounted(() => {
     if (params?.init ?? true) {
@@ -54,13 +54,11 @@ export const useImport = (params?: { init?: boolean }) => {
     return names.map((name) => ({ name }));
   };
 
-  const parseTags = (names: string[], toConcat?: TagParams[]): TagParams[] =>
-    names
-      .map((name) => {
-        const tag = tags.value.find((t) => t.name === name);
-        return tag ?? { name };
-      })
-      .concat(toConcat ?? []);
+  const parseTags = (names: string[], toConcat?: string[]): TagParams[] =>
+    [...names, ...(toConcat ?? [])].map((name) => {
+      const tag = tags.value.find((t) => t.name === name);
+      return tag ?? { name };
+    });
 
   const parseTracks = (values: PreviousTrack[]): TrackParams[] =>
     values.map(({ start_hours, start_minutes, start_seconds, ...rest }) => {
@@ -80,15 +78,55 @@ export const useImport = (params?: { init?: boolean }) => {
   const parseTracksText = (text: string | null): TrackParams[] => {
     if (text) {
       const lines: string[] = text?.split(/\r?\n/) ?? [];
-      const tracks: TrackParams[] = lines.map((line, i) => {
-        const infos = /(\d+)\s(.*)\s:\s(.*)/g.exec(line);
-        return {
-          position: i,
-          artist: infos?.[2],
-          title: infos?.[3],
-        };
-      });
-      return tracks;
+      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)/g; // 01 Artist name : Track title
+      const withoutPositionFormat = /(.*)\s:\s(.*)/g; // Artist name : Track title
+      const withDotFormat = /(.*)\s\.\s(.*)/g; // Artist name . Track title
+      const withDashFormat = /(.*)\s\-\s(.*)/g; // Artist name - Track title
+
+      return lines.reduce((res, line, i) => {
+        if (defaultFormat.test(line)) {
+          const infos = defaultFormat.exec(line);
+          return [
+            ...res,
+            {
+              position: i,
+              artist: infos?.[2],
+              title: infos?.[3],
+            } as TrackParams,
+          ];
+        } else if (withoutPositionFormat.test(line)) {
+          const infos = withoutPositionFormat.exec(line);
+          return [
+            ...res,
+            {
+              position: i,
+              artist: infos?.[1],
+              title: infos?.[2],
+            } as TrackParams,
+          ];
+        } else if (withDotFormat.test(line)) {
+          const infos = withDotFormat.exec(line);
+          return [
+            ...res,
+            {
+              position: i,
+              artist: infos?.[1],
+              title: infos?.[2],
+            } as TrackParams,
+          ];
+        } else if (withDashFormat.test(line)) {
+          const infos = withDashFormat.exec(line);
+          return [
+            ...res,
+            {
+              position: i,
+              artist: infos?.[1],
+              title: infos?.[2],
+            } as TrackParams,
+          ];
+        }
+        return res;
+      }, [] as TrackParams[]);
     }
     return [];
   };
@@ -97,7 +135,7 @@ export const useImport = (params?: { init?: boolean }) => {
     value: string | null
   ): Promise<CoverFile | undefined> => {
     const url = `${urlToImport.value}/${value}`;
-    if (await isValidImageUrl(url)) {
+    if (isValidImageUrl(url)) {
       const path = url.split("/");
       const data = await getDataFromUrl(url);
       const filename = data ? path[path.length - 1] : null;
@@ -120,8 +158,10 @@ export const useImport = (params?: { init?: boolean }) => {
       ? parseTracks(item.tracks)
       : parseTracksText(item.text_tracks ?? null),
     tags: parseTags(item.tags ?? [], [
-      ...(item.text_tracks ? [{ name: "use_text_tracks" }] : []),
-      ...(!item.year ? [{ name: "has_no_year" }] : []),
+      ...(item.text_tracks && !item.tags?.includes("use_text_tracks")
+        ? ["use_text_tracks"]
+        : []),
+      ...(!item.year ? ["has_no_year"] : []),
     ]),
     cover: null,
     cover_url: null,
@@ -165,7 +205,7 @@ export const useImport = (params?: { init?: boolean }) => {
             results: [...resultsObject.results, mixtapeData],
           };
         } catch (error) {
-          keysNotImported.value.push(key);
+          keysWithErrors.value.push(key);
           return {
             ...resultsObject,
             errors: [...resultsObject.errors, error],
@@ -185,7 +225,7 @@ export const useImport = (params?: { init?: boolean }) => {
   return {
     json,
     keysImported,
-    keysNotImported,
+    keysWithErrors,
     fetchFromUrl,
     parseTracksText,
     parseAuthors,

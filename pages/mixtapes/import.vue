@@ -5,14 +5,14 @@ import { AnyFn, MixtapeParamsExt } from '~~/types/supatypes';
 definePageMeta({ middleware: ["auth"] })
 
 const { snackSuccess, snackError } = useSnackbarStore();
-const { fetchFromUrl, importData, keysImported, keysNotImported } = useImport()
+const { fetchFromUrl, importData, keysImported, keysWithErrors } = useImport()
 const { isLoading } = storeToRefs(useLoadingStore())
 const data = ref<MixtapeParamsExt[]>([]);
 const url = ref<string | null>(null);
 const importEnded = ref<boolean>(false);
 
 const imported = (key: string) => keysImported.value.includes(key);
-const notImported = (key: string) => keysNotImported.value.includes(key);
+const withErrors = (key: string) => keysWithErrors.value.includes(key);
 
 const handleFetch = async (form: Form) => {
   if (form.url) {
@@ -62,7 +62,7 @@ const handleCancel = () => {
             </v-col>
             <v-col>
               <v-alert icon="mdi-database" color="error" variant="tonal">
-                <v-alert-title>{{ keysNotImported.length }} mixtapes n'ont pu être importées !</v-alert-title>
+                <v-alert-title>{{ keysWithErrors.length }} mixtapes n'ont pu être importées !</v-alert-title>
               </v-alert>
             </v-col>
           </v-row>
@@ -79,11 +79,11 @@ const handleCancel = () => {
                   <v-card-title class="pa-0">{{ mixtape.name }}</v-card-title>
                   <v-card-subtitle class="pa-0">{{ mixtape.authors_text }}</v-card-subtitle>
                 </div>
-                <v-overlay :model-value="imported(mixtape.key) || notImported(mixtape.key)" contained
+                <v-overlay :model-value="imported(mixtape.key) || withErrors(mixtape.key)" contained
                   :close-on-back="false" class="align-center justify-center" persistent>
                   <v-chip :prepend-icon="imported(mixtape.key) ? 'mdi-check' : 'mdi-close'" size="small"
                     :color="imported(mixtape.key) ? 'success' : 'error'" variant="text">
-                    {{ imported(mixtape.key) ?'Importée': 'Non-importée' }}
+                    {{ imported(mixtape.key) ?'Importée': 'Importée avec erreurs' }}
                   </v-chip>
                 </v-overlay>
               </v-card>

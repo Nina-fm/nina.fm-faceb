@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
       responseType: "arrayBuffer",
       headers: {
         Accept: mimeType,
+        "Content-Security-Policy": "default-src 'self' *.nina.fm",
       },
     })
       .then((result) => {

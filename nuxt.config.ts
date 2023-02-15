@@ -18,6 +18,10 @@ export default defineNuxtConfig({
           name: "description",
           content: "The Nina.fm Admin",
         },
+        {
+          "http-equiv": "Content-Security-Policy",
+          content: "default-src 'self' *.nina.fm; img-src *",
+        },
       ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.png" }],
       script: [],

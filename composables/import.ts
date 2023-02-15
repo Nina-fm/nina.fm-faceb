@@ -131,11 +131,7 @@ export const useImport = (params?: { init?: boolean }) => {
   const fetchFromUrl = async (url: string) => {
     loadingOn(0);
     urlToImport.value = url.replace(/\/$/, "");
-    const res = await $fetch(url, {
-      headers: {
-        "Content-Security-Policy": "default-src 'self' *.nina.fm",
-      },
-    });
+    const res = await $fetch(url);
     const previous: PreviousMixtape[] = JSON.parse(res as string);
     const data = previous; //.slice(310, 321);
     json.value = data;

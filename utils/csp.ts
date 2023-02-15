@@ -1,3 +1,3 @@
 export const cspHeaders = {
-  "Content-Security-Policy": "script-src: 'self' *.nina.fm",
+  "Content-Security-Policy": "default-src: 'self' *.nina.fm",
 };

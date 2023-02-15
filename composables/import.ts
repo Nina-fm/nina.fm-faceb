@@ -31,13 +31,11 @@ interface PreviousMixtape {
 
 export const useImport = (params?: { init?: boolean }) => {
   const { loadingOn, loadingOff, setLoadingPercent } = useLoadingStore();
-  const { snackError } = useSnackbarStore();
   const { fetchTags } = useTagsStore();
   const { fetchAuthors } = useAuthorsStore();
   const { createMixtape } = useMixtapesStore();
 
   const { data: tags } = storeToRefs(useTagsStore());
-  const { data: authors } = storeToRefs(useAuthorsStore());
   const json = ref<Object[]>([]);
   const urlToImport = ref<string | null>(null);
   const keysImported = ref<string[]>([]);
@@ -56,11 +54,13 @@ export const useImport = (params?: { init?: boolean }) => {
     return names.map((name) => ({ name }));
   };
 
-  const parseTags = (names: string[]): TagParams[] =>
-    names.map((name) => {
-      const tag = tags.value.find((t) => t.name === name);
-      return tag ?? { name };
-    });
+  const parseTags = (names: string[], toConcat?: TagParams[]): TagParams[] =>
+    names
+      .map((name) => {
+        const tag = tags.value.find((t) => t.name === name);
+        return tag ?? { name };
+      })
+      .concat(toConcat ?? []);
 
   const parseTracks = (values: PreviousTrack[]): TrackParams[] =>
     values.map(({ start_hours, start_minutes, start_seconds, ...rest }) => {
@@ -119,7 +119,10 @@ export const useImport = (params?: { init?: boolean }) => {
     tracks: item.tracks?.length
       ? parseTracks(item.tracks)
       : parseTracksText(item.text_tracks ?? null),
-    tags: parseTags(item.tags ?? []),
+    tags: parseTags(item.tags ?? [], [
+      ...(item.text_tracks ? [{ name: "use_text_tracks" }] : []),
+      ...(!item.year ? [{ name: "has_no_year" }] : []),
+    ]),
     cover: null,
     cover_url: null,
     cover_file: await parseCover(item.cover ?? null),

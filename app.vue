@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-
-const { user } = storeToRefs(useAuthStore());
-const { isLoading, loadingPercent } = storeToRefs(useLoadingStore())
-const { snackbars } = storeToRefs(useSnackbarStore())
+const { user } = useAuthStoreRefs();
+const { isLoading, loadingPercent } = useLoadingStoreRefs()
+const { snackbars } = useSnackbarStoreRefs()
 
 </script>
 
@@ -13,12 +11,10 @@ const { snackbars } = storeToRefs(useSnackbarStore())
     <NuxtPage />
   </NuxtLayout>
   <Loading :model-value="isLoading" :percent-value="loadingPercent" />
-  <Notifier v-model="snackbars" />
+<Notifier v-model="snackbars" />
 </template>
 
-<style>
-
-</style>
+<style></style>
 
 
 

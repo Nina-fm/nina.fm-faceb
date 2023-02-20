@@ -9,7 +9,7 @@ const emit = defineEmits<{
   (e: 'update:model-value', value?: string): void
 }>()
 
-const { user } = storeToRefs(useAuthStore());
+const { user } = useAuthStoreRefs();
 const { modelValue } = toRefs(props);
 const userId = ref<string | undefined>(modelValue.value);
 
@@ -36,9 +36,7 @@ const handleAutoFill = () => {
         </template>
       </v-text-field>
     </v-col>
-  </v-row>
+</v-row>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

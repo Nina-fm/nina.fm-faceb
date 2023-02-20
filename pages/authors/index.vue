@@ -4,9 +4,9 @@ import Confirm from '~~/components/ui/Confirm.vue';
 
 definePageMeta({ middleware: ["auth"] })
 
-const { user } = storeToRefs(useAuthStore())
+const { user } = useAuthStoreRefs()
 const { fetchAuthors, deleteAuthor } = useAuthorsStore()
-const { data: authors } = storeToRefs(useAuthorsStore());
+const { data: authors } = useAuthorsStoreRefs();
 const itemsPerPage = ref(-1)
 const search = ref(null);
 const idToDelete = ref<string | number | null>(null)
@@ -95,7 +95,7 @@ onMounted(() => fetchAuthors())
       <p>Le DJ sera supprimé définitivement.</p>
       <p>Confirmez-vous l'action ?</p>
     </Confirm>
-  </v-container>
+</v-container>
 </template>
 
 <style scoped>

@@ -25,7 +25,7 @@ const emit = defineEmits<{
 const { parseAuthors } = useImport();
 const { modelValue, textValue } = toRefs(props)
 const { fetchAuthors } = useAuthorsStore()
-const { data: authorsData, isLoading: isLoadingAuthors } = storeToRefs(useAuthorsStore())
+const { data: authorsData, isLoading: isLoadingAuthors } = useAuthorsStoreRefs()
 const openImport = ref(false);
 const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })));
 const data: Data = reactive({
@@ -62,9 +62,9 @@ onMounted(() => {
 <template>
   <v-row>
     <v-col cols="12">
-      <v-combobox v-model="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label"
-        :items="authors" item-title="name" item-value="id" chips readonly multiple variant="outlined"
-        :required="required" @click="handleOpenImport">
+      <v-combobox v-model="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label" :items="authors"
+        item-title="name" item-value="id" chips readonly multiple variant="outlined" :required="required"
+        @click="handleOpenImport">
         <template v-slot:append-inner>
           <v-tooltip text="Importer au format texte" location="top">
             <template v-slot:activator="{ props }">
@@ -80,9 +80,7 @@ onMounted(() => {
     </v-col>
   </v-row>
   <text-import-modal v-model:open-value="openImport" v-model:model-value="data.text" :label="label"
-    alert="Veuillez respecter le format saisi dans AirTime" @cancel="handleCancelImport" @import="handleImport" />
+  alert="Veuillez respecter le format saisi dans AirTime" @cancel="handleCancelImport" @import="handleImport" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

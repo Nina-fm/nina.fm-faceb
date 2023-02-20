@@ -84,7 +84,7 @@ const handleConfirmDelete = async () => {
       <p>La mixtape sera supprimée définitivement.</p>
       <p>Confirmez-vous l'action ?</p>
     </Confirm>
-  </v-container>
+</v-container>
 </template>
 
 <style lang="scss" scoped>

@@ -65,3 +65,9 @@ export const useLoadingStore = defineStore("loading", () => {
     incrementLoadingPercent,
   };
 });
+
+export const useLoadingStoreRefs = () => storeToRefs(useLoadingStore());
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useLoadingStore, import.meta.hot));
+}

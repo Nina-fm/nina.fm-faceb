@@ -47,3 +47,9 @@ export const useSnackbarStore = defineStore("snackbar", () => {
     resetSnackbars,
   };
 });
+
+export const useSnackbarStoreRefs = () => storeToRefs(useSnackbarStore());
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSnackbarStore, import.meta.hot));
+}

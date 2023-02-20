@@ -100,6 +100,8 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   };
 });
 
+export const useMixtapesStoreRefs = () => storeToRefs(useMixtapesStore());
+
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useMixtapesStore, import.meta.hot));
 }

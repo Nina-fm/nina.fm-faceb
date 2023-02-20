@@ -15,14 +15,14 @@ interface Filters {
 }
 
 const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
-const { data: mixtapes } = storeToRefs(useMixtapesStore());
+const { data: mixtapes } = useMixtapesStoreRefs();
 const { fetchTags } = useTagsStore()
-const { data: tags } = storeToRefs(useTagsStore());
+const { data: tags } = useTagsStoreRefs();
 const search = ref(null);
 const filters: Filters = reactive({
   tags: []
 })
-const itemsPerPage = ref(50)
+const itemsPerPage = ref(20)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false);
 const { smAndUp, mdAndUp, update } = useDisplay();
@@ -199,9 +199,7 @@ onMounted(() => {
       <p>La mixtape sera supprimée définitivement.</p>
       <p>Confirmez-vous l'action ?</p>
     </Confirm>
-  </v-container>
+</v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

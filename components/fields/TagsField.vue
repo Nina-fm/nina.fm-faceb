@@ -21,7 +21,7 @@ const emit = defineEmits<{
 
 const { modelValue } = toRefs(props);
 const { fetchTags } = useTagsStore();
-const { data: tagsData, isLoading: isLoadingTags } = storeToRefs(useTagsStore())
+const { data: tagsData, isLoading: isLoadingTags } = useTagsStoreRefs()
 const tags = computed(() => tagsData.value.map(({ id, name }) => ({ id, name })));
 const data: Data = reactive({
     tags: modelValue.value.map(({ id, name }) => ({ id, name }))
@@ -47,9 +47,7 @@ onMounted(() => {
                 </template>
             </v-combobox>
         </v-col>
-    </v-row>
+</v-row>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

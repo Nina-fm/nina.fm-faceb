@@ -16,7 +16,7 @@ export interface ApiOptions {
 
 export const useApi = () => {
   const config = useRuntimeConfig();
-  const { token } = storeToRefs(useAuthStore());
+  const { token } = useAuthStoreRefs();
   const apikey = config.public.supabase.key;
   const baseURL = config.public.supabase.functionsUrl;
 

@@ -6,7 +6,7 @@ definePageMeta({ middleware: ["auth"] })
 
 const { snackSuccess, snackError } = useSnackbarStore();
 const { fetchFromUrl, importData, keysImported, keysWithErrors } = useImport()
-const { isLoading } = storeToRefs(useLoadingStore())
+const { isLoading } = useLoadingStoreRefs()
 const data = ref<MixtapeParamsExt[]>([]);
 const url = ref<string | null>(null);
 const importEnded = ref<boolean>(false);
@@ -83,7 +83,7 @@ const handleCancel = () => {
                   :close-on-back="false" class="align-center justify-center" persistent>
                   <v-chip :prepend-icon="imported(mixtape.key) ? 'mdi-check' : 'mdi-close'" size="small"
                     :color="imported(mixtape.key) ? 'success' : 'error'" variant="text">
-                    {{ imported(mixtape.key) ?'Importée': 'Importée avec erreurs' }}
+                    {{ imported(mixtape.key) ? 'Importée' : 'Importée avec erreurs' }}
                   </v-chip>
                 </v-overlay>
               </v-card>
@@ -92,9 +92,7 @@ const handleCancel = () => {
         </template>
       </v-col>
     </v-row>
-  </v-container>
+</v-container>
 </template>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

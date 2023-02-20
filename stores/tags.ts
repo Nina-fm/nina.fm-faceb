@@ -89,6 +89,8 @@ export const useTagsStore = defineStore("tags", () => {
   };
 });
 
+export const useTagsStoreRefs = () => storeToRefs(useTagsStore());
+
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useMixtapesStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useTagsStore, import.meta.hot));
 }

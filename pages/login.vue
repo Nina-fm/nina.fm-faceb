@@ -5,7 +5,7 @@ import { reactive } from 'vue';
 definePageMeta({ layout: "naked" });
 
 const { login } = useAuthStore()
-const { isLoggedIn } = storeToRefs(useAuthStore())
+const { isLoggedIn } = useAuthStoreRefs()
 const valid = ref(false);
 const form = reactive({
   email: '',
@@ -49,9 +49,7 @@ const handleLogin = async () => {
         Se connecter
       </v-btn>
     </template>
-  </auth-box>
+</auth-box>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

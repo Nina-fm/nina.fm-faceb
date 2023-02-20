@@ -90,6 +90,8 @@ export const useAuthorsStore = defineStore("authors", () => {
   };
 });
 
+export const useAuthorsStoreRefs = () => storeToRefs(useAuthorsStore());
+
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useMixtapesStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useAuthorsStore, import.meta.hot));
 }

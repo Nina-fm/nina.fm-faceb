@@ -1,10 +1,8 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-
 const { $version } = useNuxtApp();
 const config = useRuntimeConfig()
 const { logout } = useAuthStore();
-const { user, isLoggedIn } = storeToRefs(useAuthStore());
+const { user, isLoggedIn } = useAuthStoreRefs();
 const showNewVersion = ref(false);
 
 const handleLogout = async () => {
@@ -65,7 +63,7 @@ onMounted(() => {
       </v-menu>
 
     </template>
-  </v-app-bar>
+</v-app-bar>
 </template>
 
 <style lang="scss" scoped >

@@ -35,7 +35,7 @@ export const useImport = (params?: { init?: boolean }) => {
   const { fetchAuthors } = useAuthorsStore();
   const { createMixtape } = useMixtapesStore();
 
-  const { data: tags } = storeToRefs(useTagsStore());
+  const { data: tags } = useTagsStoreRefs();
   const json = ref<Object[]>([]);
   const urlToImport = ref<string | null>(null);
   const keysImported = ref<string[]>([]);

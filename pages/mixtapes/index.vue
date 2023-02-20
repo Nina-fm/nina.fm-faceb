@@ -6,7 +6,7 @@ import { Tag } from '~~/types/supatypes';
 definePageMeta({ middleware: ["auth"] })
 
 interface TagFilter {
-  tag_id: number;
+  id: number;
   exclude?: boolean;
 }
 
@@ -66,25 +66,25 @@ const headers = computed(() => {
     (!("show" in h) || h.show === "mdAndUp" && mdAndUp.value || h.show === "smAndUp" && smAndUp.value)
   )
 })
-const activeTags = computed(() => filters.tags.reduce((r, t) => [...r, t.tag_id], [] as number[]));
 const filteredMixtapes = computed(() => mixtapes.value.filter((m) => {
-  if (activeTags.value.length) {
-    return m.tags.reduce((r: boolean, t: Tag) => {
-      return activeTags.value.includes(t.id)
-    }, false);
+  if (filters.tags.length) {
+    return filters.tags.reduce((r: boolean, at: Tag) => {
+      const isMatching = m.tags.reduce((match: boolean, t: Tag) => t.id === at.id ? true : match, false);
+      return !isMatching ? false : r;
+    }, true)
   }
   return true;
 }))
 
-const isFilterActive = (tagId: number) => !!filters.tags.find((t) => t.tag_id === tagId);
+const isFilterActive = (tagId: number) => !!filters.tags.find((t) => t.id === tagId);
 
 const handleAddFilter = (tag: Tag) => {
-  const index = filters.tags.findIndex((t) => t.tag_id === tag.id)
+  const index = filters.tags.findIndex((t) => t.id === tag.id)
   if (index >= 0) {
     filters.tags.splice(index, 1);
   } else {
     filters.tags.push({
-      tag_id: tag.id,
+      id: tag.id,
     })
   }
 }
@@ -142,8 +142,8 @@ onMounted(() => {
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="filteredMixtapes"
-          :search="search" class="clickable" @click:row="handleRowClick">
+        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="filteredMixtapes" :search="search"
+          class="clickable" @click:row="handleRowClick">
           <template v-slot:top>
             <v-toolbar class="pa-4" color="transparent">
               <v-chip-group multiple column>
@@ -151,7 +151,7 @@ onMounted(() => {
                   @click="() => handleAddFilter(tag)">{{ tag.name }}</v-chip>
               </v-chip-group>
               <v-spacer></v-spacer>
-              <v-btn v-if="activeTags.length" icon="mdi-close-circle" size="small" variant="plain"
+              <v-btn v-if="filters.tags.length" icon="mdi-close-circle" size="small" variant="plain"
                 @click="handleClearTagFilters" />
             </v-toolbar>
           </template>

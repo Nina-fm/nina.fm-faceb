@@ -28,6 +28,8 @@ export default defineNuxtConfig({
     public: {
       sitename,
       siteurl: process.env.SITE_URL,
+      streamApiUrl: process.env.STREAM_API_URL,
+      streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       supabase: {
         functionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
       },

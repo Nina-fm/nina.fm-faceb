@@ -106,13 +106,7 @@ export class MixtapesService extends Service {
       .match({ id })
       .single();
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        throw new Error("Resource not found");
-      } else {
-        throw error;
-      }
-    }
+    if (error) throw error;
 
     return this.format(mixtape);
   }
@@ -129,13 +123,7 @@ export class MixtapesService extends Service {
       .match({ name, authors_text: authors })
       .single();
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        throw new Error("Resource not found");
-      } else {
-        throw error;
-      }
-    }
+    if (error) throw error;
 
     return this.format(mixtape);
   }

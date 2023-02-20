@@ -14,18 +14,31 @@ export const getParam = <T>(param: string, url: string): T | undefined => {
   return params?.[param] ? (params[param] as T) : undefined;
 };
 
+export const respond = (
+  body?: BodyInit | null,
+  status?: number,
+  statusText?: string
+) => {
+  return new Response(body, {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    ...(status ? { status } : {}),
+    ...(statusText ? { statusText } : {}),
+  });
+};
+
 export const queryResponse = async (callback: AnyFn) => {
   try {
     const result = await callback();
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    console.log("query response", { result });
+    console.log("Response:", 200);
+    return respond(JSON.stringify(result), 200);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    if (error.code === "PGRST116") {
+      console.log("Response:", 204);
+      return respond(null, 204, "No content");
+    }
+    console.log("Response:", 400);
+    return respond(JSON.stringify({ error: error.message }), 400);
   }
 };
 

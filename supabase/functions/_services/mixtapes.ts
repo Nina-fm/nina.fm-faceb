@@ -87,7 +87,7 @@ export class MixtapesService extends Service {
       .select(
         `*, ${mixtapeAuthorsWithAuthorsRelation}, ${mixtapeTagsWithTagsRelation}, ${tracksRelation}`
       )
-      .order("created_at", { ascending: false });
+      .order("id", { ascending: false });
 
     if (error) throw error;
 

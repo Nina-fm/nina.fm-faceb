@@ -63,7 +63,7 @@ export class MixtapesService extends Service {
         : null,
       authors,
       tags,
-      created_by: formatAuthorNames(authors),
+      authors_text: formatAuthorNames(authors),
       tracks: mixtape.tracks
         ? mixtape.tracks.map(
             ({

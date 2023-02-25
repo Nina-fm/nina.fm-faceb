@@ -45,7 +45,7 @@ const headersDefinition = [
   },
   {
     title: 'Par',
-    key: 'created_by',
+    key: 'authors_text',
   },
   {
     title: 'Tags',
@@ -199,7 +199,7 @@ onMounted(() => {
       <p>La mixtape sera supprimée définitivement.</p>
       <p>Confirmez-vous l'action ?</p>
     </Confirm>
-</v-container>
+  </v-container>
 </template>
 
 <style scoped></style>

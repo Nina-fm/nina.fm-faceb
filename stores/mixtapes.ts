@@ -60,7 +60,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
 
   const updateMixtape = async (
     mixtapeId: string | number,
-    { cover_url, created_by, ...mixtapeData }: MixtapeParamsExt
+    { cover_url, authors_text, ...mixtapeData }: MixtapeParamsExt
   ) =>
     await process(
       async () => {

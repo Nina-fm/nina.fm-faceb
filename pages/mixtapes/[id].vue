@@ -63,7 +63,7 @@ const handleConfirmDelete = async () => {
       <div class="card-header">
         <div class="card-texts">
           <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
-          <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.created_by }}</v-card-subtitle>
+          <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.authors_text }}</v-card-subtitle>
           <v-card-text>
             <v-chip v-for="tag in mixtape.tags" density="comfortable">{{ tag.name }}</v-chip>
           </v-card-text>
@@ -84,7 +84,7 @@ const handleConfirmDelete = async () => {
       <p>La mixtape sera supprimée définitivement.</p>
       <p>Confirmez-vous l'action ?</p>
     </Confirm>
-</v-container>
+  </v-container>
 </template>
 
 <style lang="scss" scoped>

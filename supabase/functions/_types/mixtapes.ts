@@ -53,7 +53,7 @@ export type MixtapeExt = Mixtape &
   WithMixtapeAuthorsExt &
   WithMixtapeTagsExt &
   WithTracks & {
-    created_by?: string | null;
+    authors_text?: string | null;
     cover_url?: string | null;
   };
 export type MixtapeParamsExt = MixtapeParams & {

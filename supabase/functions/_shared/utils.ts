@@ -42,8 +42,10 @@ export const queryResponse = async (callback: AnyFn) => {
   }
 };
 
-export const handleLocalFileUrl = (url: string) =>
-  url.replace(/supabase_kong_ninafm-api:8000/i, "localhost:54321");
+export const handleLocalFileUrl = (url: string) => {
+  const regex = /supabase_kong_ninafm-api:8000/i;
+  return regex.test(url) ? url.replace(regex, "localhost:54321") : url;
+};
 
 export const formatAuthorNames = (authors: AuthorParamsExt[]) =>
   authors.reduce(

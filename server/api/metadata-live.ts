@@ -1,5 +1,3 @@
-import { jsonp } from "vue-jsonp";
-
 interface IceCastResponse {
   icestats: {
     source: Record<string, any>;

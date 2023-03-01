@@ -1,3 +1,5 @@
+import he from "he";
+
 interface IceCastResponse {
   icestats: {
     source: Record<string, any>;
@@ -10,10 +12,17 @@ export default defineEventHandler(async (event) => {
 
   const getLiveInfo = async (): Promise<any> => {
     console.log("getLiveInfo", config.public.streamApiUrl);
-    return await $fetch(config.public.streamApiUrl, {
+    const result: any = await $fetch(config.public.streamApiUrl, {
       mode: "no-cors",
       responseType: "json",
     });
+    return {
+      ...(result ?? {}),
+      current: {
+        ...(result?.current ?? {}),
+        name: he.decode(result?.current?.name ?? ""),
+      },
+    };
   };
 
   const getFlux = async (): Promise<any> => {
@@ -26,14 +35,11 @@ export default defineEventHandler(async (event) => {
       }
     );
     const source = res.icestats.source;
-    const [artist, title] = source?.title.split(" - ");
     return {
       server_name: source?.server_name,
       listeners: source?.listeners,
       description: source?.server_description,
-      artist,
-      title,
-      bitrate: "",
+      title: he.decode(source?.title),
       url: source?.server_url,
     };
   };
@@ -42,10 +48,10 @@ export default defineEventHandler(async (event) => {
     try {
       console.log("METADATA LIVE API CALL");
       const liveInfo = await getLiveInfo();
-      console.log({ liveInfo });
       const flux = await getFlux();
-      const [authors, name] = liveInfo.current.name.split(" - ");
-      console.log({ authors, name });
+      const infos = liveInfo?.current?.name ?? flux.title;
+      const [authors, name] = infos.split(" - ");
+      console.log("Query:", { authors, name });
       const metadata = await $fetch("/api/metadata", {
         query: {
           authors,

@@ -1,4 +1,4 @@
-import he from "he";
+import { decode } from "html-entities";
 import { log } from "~~/utils/console";
 
 interface IceCastResponse {
@@ -21,7 +21,9 @@ export default defineEventHandler(async (event) => {
       ...(result ?? {}),
       current: {
         ...(result?.current ?? {}),
-        name: he.decode(result?.current?.name ?? ""),
+        name: result?.current?.name
+          ? decode(result?.current?.name)
+          : result?.current?.name,
       },
     };
   };
@@ -40,7 +42,7 @@ export default defineEventHandler(async (event) => {
       server_name: source?.server_name,
       listeners: source?.listeners,
       description: source?.server_description,
-      title: he.decode(source?.title),
+      title: decode(source?.title),
       url: source?.server_url,
     };
   };

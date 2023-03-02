@@ -1,5 +1,6 @@
 import { AnyFn } from "~~/types/supatypes";
 import { Ref } from "nuxt/dist/app/compat/capi";
+import { log } from "~~/utils/console";
 
 export const useProcess = ({ isLoading }: { isLoading?: Ref<boolean> }) => {
   const { snackError, snackSuccess } = useSnackbarStore();
@@ -17,7 +18,7 @@ export const useProcess = ({ isLoading }: { isLoading?: Ref<boolean> }) => {
         snackSuccess(opts.successMsg);
       return { data: result, error: null };
     } catch (error: any) {
-      console.log(error);
+      log(error);
       if (opts?.withMessages ?? true) {
         snackError(error?.data?.error ?? error?.message ?? error);
       }

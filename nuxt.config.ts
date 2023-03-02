@@ -25,6 +25,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    debug: false,
     public: {
       sitename,
       siteurl: process.env.SITE_URL,

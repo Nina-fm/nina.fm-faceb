@@ -1,6 +1,7 @@
 import { AnyFn, Obj } from "~~/types/supatypes";
 
 import { Provider } from "@supabase/supabase-js";
+import { log } from "~~/utils/console";
 
 export const useAuthStore = defineStore("auth", () => {
   const { $supabase } = useNuxtApp();
@@ -32,7 +33,7 @@ export const useAuthStore = defineStore("auth", () => {
       if (result.error) throw result.error;
       return result;
     } catch (error: any) {
-      console.log(error);
+      log(error);
       snackError(error.error_description || error.message);
     } finally {
       isLoading.value = false;

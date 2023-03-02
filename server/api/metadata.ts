@@ -1,3 +1,5 @@
+import { log } from "~~/utils/console";
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
@@ -11,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("METADATA API CALL", queryParams);
+      log("METADATA API CALL", queryParams);
       const result = await $fetch(metadataUrl, {
         query: queryParams,
         mode: "no-cors",
@@ -19,10 +21,10 @@ export default defineEventHandler(async (event) => {
           Authorization: `Bearer ${config.public.supabase.key}`,
         },
       });
-      console.log({ result });
+      log({ result });
       resolve(result);
     } catch (error) {
-      console.log({ error });
+      log({ error });
       reject(error);
     }
   });

@@ -1,4 +1,5 @@
 import he from "he";
+import { log } from "~~/utils/console";
 
 interface IceCastResponse {
   icestats: {
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   const getLiveInfo = async (): Promise<any> => {
-    console.log("getLiveInfo", config.public.streamApiUrl);
+    log("getLiveInfo", config.public.streamApiUrl);
     const result: any = await $fetch(config.public.streamApiUrl, {
       mode: "no-cors",
       responseType: "json",
@@ -26,7 +27,7 @@ export default defineEventHandler(async (event) => {
   };
 
   const getFlux = async (): Promise<any> => {
-    console.log("getFlux", config.public.streamApiUrlFallback);
+    log("getFlux", config.public.streamApiUrlFallback);
     const res: IceCastResponse = await $fetch(
       config.public.streamApiUrlFallback,
       {
@@ -46,12 +47,12 @@ export default defineEventHandler(async (event) => {
 
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("METADATA LIVE API CALL");
+      log("METADATA LIVE API CALL");
       const liveInfo = await getLiveInfo();
       const flux = await getFlux();
       const infos = liveInfo?.current?.name ?? flux.title;
       const [authors, name] = infos.split(" - ");
-      console.log("Query:", { authors, name });
+      log("Query:", { authors, name });
       const metadata = await $fetch("/api/metadata", {
         query: {
           authors,

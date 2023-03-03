@@ -78,12 +78,12 @@ export const useImport = (params?: { init?: boolean }) => {
   const parseTracksText = (text: string | null): TrackParams[] => {
     if (text) {
       const lines: string[] = text?.split(/\r?\n/) ?? [];
-      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)/g; // 01 Artist name : Track title
-      const withoutPositionFormat = /(.*)\s:\s(.*)/g; // Artist name : Track title
-      const withDotFormat = /(.*)\s\.\s(.*)/g; // Artist name . Track title
-      const withDashFormat = /(.*)\s\-\s(.*)/g; // Artist name - Track title
+      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)/; // 01 Artist name : Track title
+      const withoutPositionFormat = /(.*)\s:\s(.*)/; // Artist name : Track title
+      const withDotFormat = /(.*)\s\.\s(.*)/; // Artist name . Track title
+      const withDashFormat = /(.*)\s\-\s(.*)/; // Artist name - Track title
 
-      return lines.reduce((res, line, i) => {
+      const items = lines.reduce((res, line, i) => {
         if (defaultFormat.test(line)) {
           const infos = defaultFormat.exec(line);
           return [
@@ -127,6 +127,7 @@ export const useImport = (params?: { init?: boolean }) => {
         }
         return res;
       }, [] as TrackParams[]);
+      return items;
     }
     return [];
   };

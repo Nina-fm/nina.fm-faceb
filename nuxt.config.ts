@@ -55,6 +55,11 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    server: {
+      hmr: {
+        port: 3008,
+      },
+    },
     ssr: {
       noExternal: ["vuetify"], // add the vuetify vite plugin
     },

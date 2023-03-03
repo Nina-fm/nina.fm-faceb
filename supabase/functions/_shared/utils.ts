@@ -29,7 +29,6 @@ export const respond = (
 export const queryResponse = async (callback: AnyFn) => {
   try {
     const result = await callback();
-    console.log("query response", { result });
     console.log("Response:", 200);
     return respond(JSON.stringify(result), 200);
   } catch (error) {

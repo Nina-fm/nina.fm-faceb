@@ -40,10 +40,10 @@ const handleCloseLightBox = () => {
   lightboxOpen.value = false
 }
 
-const handleUpload = (acceptedFiles: any[], rejectReasons: FileRejectReason[]) => {
+const handleUpload = async (acceptedFiles: any[], rejectReasons: FileRejectReason[]) => {
   isLoading.value = true
   if (acceptedFiles.length) {
-    const { filename, data } = getFileStringFromBuffer(acceptedFiles[0]);
+    const { filename, data } = await getFileStringFromBuffer(acceptedFiles[0]);
     modelValue.value.filename = filename
     modelValue.value.data = data
   }

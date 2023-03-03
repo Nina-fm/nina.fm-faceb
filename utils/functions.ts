@@ -41,21 +41,22 @@ export const isValidImageUrl = (url: string): boolean => {
   return regex.test(url);
 };
 
-export const getFileStringFromBuffer = (file: any) => {
-  const reader = new FileReader();
-  const result: { data?: string | null; filename?: string | null } = {
-    data: null,
-    filename: null,
-  };
-  reader.onload = (e: ProgressEvent<FileReader>) => {
-    if (!(e.target?.result instanceof ArrayBuffer)) {
-      result.data = e.target?.result;
-    }
-  };
-  reader.readAsDataURL(file);
-  result.filename = file.name;
-  return result;
-};
+export const getFileStringFromBuffer = (
+  file: any
+): Promise<{ data: string | null; filename: string | null }> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      if (!(e.target?.result instanceof ArrayBuffer)) {
+        resolve({
+          data: e.target?.result ?? null,
+          filename: file.name ?? null,
+        });
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 
 export const fileToBase64 = (file: File | Blob): Promise<string> =>
   new Promise((resolve, reject) => {

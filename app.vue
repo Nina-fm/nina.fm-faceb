@@ -11,7 +11,7 @@ const { snackbars } = useSnackbarStoreRefs()
     <NuxtPage />
   </NuxtLayout>
   <Loading :model-value="isLoading" :percent-value="loadingPercent" />
-<Notifier v-model="snackbars" />
+  <Notifier v-model="snackbars" />
 </template>
 
 <style></style>

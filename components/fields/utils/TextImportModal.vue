@@ -32,6 +32,10 @@ watch(openValue, (value) => {
   data.open = value
 })
 
+watch(modelValue, (value) => {
+  data.text = value
+})
+
 watch(() => data.open, (value) => {
   emit('update:open-value', value)
 })
@@ -69,8 +73,7 @@ const handleImport = () => {
             <v-card-text>
               <v-textarea v-if="multiline" v-model="data.text" :label="`${label} (format text)`" :rows="10"
                 @keydown.enter="handleImport" />
-              <v-text-field v-else v-model="data.text" :label="`${label} (format text)`"
-                @keydown.enter="handleImport" />
+              <v-text-field v-else v-model="data.text" :label="`${label} (format text)`" @keydown.enter="handleImport" />
             </v-card-text>
             <v-card-actions>
               <v-btn variant="plain" @click="handleCancel">{{ cancelText ?? "Annuler" }}</v-btn>
@@ -83,6 +86,4 @@ const handleImport = () => {
   </v-dialog>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

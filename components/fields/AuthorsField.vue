@@ -54,6 +54,16 @@ const handleImport = () => {
   data.authors.splice(0, data.authors.length, ...parseAuthors(data.text));
 }
 
+const handleSelect = (value: unknown) => {
+  console.log({ value })
+  const items = value as ItemBase[]
+  data.authors = items
+  const names = Object.values(items).map((i) => i.name)
+  if (names.length) {
+    data.text = names.length > 1 ? `${names.slice(0, -1).join(", ")} & ${names.slice(-1)}` : `${names[0]}`
+  }
+}
+
 onMounted(() => {
   fetchAuthors();
 })
@@ -62,9 +72,9 @@ onMounted(() => {
 <template>
   <v-row>
     <v-col cols="12">
-      <v-combobox v-model="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label" :items="authors"
-        item-title="name" item-value="id" chips readonly multiple variant="outlined" :required="required"
-        @click="handleOpenImport">
+      <v-combobox :model-value="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label"
+        :items="authors" item-title="name" item-value="id" chips multiple variant="outlined" :required="required"
+        @update:model-value="handleSelect">
         <template v-slot:append-inner>
           <v-tooltip text="Importer au format texte" location="top">
             <template v-slot:activator="{ props }">
@@ -80,7 +90,7 @@ onMounted(() => {
     </v-col>
   </v-row>
   <text-import-modal v-model:open-value="openImport" v-model:model-value="data.text" :label="label"
-  alert="Veuillez respecter le format saisi dans AirTime" @cancel="handleCancelImport" @import="handleImport" />
+    alert="Veuillez respecter le format saisi dans AirTime" @cancel="handleCancelImport" @import="handleImport" />
 </template>
 
 <style scoped></style>

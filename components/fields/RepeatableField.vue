@@ -31,7 +31,6 @@ const data: Data = reactive(modelValue.value.map((el) => ({ ...el, key: uniqid()
 watch(
   () => [...modelValue.value],
   (value) => {
-    console.log("RepeatableField - modelValue changed", value.length)
     updateLock.value = true
     data.splice(0, data.length, ...value.map((el) => ({ ...el, key: uniqid() } as ItemBase)))
   }
@@ -42,7 +41,6 @@ watch(
   (value) => {
     if (!updateLock.value) {
       const rows = value.map(({ key, ...row }) => ({ ...row }))
-      console.log("RepeatableField - emit update:model-value", rows)
       emit("update:model-value", rows)
     }
     updateLock.value = false

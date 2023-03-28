@@ -33,14 +33,6 @@ const form: MixtapeParamsExt = reactive({
   },
 })
 
-watch(
-  () => [...form.tracks],
-  (value) => {
-    console.log("")
-    console.log("MixtapeForm - form.tracks changed", value.length)
-  }
-)
-
 const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form)

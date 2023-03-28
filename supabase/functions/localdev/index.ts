@@ -17,7 +17,6 @@ function localdevHandler(req: Request, connInfo: ConnInfo) {
   if (req.method === "OPTIONS") {
     return new Response("OK", { headers: corsHeaders })
   }
-  // console.log(`${req.method} ${req.url}`);
   const url = new URL(req.url)
   const urlParts = url.pathname.split("/")
   const handlerName = urlParts[urlParts.length - 1]

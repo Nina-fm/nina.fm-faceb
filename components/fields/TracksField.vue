@@ -31,13 +31,6 @@ const emptyTrack: ItemBase = {
 }
 
 watch(
-  () => [...modelValue.value],
-  (value) => {
-    console.log("TracksField - modelValue changed", modelValue.value.length)
-  }
-)
-
-watch(
   () => data.text,
   (value) => {
     emit("update:text-value", value)
@@ -47,7 +40,6 @@ watch(
 watch(
   () => [...data.model],
   (value) => {
-    console.log("TracksField - modelData changed", data.model.length)
     emit("update:model-value", value)
   }
 )

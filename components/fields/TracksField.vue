@@ -113,6 +113,7 @@ const handleClick = () => {
             step="1"
             min="00:00:00"
             max="20:00:00"
+            @paste="(e: any) => item.start_at = e.clipboardData.getData('text')"
             @change="(e: any) => item.start_at = e.target.value"
           />
         </v-col>

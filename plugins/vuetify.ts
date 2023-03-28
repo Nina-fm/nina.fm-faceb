@@ -1,11 +1,11 @@
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
+import * as components from "vuetify/components"
+import * as directives from "vuetify/directives"
 
 // plugins/vuetify.js
-import { ThemeDefinition, createVuetify } from "vuetify";
+import { ThemeDefinition, createVuetify } from "vuetify"
 
-import { VDataTable } from "vuetify/labs/VDataTable";
-import { fr } from "vuetify/locale";
+import { VDataTable } from "vuetify/labs/VDataTable"
+import { fr } from "vuetify/locale"
 
 const NinaTheme: ThemeDefinition = {
   dark: true,
@@ -17,7 +17,7 @@ const NinaTheme: ThemeDefinition = {
     success: "#4CAF50",
     warning: "#FB8C00",
   },
-};
+}
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -66,7 +66,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         hideDetails: "auto",
       },
     },
-  });
+  })
 
-  nuxtApp.vueApp.use(vuetify);
-});
+  nuxtApp.vueApp.use(vuetify)
+})

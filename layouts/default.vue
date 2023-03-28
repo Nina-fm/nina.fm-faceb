@@ -8,7 +8,7 @@
         <slot />
       </v-container>
     </v-main>
-</v-app>
+  </v-app>
 </template>
 
 <style scoped></style>

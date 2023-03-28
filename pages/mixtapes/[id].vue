@@ -1,37 +1,36 @@
 <script lang="ts" setup>
-
 definePageMeta({ middleware: ["auth"] })
 
-const { params } = useRoute();
-const { getById } = useMixtapesStore();
+const { params } = useRoute()
+const { getById } = useMixtapesStore()
 const { deleteMixtape } = useMixtapesStore()
 
-const id = params.id as string;
-const { data } = await useAsyncData("mixtape", () => getById(id));
-const openConfirm = ref(false);
+const id = params.id as string
+const { data } = await useAsyncData("mixtape", () => getById(id))
+const openConfirm = ref(false)
 const mixtape = computed(() => data.value)
 const headers = [
   {
     title: "Position",
     key: "position",
-    sortable: false
+    sortable: false,
   },
   {
     title: "Artiste",
     key: "artist",
-    sortable: false
+    sortable: false,
   },
   {
     title: "Titre",
     key: "title",
-    sortable: false
+    sortable: false,
   },
   {
     title: "Début",
     key: "start_at",
     align: "end",
-    sortable: false
-  }
+    sortable: false,
+  },
 ]
 
 const handleBack = () => {
@@ -39,13 +38,15 @@ const handleBack = () => {
 }
 
 const handleDelete = () => {
-  openConfirm.value = true;
+  openConfirm.value = true
 }
 
-const handleCloseConfirm = () => { openConfirm.value = false }
+const handleCloseConfirm = () => {
+  openConfirm.value = false
+}
 
 const handleConfirmDelete = async () => {
-  const { error } = await deleteMixtape(id);
+  const { error } = await deleteMixtape(id)
   if (!error) {
     navigateTo("/mixtapes")
   }
@@ -53,11 +54,15 @@ const handleConfirmDelete = async () => {
 </script>
 
 <template>
-  <PageHeader v-on:back="handleBack" title="La mixtape en détails" :actions="[
-    { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) },
-    { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete },
-    { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo(`/mixtapes/add`) }
-  ]" />
+  <PageHeader
+    title="La mixtape en détails"
+    :actions="[
+      { tooltip: 'Modifier', icon: 'mdi-pencil', onClick: () => navigateTo(`/mixtapes/edit/${id}`) },
+      { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete },
+      { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo(`/mixtapes/add`) },
+    ]"
+    @back="handleBack"
+  />
   <v-container class="n-page-content">
     <v-card>
       <div class="card-header">
@@ -65,7 +70,7 @@ const handleConfirmDelete = async () => {
           <v-card-title class="mixtape-title">{{ mixtape.name }}</v-card-title>
           <v-card-subtitle> Mixée en {{ mixtape.year }} par {{ mixtape.authors_text }}</v-card-subtitle>
           <v-card-text>
-            <v-chip v-for="tag in mixtape.tags" density="comfortable">{{ tag.name }}</v-chip>
+            <v-chip v-for="tag in mixtape.tags" :key="tag.name" density="comfortable">{{ tag.name }}</v-chip>
           </v-card-text>
         </div>
         <v-avatar class="mixtape-cover ma-3" size="250" rounded="0">
@@ -89,7 +94,7 @@ const handleConfirmDelete = async () => {
 
 <style lang="scss" scoped>
 :deep(.v-data-table-footer) {
-  display: none
+  display: none;
 }
 
 .card-header {

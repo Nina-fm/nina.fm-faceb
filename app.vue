@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-const { user } = useAuthStoreRefs();
+const { user } = useAuthStoreRefs()
 const { isLoading, loadingPercent } = useLoadingStoreRefs()
 const { snackbars } = useSnackbarStoreRefs()
-
 </script>
 
 <template>
@@ -15,7 +14,3 @@ const { snackbars } = useSnackbarStoreRefs()
 </template>
 
 <style></style>
-
-
-
-

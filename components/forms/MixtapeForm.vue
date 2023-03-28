@@ -1,47 +1,55 @@
 <script lang="ts" setup>
-import { MixtapeExt, MixtapeParamsExt, TrackParams } from '~~/types/supatypes';
+import { MixtapeExt, MixtapeParamsExt } from "~~/types/supatypes"
 
 const props = defineProps<{
-  mixtape?: MixtapeExt,
-}>();
-
-const emit = defineEmits<{
-  (e: 'cancel'): void
-  (e: 'submit', value: MixtapeParamsExt): void
+  mixtape?: MixtapeExt
 }>()
 
-const { mixtape } = props;
+const emit = defineEmits<{
+  (e: "cancel"): void
+  (e: "submit", value: MixtapeParamsExt): void
+}>()
+
+const { mixtape } = toRefs(props)
 const { fetchTags } = useTagsStore()
 const rules = useFieldRules()
-const valid = ref(false);
-const years = generateYears(2007);
-const isEdit = computed(() => !!mixtape);
+const valid = ref(false)
+const years = generateYearsSince(2007)
+const isEdit = computed(() => !!mixtape.value)
 const form: MixtapeParamsExt = reactive({
-  name: mixtape?.name ?? null,
-  year: mixtape?.year ?? null,
-  comment: mixtape?.comment ?? null,
-  authors_text: mixtape?.authors_text ?? null,
-  authors: mixtape?.authors ?? [],
-  tracks_text: mixtape?.tracks_text ?? null,
-  tracks: mixtape?.tracks ?? [],
-  tags: mixtape?.tags ?? [],
-  cover: mixtape?.cover ?? null,
-  cover_url: mixtape?.cover_url ?? null,
+  name: mixtape.value?.name ?? null,
+  year: mixtape.value?.year ?? null,
+  comment: mixtape.value?.comment ?? null,
+  authors_text: mixtape.value?.authors_text ?? null,
+  authors: mixtape.value?.authors ?? [],
+  tracks_text: mixtape.value?.tracks_text ?? null,
+  tracks: mixtape.value?.tracks ?? [],
+  tags: mixtape.value?.tags ?? [],
+  cover: mixtape.value?.cover ?? null,
+  cover_url: mixtape.value?.cover_url ?? null,
   cover_file: {
-    filename: mixtape?.cover ?? null,
-    data: mixtape?.cover_url ?? null
+    filename: mixtape.value?.cover ?? null,
+    data: mixtape.value?.cover_url ?? null,
+  },
+})
+
+watch(
+  () => [...form.tracks],
+  (value) => {
+    console.log("")
+    console.log("MixtapeForm - form.tracks changed", value.length)
   }
-});
+)
 
 const handleCancel = () => emit("cancel")
 
-const handleSubmit = () => emit("submit", form);
+const handleSubmit = () => emit("submit", form)
 
 onMounted(() => {
-  fetchTags();
+  fetchTags()
 })
 
-const hint = "Attention à bien respecter le format AirTime !";
+const hint = "Attention à bien respecter le format AirTime !"
 </script>
 
 <template>
@@ -54,12 +62,15 @@ const hint = "Attention à bien respecter le format AirTime !";
               <v-text-field v-model="form.name" label="Nom" :rules="[rules.min2Char]" :hint="hint" required />
             </v-col>
             <v-col cols="12">
-              <authors-field v-model:model-value="form.authors" v-model:text-value="form.authors_text" label="DJ's"
-                required />
+              <authors-field
+                v-model:model-value="form.authors"
+                v-model:text-value="form.authors_text"
+                label="DJ's"
+                required
+              />
             </v-col>
             <v-col cols="12">
-              <v-autocomplete v-model="form.year" label="Année" :items="years" variant="outlined"
-                required></v-autocomplete>
+              <v-autocomplete v-model="form.year" label="Année" :items="years" variant="outlined" required />
             </v-col>
             <v-col cols="12">
               <tags-field v-model="form.tags" label="Tags" />
@@ -72,22 +83,7 @@ const hint = "Attention à bien respecter le format AirTime !";
       </v-row>
       <v-row>
         <v-col cols="12">
-          <tracks-field v-model:model-value="form.tracks" v-model:text-value="form.tracks_text" label="Pistes">
-            <template #item="{ item }: { item: TrackParams }">
-              <v-row>
-                <v-col>
-                  <v-text-field variant="underlined" v-model="item.artist" label="Artiste" density="compact" required />
-                </v-col>
-                <v-col>
-                  <v-text-field variant="underlined" v-model="item.title" label="Titre" density="compact" required />
-                </v-col>
-                <v-col cols="3" lg="2">
-                  <v-text-field variant="underlined" v-model="item.start_at" label="Début" density="compact" type="time"
-                    step='1' min="00:00:00" max="20:00:00" />
-                </v-col>
-              </v-row>
-            </template>
-          </tracks-field>
+          <tracks-field v-model:model-value="form.tracks" v-model:text-value="form.tracks_text" label="Pistes" />
         </v-col>
       </v-row>
       <v-row>

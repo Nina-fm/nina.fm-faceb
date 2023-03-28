@@ -1,25 +1,22 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-import { reactive } from 'vue';
-
-definePageMeta({ layout: "naked" });
+definePageMeta({ layout: "naked" })
 
 const { login } = useAuthStore()
 const { isLoggedIn } = useAuthStoreRefs()
-const valid = ref(false);
+const valid = ref(false)
 const form = reactive({
-  email: '',
-  password: ''
+  email: "",
+  password: "",
 })
 
 watchEffect(() => {
   if (!!isLoggedIn.value) {
-    navigateTo("/");
+    navigateTo("/")
   }
 })
 
 const handleLogin = async () => {
-  await login({ email: form.email, password: form.password });
+  await login({ email: form.email, password: form.password })
 }
 </script>
 
@@ -29,14 +26,24 @@ const handleLogin = async () => {
       <v-container>
         <v-row>
           <v-col cols="12">
-            <v-text-field @keydown.enter="handleLogin" v-model="form.email" type="email" label="Email"
-              required></v-text-field>
+            <v-text-field
+              @keydown.enter="handleLogin"
+              v-model="form.email"
+              type="email"
+              label="Email"
+              required
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12">
-            <v-text-field @keydown.enter="handleLogin" v-model="form.password" type="password" label="Mot de passe"
-              required></v-text-field>
+            <v-text-field
+              @keydown.enter="handleLogin"
+              v-model="form.password"
+              type="password"
+              label="Mot de passe"
+              required
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -45,11 +52,9 @@ const handleLogin = async () => {
       <nuxt-link to="/reset-password">Mot de passe oublié ?</nuxt-link>
     </div>
     <template #footer>
-      <v-btn variant="tonal" @click="handleLogin">
-        Se connecter
-      </v-btn>
+      <v-btn variant="tonal" @click="handleLogin"> Se connecter </v-btn>
     </template>
-</auth-box>
+  </auth-box>
 </template>
 
 <style scoped></style>

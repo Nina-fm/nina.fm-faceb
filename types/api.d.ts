@@ -1,4 +1,4 @@
-import { AuthError, PostgrestError } from "@supabase/supabase-js";
+import { AuthError, PostgrestError } from "@supabase/supabase-js"
 
 // API
 
@@ -7,31 +7,31 @@ declare global {
     Rename<
       { data: U },
       {
-        data: T | null;
-        error: AuthError | null;
+        data: T | null
+        error: AuthError | null
       }
     >
-  >;
+  >
 
   type ApiReturn<T, U = "data"> = Promise<
     Rename<
       { data: U },
       {
-        data: T | null;
-        error: PostgrestError | null;
+        data: T | null
+        error: PostgrestError | null
       }
     >
-  >;
+  >
 
   interface SignUpParams {
-    email: string;
-    password: string;
+    email: string
+    password: string
   }
 
   interface SignInParams {
-    email: string;
-    password: string;
+    email: string
+    password: string
   }
 }
 
-export {};
+export {}

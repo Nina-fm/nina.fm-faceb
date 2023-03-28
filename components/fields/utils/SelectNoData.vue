@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-const { dataType, feminine = false } = defineProps<{
-  dataType?: string,
+const props = defineProps<{
+  dataType?: string
   feminine?: boolean
-}>();
+}>()
 
-const shouldBeFeminine = !dataType || feminine;
+const { dataType, feminine } = toRefs(props)
+const shouldBeFeminine = !dataType?.value || (feminine.value ?? false)
 
-const prefix = `Aucun${shouldBeFeminine ? 'e' : ''} ${dataType ?? "donnée"} trouvé${shouldBeFeminine ? 'e' : ''}`
-const article = shouldBeFeminine ? 'la' : 'le'
+const prefix = `Aucun${shouldBeFeminine ? "e" : ""} ${dataType?.value ?? "donnée"} trouvé${shouldBeFeminine ? "e" : ""}`
+const article = shouldBeFeminine ? "la" : "le"
 </script>
 
 <template>
@@ -18,6 +19,4 @@ const article = shouldBeFeminine ? 'la' : 'le'
   </v-list-item>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,21 +1,19 @@
 export const useBuckets = () => {
-  const { $supabase } = useNuxtApp();
+  const { $supabase } = useNuxtApp()
 
   const upload = async (bucket: string, file: File) => {
     try {
-      const { data, error } = await $supabase.storage
-        .from(bucket)
-        .upload(`${file.name}`, file);
+      const { data, error } = await $supabase.storage.from(bucket).upload(`${file.name}`, file)
 
-      if (error) throw error;
+      if (error) throw error
 
-      return data;
+      return data
     } catch (error) {
-      throw error;
+      throw error
     }
-  };
+  }
 
   return {
     upload,
-  };
-};
+  }
+}

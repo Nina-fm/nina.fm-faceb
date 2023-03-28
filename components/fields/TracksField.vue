@@ -1,78 +1,147 @@
 <script lang="ts" setup>
-import { ItemBase } from './RepeatableField.vue';
+import { ItemBase } from "./RepeatableField.vue"
+
+type Data = {
+  text: string | null
+  model: ItemBase[]
+}
 
 const props = defineProps<{
-    modelValue: ItemBase[],
-    textValue: string | null,
-    label: string,
-}>();
+  modelValue: ItemBase[]
+  textValue: string | null
+  label: string
+}>()
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: ItemBase[]): void,
-    (e: 'update:textValue', value: string | null): void,
-}>();
+  (e: "update:model-value", value: ItemBase[]): void
+  (e: "update:text-value", value: string | null): void
+}>()
 
 const { parseTracksText } = useImport({ init: false })
-const { modelValue, textValue } = toRefs(props);
-const { label } = props;
-const openImport = ref(false);
-const text = ref<string | null>(textValue.value);
-const data: ItemBase[] = reactive(modelValue.value);
+const { label, modelValue, textValue } = toRefs(props)
+const openImport = ref(false)
+const data: Data = reactive({
+  text: textValue.value,
+  model: modelValue.value,
+})
 const emptyTrack: ItemBase = {
-    title: null,
-    artist: null,
-    start_at: null
-};
+  title: null,
+  artist: null,
+  start_at: null,
+}
 
-watch(data, (value) => {
-    emit('update:modelValue', value)
-})
+watch(
+  () => [...modelValue.value],
+  (value) => {
+    console.log("TracksField - modelValue changed", modelValue.value.length)
+  }
+)
 
-watch(text, (value) => {
-    emit('update:textValue', value)
-})
+watch(
+  () => data.text,
+  (value) => {
+    emit("update:text-value", value)
+  }
+)
+
+watch(
+  () => [...data.model],
+  (value) => {
+    console.log("TracksField - modelData changed", data.model.length)
+    emit("update:model-value", value)
+  }
+)
 
 const handleOpenImport = () => {
-    openImport.value = true
+  openImport.value = true
 }
 
 const handleCancelImport = () => {
-    openImport.value = false;
+  data.text = textValue.value
+  openImport.value = false
 }
 
 const handleImport = () => {
-    openImport.value = false;
-    data.splice(0, data.length, ...parseTracksText(text.value));
+  const parsedTracks = parseTracksText(data.text)
+  modelValue.value.splice(0, modelValue.value.length, ...(parsedTracks as ItemBase[]))
+  openImport.value = false
+}
+
+const handleClick = () => {
+  if (!modelValue.value.length) {
+    handleOpenImport()
+  }
 }
 </script>
 
 <template>
-    <repeatable-field v-model="data" :label="label" :empty-item="emptyTrack" @click="handleOpenImport">
-        <template v-slot:prepend-buttons>
-            <v-tooltip text="Importer au format texte" location="top">
-                <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-import" variant="plain" class="field-inner-button" @click.stop="handleOpenImport"
-                        v-bind="props" />
-                </template>
-            </v-tooltip>
+  <repeatable-field v-model="data.model" :label="label" :empty-item="emptyTrack" @click="handleClick">
+    <template #prepend-buttons>
+      <v-tooltip text="Importer au format texte" location="top">
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+            icon="mdi-import"
+            variant="plain"
+            class="field-inner-button"
+            v-bind="activatorProps"
+            @click.stop="handleOpenImport"
+          />
         </template>
-        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
-            <slot :name="slot" v-bind="scope || {}" />
+      </v-tooltip>
+    </template>
+    <template #item="{ item }">
+      <v-row>
+        <v-col>
+          <v-text-field
+            :model-value="item.artist"
+            variant="underlined"
+            label="Artiste"
+            density="compact"
+            required
+            @change="(e: any) => item.artist = e.target.value"
+          />
+        </v-col>
+        <v-col>
+          <v-text-field
+            :model-value="item.title"
+            variant="underlined"
+            label="Titre"
+            density="compact"
+            required
+            @change="(e: any) => item.title = e.target.value"
+          />
+        </v-col>
+        <v-col cols="3" lg="2">
+          <v-text-field
+            :model-value="item.start_at"
+            variant="underlined"
+            label="Début"
+            density="compact"
+            type="time"
+            step="1"
+            min="00:00:00"
+            max="20:00:00"
+            @change="(e: any) => item.start_at = e.target.value"
+          />
+        </v-col>
+      </v-row>
+    </template>
+    <template #append-outer>
+      <text-import-modal
+        v-model="data.text"
+        v-model:open-value="openImport"
+        :label="label"
+        multiline
+        @cancel="handleCancelImport"
+        @import="handleImport"
+      >
+        <template #alert>
+          Veuillez respecter une ligne par piste, au format :
+          <pre>01 Nom de l'artiste : Titre de la piste</pre>
         </template>
-        <template v-slot:append-outer>
-            <text-import-modal v-model:open-value="openImport" v-model:model-value="text" :label="label"
-                @cancel="handleCancelImport" @import="handleImport" multiline>
-                <template v-slot:alert>
-                    Veuillez respecter une ligne par piste, au format :
-                    <pre>01 Nom de l'artiste : Titre de la piste</pre>
-                </template>
-            </text-import-modal>
-        </template>
-    </repeatable-field>
+      </text-import-modal>
+    </template>
+  </repeatable-field>
 </template>
 
-<style lang="scss" scoped>
-.field-inner-button {
-    // margin-top: -4px;
-}
-</style>
+<style lang="scss" scoped></style>

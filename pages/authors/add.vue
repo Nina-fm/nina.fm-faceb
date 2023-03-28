@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-import { AuthorParamsExt } from '~~/types/supatypes';
+import { AuthorParamsExt } from "~~/types/supatypes"
 
 definePageMeta({ middleware: ["auth"] })
 
-const { createAuthor } = useAuthorsStore();
+const { createAuthor } = useAuthorsStore()
 
 const handleCancel = () => {
   navigateTo("/authors")
 }
 
 const handleSubmit = async (form: AuthorParamsExt) => {
-  const { error } = await createAuthor(form);
+  const { error } = await createAuthor(form)
   if (!error) navigateTo("/authors")
 }
 </script>
 
 <template>
-  <PageHeader @back="navigateTo('/authors')" title="Nouveau DJ" />
+  <PageHeader title="Nouveau DJ" @back="navigateTo('/authors')" />
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
@@ -26,6 +26,4 @@ const handleSubmit = async (form: AuthorParamsExt) => {
   </v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

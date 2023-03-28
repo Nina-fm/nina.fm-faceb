@@ -1,4 +1,6 @@
-import queryString, { StringifiableRecord } from "query-string";
+import queryString, { StringifiableRecord } from "query-string"
+
+import { Obj } from "~~/types/supatypes"
 
 export enum Methods {
   DELETE = "DELETE",
@@ -10,19 +12,19 @@ export enum Methods {
 }
 
 export interface ApiOptions {
-  query?: StringifiableRecord | undefined;
-  body?: Object;
+  query?: StringifiableRecord | undefined
+  body?: Obj
 }
 
 export const useApi = () => {
-  const config = useRuntimeConfig();
-  const { token } = useAuthStoreRefs();
-  const apikey = config.public.supabase.key;
-  const baseURL = config.public.supabase.functionsUrl;
+  const config = useRuntimeConfig()
+  const { token } = useAuthStoreRefs()
+  const apikey = config.public.supabase.key
+  const baseURL = config.public.supabase.functionsUrl
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
     if (!token.value) {
-      return navigateTo("/login");
+      return navigateTo("/login")
     }
 
     return await $fetch(
@@ -39,23 +41,18 @@ export const useApi = () => {
         },
         body: options?.body ?? null,
       }
-    );
-  };
+    )
+  }
 
-  const callGet = async (path: string, options?: ApiOptions) =>
-    await call(path, Methods.GET, options);
+  const callGet = async (path: string, options?: ApiOptions) => await call(path, Methods.GET, options)
 
-  const callPost = async (path: string, options?: ApiOptions) =>
-    await call(path, Methods.POST, options);
+  const callPost = async (path: string, options?: ApiOptions) => await call(path, Methods.POST, options)
 
-  const callPut = async (path: string, options?: ApiOptions) =>
-    await call(path, Methods.PUT, options);
+  const callPut = async (path: string, options?: ApiOptions) => await call(path, Methods.PUT, options)
 
-  const callPatch = async (path: string, options?: ApiOptions) =>
-    await call(path, Methods.PATCH, options);
+  const callPatch = async (path: string, options?: ApiOptions) => await call(path, Methods.PATCH, options)
 
-  const callDelete = async (path: string, options?: ApiOptions) =>
-    await call(path, Methods.DELETE, options);
+  const callDelete = async (path: string, options?: ApiOptions) => await call(path, Methods.DELETE, options)
 
   return {
     post: callPost,
@@ -63,5 +60,5 @@ export const useApi = () => {
     put: callPut,
     patch: callPatch,
     delete: callDelete,
-  };
-};
+  }
+}

@@ -1,25 +1,25 @@
 <script lang="ts" setup>
 defineProps<{
-  modelValue: boolean,
-  title?: string,
-}>();
+  modelValue: boolean
+  title?: string
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'close'): void
-  (e: 'cancel'): void
-  (e: 'confirm'): void
+  (e: "update:modelValue", value: boolean): void
+  (e: "close"): void
+  (e: "cancel"): void
+  (e: "confirm"): void
 }>()
 
 const handleCancel = () => {
-  emit("cancel");
+  emit("cancel")
   emit("close")
-};
+}
 
 const handleConfirm = () => {
-  emit("confirm");
+  emit("confirm")
   emit("close")
-};
+}
 </script>
 
 <template>
@@ -37,6 +37,4 @@ const handleConfirm = () => {
   </v-dialog>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

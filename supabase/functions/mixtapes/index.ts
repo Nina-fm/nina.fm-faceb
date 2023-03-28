@@ -2,10 +2,10 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-import { handler } from "./handler.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { handler } from "./handler.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-serve(handler);
+serve(handler)
 
 // To invoke:
 // curl -i --location --request POST 'http://localhost:54321/functions/v1/' \

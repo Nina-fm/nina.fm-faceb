@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-defineProps({
-  title: String
-})
+defineProps<{
+  title: string
+}>()
 
 const config = useRuntimeConfig()
-
 </script>
 
 <template>
@@ -26,7 +25,6 @@ const config = useRuntimeConfig()
 
   :deep(.v-card-subtitle) {
     text-align: center;
-
   }
 
   :deep(.pre-footer) {
@@ -36,7 +34,7 @@ const config = useRuntimeConfig()
 
   :deep(.v-card-actions) {
     justify-content: center;
-    padding-bottom: 20px
+    padding-bottom: 20px;
   }
 }
 </style>

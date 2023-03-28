@@ -9,6 +9,6 @@ export enum Method {
 }
 
 export interface FileModel {
-  filename?: string | null;
-  data?: string | null;
+  filename?: string | null
+  data?: string | null
 }

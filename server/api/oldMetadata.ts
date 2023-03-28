@@ -1,17 +1,17 @@
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const url = String(query?.url);
+  const query = getQuery(event)
+  const url = String(query?.url)
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     $fetch(url, {
       mode: "no-cors",
       responseType: "json",
     })
       .then((result) => {
-        resolve(result);
+        resolve(result)
       })
-      .catch((error) => {
-        resolve(null);
-      });
-  });
-});
+      .catch(() => {
+        resolve(null)
+      })
+  })
+})

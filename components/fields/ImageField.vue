@@ -1,34 +1,37 @@
 <script lang="ts" setup>
 // https://github.com/Yaxian/vue3-dropzone
-import { FileRejectReason, useDropzone } from 'vue3-dropzone';
-import { FileModel } from '~~/types/supatypes';
+import { FileRejectReason, useDropzone } from "vue3-dropzone"
+import { FileModel } from "~~/types/supatypes"
 
-const props = withDefaults(defineProps<{
-  label: string,
-  modelValue: FileModel,
-  aspectRatio?: string | number,
-  emptyText?: string
-}>(), {
-  aspectRatio: 1,
-  emptyText: "Aucune image"
-})
+const props = withDefaults(
+  defineProps<{
+    label: string
+    modelValue: FileModel
+    aspectRatio?: string | number
+    emptyText?: string
+  }>(),
+  {
+    aspectRatio: 1,
+    emptyText: "Aucune image",
+  }
+)
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: FileModel): void
 }>()
 
-const { aspectRatio, modelValue } = toRefs(props);
+const { aspectRatio, modelValue } = toRefs(props)
 const lightboxOpen = ref(false)
-const preview = computed(() => (typeof modelValue.value.data === 'string' && modelValue.value.data))
+const preview = computed(() => typeof modelValue.value.data === "string" && modelValue.value.data)
 const ratio = computed(() => aspectRatio.value ?? 1)
 const isFieldActive = computed(() => !!preview.value || isDragActive.value || isFocused.value)
-const isLoading = ref(false);
+const isLoading = ref(false)
 
 const handleDelete = () => {
   isLoading.value = true
-  modelValue.value.data = null;
-  modelValue.value.filename = null;
-  emit('update:modelValue', modelValue.value)
+  modelValue.value.data = null
+  modelValue.value.filename = null
+  emit("update:modelValue", modelValue.value)
   isLoading.value = false
 }
 
@@ -43,27 +46,29 @@ const handleCloseLightBox = () => {
 const handleUpload = async (acceptedFiles: any[], rejectReasons: FileRejectReason[]) => {
   isLoading.value = true
   if (acceptedFiles.length) {
-    const { filename, data } = await getFileStringFromBuffer(acceptedFiles[0]);
+    const { filename, data } = await getFileStringFromBuffer(acceptedFiles[0])
     modelValue.value.filename = filename
     modelValue.value.data = data
   }
-  emit('update:modelValue', modelValue.value)
+  emit("update:modelValue", modelValue.value)
   isLoading.value = false
 }
 
-const { getRootProps, getInputProps, isDragActive, isFocused, open } = useDropzone({ onDrop: handleUpload });
+const { getRootProps, getInputProps, isDragActive, isFocused, open } = useDropzone({ onDrop: handleUpload })
 </script>
 
 <template>
   <v-field :active="isFieldActive" :loading="isLoading" class="image-field">
     <template #label>Cover</template>
-    <v-sheet class="w-100  pa-4" v-bind="getRootProps()">
+    <v-sheet class="w-100 pa-4" v-bind="getRootProps()">
       <template v-if="preview && !isDragActive">
         <v-hover v-slot="{ isHovering, props }">
           <v-card :elevation="0" v-bind="props" @click.stop="handleOpenLightBox">
             <v-img :src="preview || ''" :aspect-ratio="ratio" contain>
-              <div class="image-overlay d-flex flex-column flex-grow-1 align-center justify-space-between"
-                :class="{ hover: isHovering }">
+              <div
+                class="image-overlay d-flex flex-column flex-grow-1 align-center justify-space-between"
+                :class="{ hover: isHovering }"
+              >
                 <div class="d-flex h-30 align-start">&nbsp;</div>
                 <div class="d-flex h-30 align-center">
                   <v-chip>{{ modelValue?.filename }}</v-chip>

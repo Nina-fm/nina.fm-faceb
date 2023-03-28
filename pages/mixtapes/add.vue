@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-import { MixtapeParamsExt } from '~~/types/supatypes';
+import { MixtapeParamsExt } from "~~/types/supatypes"
 
 definePageMeta({ middleware: ["auth"] })
 
-const { createMixtape } = useMixtapesStore();
+const { createMixtape } = useMixtapesStore()
 
 const handleCancel = () => {
   navigateTo("/mixtapes")
 }
 
 const handleSubmit = async (form: MixtapeParamsExt) => {
-  const { error } = await createMixtape(form);
+  const { error } = await createMixtape(form)
   if (!error) navigateTo("/mixtapes")
 }
 </script>
 
 <template>
-  <PageHeader @back="navigateTo('/mixtapes')" title="Nouvelle mixtape" />
+  <PageHeader title="Nouvelle mixtape" @back="navigateTo('/mixtapes')" />
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
@@ -26,6 +26,4 @@ const handleSubmit = async (form: MixtapeParamsExt) => {
   </v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

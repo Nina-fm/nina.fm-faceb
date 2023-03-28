@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-const { $version } = useNuxtApp();
+const { $version } = useNuxtApp()
 const config = useRuntimeConfig()
-const { logout } = useAuthStore();
-const { user, isLoggedIn } = useAuthStoreRefs();
-const showNewVersion = ref(false);
+const { logout } = useAuthStore()
+const { user, isLoggedIn } = useAuthStoreRefs()
+const showNewVersion = ref(false)
 
 const handleLogout = async () => {
   await logout()
@@ -12,7 +12,7 @@ const handleLogout = async () => {
 
 onMounted(() => {
   if ($version.isNew) {
-    setTimeout(() => showNewVersion.value = true, 5000)
+    setTimeout(() => (showNewVersion.value = true), 5000)
   }
 })
 </script>
@@ -26,12 +26,12 @@ onMounted(() => {
         <v-chip v-if="showNewVersion" color="info" size="small" density="comfortable" variant="flat">New !</v-chip>
       </v-slide-x-reverse-transition>
     </template>
-    <template v-slot:append>
+    <template #append>
       <v-btn size="small" @click="navigateTo('/mixtapes')">Mixtapes</v-btn>
       <v-btn size="small" @click="navigateTo('/authors')">DJ's</v-btn>
       <v-menu open-on-hover>
-        <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-dots-vertical" v-bind="props" variant="plain"></v-btn>
+        <template #activator="{ props: activatorProps }">
+          <v-btn icon="mdi-dots-vertical" v-bind="activatorProps" variant="plain"></v-btn>
         </template>
         <v-list>
           <v-list-item :href="config.public.siteurl" target="_blank">
@@ -43,14 +43,12 @@ onMounted(() => {
         </v-list>
       </v-menu>
       <v-menu v-if="isLoggedIn" open-on-hover>
-        <template v-slot:activator="{ props }">
+        <template #activator="{ props }">
           <v-btn icon="mdi-account-circle" v-bind="props" variant="plain"></v-btn>
         </template>
         <v-list>
           <v-list-item>
-            <v-list-item-title>
-              Bienvenue !
-            </v-list-item-title>
+            <v-list-item-title> Bienvenue ! </v-list-item-title>
             <v-list-item-subtitle class="my-2">
               <v-chip color="primary" size="small">{{ user?.email }}</v-chip>
             </v-list-item-subtitle>
@@ -61,12 +59,11 @@ onMounted(() => {
           </v-list-item>
         </v-list>
       </v-menu>
-
     </template>
-</v-app-bar>
+  </v-app-bar>
 </template>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 :deep(.v-toolbar-title) {
   .brand {
     font-weight: bold;

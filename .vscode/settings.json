@@ -1,8 +1,9 @@
 {
   "editor.formatOnSave": true,
+  "volar.autoCompleteRefs": true,
   "[vue]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "deno.enable": true,
   "deno.enablePaths": ["supabase/functions"]

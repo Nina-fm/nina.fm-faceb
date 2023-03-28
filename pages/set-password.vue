@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-definePageMeta({ layout: "naked" });
+definePageMeta({ layout: "naked" })
 
-const route = useRoute();
+const route = useRoute()
 
-const { update } = useAuthStore();
-const valid = ref(false);
+const { update } = useAuthStore()
+const valid = ref(false)
 const form = reactive({
-  password: '',
+  password: "",
 })
 
 onMounted(() => {
   if (!route.hash) {
-    return navigateTo('/login');
+    return navigateTo("/login")
   }
-});
+})
 
 const handleSavePassword = async () => {
-  await update({ password: form.password });
+  await update({ password: form.password })
   navigateTo("/")
 }
 </script>
@@ -34,14 +34,10 @@ const handleSavePassword = async () => {
     </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <v-btn variant="tonal" @click="handleSavePassword">
-          Continuer
-        </v-btn>
+        <v-btn variant="tonal" @click="handleSavePassword"> Continuer </v-btn>
       </span>
     </template>
   </auth-box>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

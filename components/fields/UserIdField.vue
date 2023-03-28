@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  modelValue: string,
-  tooltip?: string,
+  modelValue: string
+  tooltip?: string
   label?: string
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:model-value', value?: string): void
 }>()
 
-const { user } = useAuthStoreRefs();
-const { modelValue } = toRefs(props);
-const userId = ref<string | undefined>(modelValue.value);
+const emit = defineEmits<{
+  (e: "update:model-value", value?: string): void
+}>()
+
+const { user } = useAuthStoreRefs()
+const { modelValue } = toRefs(props)
+const userId = ref<string | undefined>(modelValue.value)
 
 watch(userId, (value) => {
-  emit('update:model-value', value);
+  emit("update:model-value", value)
 })
 
 const handleAutoFill = () => {
@@ -26,17 +26,22 @@ const handleAutoFill = () => {
   <v-row>
     <v-col cols="12">
       <v-text-field v-model="userId" :label="label ?? 'UserId'" clearable>
-        <template v-slot:append-inner>
+        <template #append-inner>
           <v-tooltip activator="parent" location="start" :text="tooltip ?? 'C\'est moi'">
-            <template v-slot:activator="{ props }">
-              <v-btn variant="plain" icon="mdi-hand-front-left" class="field-inner-button" @click="handleAutoFill"
-                v-bind="props" />
+            <template #activator="{ props: activatorProps }">
+              <v-btn
+                variant="plain"
+                icon="mdi-hand-front-left"
+                class="field-inner-button"
+                v-bind="activatorProps"
+                @click="handleAutoFill"
+              />
             </template>
           </v-tooltip>
         </template>
       </v-text-field>
     </v-col>
-</v-row>
+  </v-row>
 </template>
 
 <style scoped></style>

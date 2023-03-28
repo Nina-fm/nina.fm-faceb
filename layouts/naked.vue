@@ -7,7 +7,6 @@
         <v-row align="center" justify="center">
           <v-col cols="6">
             <slot />
-
           </v-col>
         </v-row>
       </v-container>
@@ -15,6 +14,4 @@
   </v-app>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

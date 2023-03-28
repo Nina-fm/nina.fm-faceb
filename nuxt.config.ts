@@ -1,6 +1,6 @@
-import vuetify from "vite-plugin-vuetify";
+import vuetify from "vite-plugin-vuetify"
 
-const sitename = "Face B • Nina.fm";
+const sitename = "Face B • Nina.fm"
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -44,11 +44,7 @@ export default defineNuxtConfig({
     shim: false,
   },
 
-  css: [
-    "assets/scss/variables.scss",
-    "@mdi/font/css/materialdesignicons.min.css",
-    "assets/scss/index.scss",
-  ],
+  css: ["assets/scss/variables.scss", "@mdi/font/css/materialdesignicons.min.css", "assets/scss/index.scss"],
 
   build: {
     transpile: ["vuetify"],
@@ -68,8 +64,7 @@ export default defineNuxtConfig({
     },
     resolve: {
       alias: {
-        "vue-easy-lightbox":
-          "vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js",
+        "vue-easy-lightbox": "vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js",
       },
     },
   },
@@ -86,9 +81,10 @@ export default defineNuxtConfig({
     "@nuxtjs/supabase",
     async (options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         config.plugins.push(vuetify())
-      );
+      )
     },
   ],
 
@@ -108,4 +104,4 @@ export default defineNuxtConfig({
   vueuse: {
     ssrHandlers: true,
   },
-});
+})

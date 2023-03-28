@@ -1,101 +1,137 @@
 <script lang="ts">
-export type ItemBase = {
-  key?: string;
-  position?: number;
-  [key: string]: unknown;
-};
+export interface ItemBase {
+  key?: string
+  position?: number
+  [key: string]: unknown
+}
 </script>
 <script lang="ts" setup>
-import uniqid from 'uniqid'
+type Data = ItemBase[]
 
-const { modelValue, emptyItem, label, emptySuggestion, onClick } = defineProps<{
-  emptyItem: ItemBase,
-  modelValue: ItemBase[],
-  label: string,
-  emptySuggestion?: boolean,
-  onClick?: (e: Event) => void,
-}>();
+const props = defineProps<{
+  modelValue: ItemBase[]
+  emptyItem: ItemBase
+  label: string
+  emptySuggestion?: boolean
+  onClick?: (e: Event) => void
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: ItemBase[]): void,
-  (e: 'add'): void
-  (e: 'remove', value: number): void
-}>();
+  (e: "update:model-value", value: ItemBase[]): void
+  (e: "add"): void
+  (e: "remove", index: number): void
+  (e: "clear"): void
+}>()
 
-const active = ref(false);
-const data = reactive(modelValue.map((el) => ({ ...el, key: uniqid() } as ItemBase)));
+const { modelValue } = toRefs(props)
+const active = ref(false)
+const updateLock = ref(false)
+const data: Data = reactive(modelValue.value.map((el) => ({ ...el, key: uniqid() } as ItemBase)))
 
-watch(modelValue, (value) => {
-  data.splice(0, data.length, ...value.map((el) => ({ ...el, key: uniqid() } as ItemBase)))
-})
+watch(
+  () => [...modelValue.value],
+  (value) => {
+    console.log("RepeatableField - modelValue changed", value.length)
+    updateLock.value = true
+    data.splice(0, data.length, ...value.map((el) => ({ ...el, key: uniqid() } as ItemBase)))
+  }
+)
 
-watch(data, (value) => {
-  const rows = value.map(({ key, ...row }) => ({ ...row }));
-  emit('update:modelValue', rows)
-})
+watch(
+  () => [...data],
+  (value) => {
+    if (!updateLock.value) {
+      const rows = value.map(({ key, ...row }) => ({ ...row }))
+      console.log("RepeatableField - emit update:model-value", rows)
+      emit("update:model-value", rows)
+    }
+    updateLock.value = false
+  },
+  { deep: true }
+)
 
 onMounted(() => {
-  if (!data.length && emptySuggestion) {
+  if (!data.length && props.emptySuggestion) {
     handleAdd()
   }
 })
 
 const handleClear = () => {
-  data.splice(0, data.length);
+  data.splice(0, data.length)
+  emit("clear")
 }
 
 const handleAdd = () => {
-  data.push({ ...emptyItem, key: uniqid(), position: data.length + 1 })
-  emit('add')
+  data.push({ ...props.emptyItem, key: uniqid(), position: data.length + 1 })
+  emit("add")
 }
 
 const handleRemove = (index: number) => {
-  emit('remove', index)
-  data.splice(index, 1);
+  data.splice(index, 1)
+  emit("remove", index)
 }
 
-const handleChangePosition = (event: any) => {
-  const { element, oldIndex, newIndex } = event.moved;
-  data.splice(oldIndex, 1)
-  data.splice(newIndex, 0, element)
-  data.map((el, i) => ({ ...el, key: uniqid(), position: i + 1 }))
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleUpdate = (event: any) => {
+  const { element, oldIndex, newIndex } = event.moved
+  const temp = [...data]
+  temp.splice(oldIndex, 1)
+  temp.splice(newIndex, 0, element)
+  data.splice(0, data.length, ...temp.map((el, i) => ({ ...el, key: uniqid(), position: i + 1 })))
 }
 </script>
 
 <template>
-  <v-field class="repeatable-field" :label="label" :active="active" @click="onClick">
-    <template v-slot:append-inner>
+  <v-field class="repeatable-field" :label="props.label" :active="active">
+    <div class="repeatable-field__click-area" @click="props.onClick" />
+    <template #append-inner>
       <slot name="prepend-buttons" />
       <v-tooltip text="Ajouter une piste" location="top">
-        <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-plus" variant="plain" class="field-inner-button" @click.stop="handleAdd" v-bind="props" />
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+            icon="mdi-plus"
+            variant="plain"
+            class="field-inner-button"
+            v-bind="activatorProps"
+            @click.stop="handleAdd"
+          />
         </template>
       </v-tooltip>
       <v-tooltip text="Tout supprimer" location="top">
-        <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-playlist-remove" variant="plain" class="field-inner-button" @click.stop="handleClear"
-            v-bind="props" />
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+            icon="mdi-playlist-remove"
+            variant="plain"
+            class="field-inner-button"
+            v-bind="activatorProps"
+            @click.stop="handleClear"
+          />
         </template>
       </v-tooltip>
     </template>
     <div v-if="data.length" class="repeatable-field__content mt-15">
-      <draggable :model-value="data" item-key="key" @change="handleChangePosition">
+      <draggable :list="data" item-key="key" @end="handleUpdate">
         <template #item="{ element, index }">
-          <v-sheet>
+          <v-sheet :key="`repeatable-track-${index}`">
             <div class="pt-0 pl-4 pb-4 d-flex">
               <div class="d-flex flex-grow-1">
                 <slot name="item" :item="element" :index="index" />
               </div>
               <div class="d-flex pl-2">
                 <v-tooltip text="Déplacer la piste" location="top">
-                  <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-drag" size="small" variant="plain" v-bind="props" />
+                  <template #activator="{ props: activatorProps }">
+                    <v-btn icon="mdi-drag" size="small" variant="plain" v-bind="activatorProps" />
                   </template>
                 </v-tooltip>
                 <v-tooltip text="Supprimer la piste" location="top">
-                  <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-delete" size="small" variant="plain" @click.stop="() => handleRemove(index)"
-                      v-bind="props" />
+                  <template #activator="{ props: activatorProps }">
+                    <v-btn
+                      icon="mdi-delete"
+                      size="small"
+                      variant="plain"
+                      v-bind="activatorProps"
+                      @click.stop="() => handleRemove(index)"
+                    />
                   </template>
                 </v-tooltip>
               </div>
@@ -127,10 +163,18 @@ const handleChangePosition = (event: any) => {
     right: 0px;
   }
 
+  .repeatable-field__click-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--v-input-control-height, 56px);
+  }
+
   .repeatable-field__content {
     flex: 1;
 
-    &> :deep(.v-sheet) {
+    & > :deep(.v-sheet) {
       flex: 1;
     }
   }

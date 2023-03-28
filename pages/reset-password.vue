@@ -1,25 +1,23 @@
 <script lang="ts" setup>
-
-definePageMeta({ layout: "naked" });
+definePageMeta({ layout: "naked" })
 
 const { snackSuccess } = useSnackbarStore()
-const { sendPasswordRestEmail } = useAuthStore();
-const valid = ref(false);
+const { sendPasswordRestEmail } = useAuthStore()
+const valid = ref(false)
 const form = reactive({
-  email: '',
+  email: "",
 })
 
 const handleCancel = () => {
-  navigateTo("/login");
+  navigateTo("/login")
 }
 
 const handleResetPassword = async () => {
-  const { error } = await sendPasswordRestEmail(form.email);
+  const { error } = await sendPasswordRestEmail(form.email)
   if (!error) {
     snackSuccess("Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !")
   }
 }
-
 </script>
 
 <template>
@@ -35,17 +33,11 @@ const handleResetPassword = async () => {
     </v-form>
     <template #footer>
       <span class="dialog-footer">
-        <v-btn variant="text" @click="handleCancel">
-          Annuler
-        </v-btn>
-        <v-btn variant="tonal" @click="handleResetPassword">
-          Réinitialiser
-        </v-btn>
+        <v-btn variant="text" @click="handleCancel"> Annuler </v-btn>
+        <v-btn variant="tonal" @click="handleResetPassword"> Réinitialiser </v-btn>
       </span>
     </template>
   </auth-box>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

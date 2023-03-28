@@ -1,30 +1,29 @@
 <script lang="ts">
 export interface Form {
-  url?: string | null;
+  url?: string | null
 }
 </script>
 <script lang="ts" setup>
-import { MixtapeParamsExt } from '~~/types/supatypes';
+import { MixtapeParamsExt } from "~~/types/supatypes"
 
 const props = defineProps<{
-  data?: MixtapeParamsExt[],
-}>();
+  data?: MixtapeParamsExt[]
+}>()
 const emit = defineEmits<{
-  (e: 'cancel'): void
-  (e: 'analyze', value: Form): void
-  (e: 'import'): void
+  (e: "cancel"): void
+  (e: "analyze", value: Form): void
+  (e: "import"): void
 }>()
 
-const { data } = toRefs(props);
+const { data } = toRefs(props)
 const valid = ref(false)
 const form: Form = reactive({
-  url: null
-});
+  url: null,
+})
 
 const handleCancel = () => emit("cancel")
 const handleAnalyze = () => emit("analyze", form)
 const handleImport = () => emit("import")
-
 </script>
 
 <template>
@@ -43,6 +42,4 @@ const handleImport = () => emit("import")
   </v-form>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,96 +1,126 @@
 <script lang="ts">
 export interface ItemBase {
-  id?: number;
-  name?: string | null;
-  [key: string]: unknown;
+  id?: number
+  name?: string | null
+  [key: string]: unknown
 }
 </script>
 <script lang="ts" setup>
 interface Data {
-  text: string | null;
-  authors: ItemBase[];
+  text: string | null
+  authors: ItemBase[]
 }
 const props = defineProps<{
-  modelValue: ItemBase[],
-  textValue: string | null,
-  label: string,
-  required?: boolean,
-}>();
+  modelValue: ItemBase[]
+  textValue: string | null
+  label: string
+  required?: boolean
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: ItemBase[]): void,
-  (e: 'update:textValue', value: string | null): void,
-}>();
+  (e: "update:modelValue", value: ItemBase[]): void
+  (e: "update:textValue", value: string | null): void
+}>()
 
-const { parseAuthors } = useImport();
+const { parseAuthors } = useImport()
 const { modelValue, textValue } = toRefs(props)
 const { fetchAuthors } = useAuthorsStore()
 const { data: authorsData, isLoading: isLoadingAuthors } = useAuthorsStoreRefs()
-const openImport = ref(false);
-const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })));
+const openImport = ref(false)
+const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })))
 const data: Data = reactive({
   text: textValue.value ?? null,
-  authors: modelValue.value.map(({ id, name }) => ({ id, name }))
+  authors: modelValue.value.map(({ id, name }) => ({ id, name })),
 })
 
-watch(() => data.text, (value) => {
-  emit('update:textValue', value)
-})
+watch(
+  () => data.text,
+  (value) => {
+    emit("update:textValue", value)
+  }
+)
 
-watch(data.authors, (value) => {
-  emit('update:modelValue', value)
-})
+watch(
+  () => data.authors,
+  (value) => {
+    emit("update:modelValue", value)
+  }
+)
 
 const handleOpenImport = () => {
   openImport.value = true
 }
 
 const handleCancelImport = () => {
-  openImport.value = false;
+  openImport.value = false
 }
 
 const handleImport = () => {
-  openImport.value = false;
-  data.authors.splice(0, data.authors.length, ...parseAuthors(data.text));
+  openImport.value = false
+  data.authors.splice(0, data.authors.length, ...parseAuthors(data.text))
 }
 
 const handleSelect = (value: unknown) => {
-  console.log({ value })
   const items = value as ItemBase[]
   data.authors = items
-  const names = Object.values(items).map((i) => i.name)
+  const names = Object.values(items).map((i) => i?.name ?? i)
   if (names.length) {
     data.text = names.length > 1 ? `${names.slice(0, -1).join(", ")} & ${names.slice(-1)}` : `${names[0]}`
+  } else {
+    data.text = ""
   }
 }
 
-onMounted(() => {
-  fetchAuthors();
+onBeforeMount(() => {
+  fetchAuthors()
 })
 </script>
 
 <template>
   <v-row>
     <v-col cols="12">
-      <v-combobox :model-value="data.authors" :hide-no-data="false" :loading="isLoadingAuthors" :label="label"
-        :items="authors" item-title="name" item-value="id" chips multiple variant="outlined" :required="required"
-        @update:model-value="handleSelect">
-        <template v-slot:append-inner>
+      <v-combobox
+        :model-value="data.authors"
+        :hide-no-data="false"
+        :loading="isLoadingAuthors"
+        :label="label"
+        :items="authors"
+        item-title="name"
+        item-value="id"
+        chips
+        closable-chips
+        multiple
+        variant="outlined"
+        :required="required"
+        @update:model-value="handleSelect"
+      >
+        <template #append-inner>
           <v-tooltip text="Importer au format texte" location="top">
-            <template v-slot:activator="{ props }">
-              <v-btn icon="mdi-import" variant="plain" class="field-inner-button" @click.stop="handleOpenImport"
-                v-bind="props" />
+            <template #activator="{ props: activatorProps }">
+              <v-btn
+                icon="mdi-import"
+                variant="plain"
+                class="field-inner-button"
+                v-bind="activatorProps"
+                @click.stop="handleOpenImport"
+              />
             </template>
           </v-tooltip>
         </template>
-        <template v-slot:no-data>
+        <template #no-data>
           <select-no-data data-type="DJ" />
         </template>
       </v-combobox>
     </v-col>
   </v-row>
-  <text-import-modal v-model:open-value="openImport" v-model:model-value="data.text" :label="label"
-    alert="Veuillez respecter le format saisi dans AirTime" @cancel="handleCancelImport" @import="handleImport" />
+  <text-import-modal
+    v-model:open-value="openImport"
+    v-model:model-value="data.text"
+    :label="label"
+    alert="Veuillez respecter le format saisi dans AirTime"
+    @cancel="handleCancelImport"
+    @import="handleImport"
+  />
 </template>
 
 <style scoped></style>

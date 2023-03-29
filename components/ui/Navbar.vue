@@ -3,6 +3,7 @@ const { $version } = useNuxtApp()
 const config = useRuntimeConfig()
 const { logout } = useAuthStore()
 const { user, isLoggedIn } = useAuthStoreRefs()
+const { actAs } = useProfileStore()
 const showNewVersion = ref(false)
 
 const handleLogout = async () => {
@@ -37,7 +38,7 @@ onMounted(() => {
           <v-list-item :href="config.public.siteurl" target="_blank">
             <v-list-item-title>Voir le site</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="() => navigateTo('/mixtapes/import')">
+          <v-list-item v-if="actAs('admin')" @click="() => navigateTo('/mixtapes/import')">
             <v-list-item-title>Import de mixtapes</v-list-item-title>
           </v-list-item>
         </v-list>

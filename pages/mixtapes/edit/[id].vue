@@ -15,6 +15,10 @@ const handleCancel = () => {
 
 const handleSubmit = async (form: MixtapeParamsExt) => {
   const { error } = await updateMixtape(id, form)
+}
+
+const handleSubmitAndClose = async (form: MixtapeParamsExt) => {
+  const { error } = await updateMixtape(id, form)
   if (!error) navigateTo("/mixtapes")
 }
 </script>
@@ -24,7 +28,12 @@ const handleSubmit = async (form: MixtapeParamsExt) => {
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <MixtapeForm :mixtape="mixtape" @cancel="handleCancel" @submit="handleSubmit" />
+        <MixtapeForm
+          :mixtape="mixtape"
+          @cancel="handleCancel"
+          @submit="handleSubmit"
+          @submit-and-close="handleSubmitAndClose"
+        />
       </v-card-text>
     </v-card>
   </v-container>

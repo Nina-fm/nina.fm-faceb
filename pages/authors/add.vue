@@ -9,7 +9,7 @@ const handleCancel = () => {
   navigateTo("/authors")
 }
 
-const handleSubmit = async (form: AuthorParamsExt) => {
+const handleSubmitAndClose = async (form: AuthorParamsExt) => {
   const { error } = await createAuthor(form)
   if (!error) navigateTo("/authors")
 }
@@ -20,7 +20,7 @@ const handleSubmit = async (form: AuthorParamsExt) => {
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <AuthorForm @cancel="handleCancel" @submit="handleSubmit" />
+        <AuthorForm @cancel="handleCancel" @submit-and-close="handleSubmitAndClose" />
       </v-card-text>
     </v-card>
   </v-container>

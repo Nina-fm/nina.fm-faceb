@@ -93,7 +93,7 @@ onMounted(() => fetchAuthors())
           class="clickable"
           @click:row="handleRowClick"
         >
-          <template #user_id="{ item }">
+          <template #item.user_id="{ item }">
             <v-chip v-if="isMe(item.raw.user_id)" color="primary" size="small">Moi</v-chip>
             <v-badge
               v-else
@@ -103,7 +103,7 @@ onMounted(() => fetchAuthors())
               :color="item.raw.user_id ? 'primary' : 'default'"
             />
           </template>
-          <template #actions="{ item }">
+          <template #item.actions="{ item }">
             <div class="d-flex flex-row justify-end">
               <v-btn
                 icon="mdi-pencil"

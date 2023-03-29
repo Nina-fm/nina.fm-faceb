@@ -3,11 +3,14 @@ import { MixtapeExt, MixtapeParamsExt } from "~~/types/supatypes"
 
 const props = defineProps<{
   mixtape?: MixtapeExt
+  onSubmit?: () => void
+  onSubmitAndClose?: () => void
 }>()
 
 const emit = defineEmits<{
   (e: "cancel"): void
   (e: "submit", value: MixtapeParamsExt): void
+  (e: "submit-and-close", value: MixtapeParamsExt): void
 }>()
 
 const { mixtape } = toRefs(props)
@@ -36,6 +39,8 @@ const form: MixtapeParamsExt = reactive({
 const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form)
+
+const handleSubmitAndClose = () => emit("submit-and-close", form)
 
 onMounted(() => {
   fetchTags()
@@ -84,7 +89,14 @@ const hint = "Attention à bien respecter le format AirTime !"
         </v-col>
       </v-row>
     </v-container>
-    <submit-buttons :edit="isEdit" @cancel="handleCancel" @submit="handleSubmit" />
+    <submit-buttons
+      :edit="isEdit"
+      v-bind="{
+        ...(props?.onSubmit ? { onSubmit: handleSubmit } : {}),
+        ...(props?.onSubmitAndClose ? { onSubmitAndClose: handleSubmitAndClose } : {}),
+      }"
+      @cancel="handleCancel"
+    />
   </v-form>
 </template>
 

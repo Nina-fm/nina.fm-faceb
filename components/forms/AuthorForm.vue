@@ -3,11 +3,14 @@ import { AuthorExt, AuthorParamsExt } from "~~/types/supatypes"
 
 const props = defineProps<{
   author?: AuthorExt
+  onSubmit?: () => void
+  onSubmitAndClose?: () => void
 }>()
 
 const emit = defineEmits<{
   (e: "cancel"): void
   (e: "submit", value: AuthorParamsExt): void
+  (e: "submit-and-close", value: AuthorParamsExt): void
 }>()
 
 const { author } = toRefs(props)
@@ -22,6 +25,8 @@ const form = reactive({
 const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form)
+
+const handleSubmitAndClose = () => emit("submit-and-close", form)
 </script>
 
 <template>
@@ -38,7 +43,14 @@ const handleSubmit = () => emit("submit", form)
         </v-col>
       </v-row>
     </v-container>
-    <submit-buttons :edit="isEdit" @cancel="handleCancel" @submit="handleSubmit" />
+    <submit-buttons
+      :edit="isEdit"
+      v-bind="{
+        ...(props?.onSubmit ? { onSubmit: handleSubmit } : {}),
+        ...(props?.onSubmitAndClose ? { onSubmitAndClose: handleSubmitAndClose } : {}),
+      }"
+      @cancel="handleCancel"
+    />
   </v-form>
 </template>
 

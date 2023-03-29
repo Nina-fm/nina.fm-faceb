@@ -16,6 +16,10 @@ const handleCancel = () => {
 
 const handleSubmit = async (form: AuthorParamsExt) => {
   const { error } = await updateAuthor(id, form)
+}
+
+const handleSubmitAndClose = async (form: AuthorParamsExt) => {
+  const { error } = await updateAuthor(id, form)
   if (!error) navigateTo(`/authors`)
 }
 </script>
@@ -25,7 +29,13 @@ const handleSubmit = async (form: AuthorParamsExt) => {
   <v-container class="n-page-content">
     <v-card>
       <v-card-text>
-        <AuthorForm :author="author" edit @cancel="handleCancel" @submit="handleSubmit" />
+        <AuthorForm
+          :author="author"
+          edit
+          @cancel="handleCancel"
+          @submit="handleSubmit"
+          @submit-and-close="handleSubmitAndClose"
+        />
       </v-card-text>
     </v-card>
   </v-container>

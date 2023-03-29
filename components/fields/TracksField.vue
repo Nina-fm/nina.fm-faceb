@@ -55,7 +55,7 @@ const handleCancelImport = () => {
 
 const handleImport = () => {
   const parsedTracks = parseTracksText(data.text)
-  modelValue.value.splice(0, modelValue.value.length, ...(parsedTracks as ItemBase[]))
+  data.model.splice(0, data.model.length, ...(parsedTracks as ItemBase[]))
   openImport.value = false
 }
 
@@ -130,7 +130,9 @@ const handleClick = () => {
       >
         <template #alert>
           Veuillez respecter une ligne par piste, au format :
-          <pre>01 Nom de l'artiste : Titre de la piste</pre>
+          <pre>Nom de l'artiste : Titre de la piste</pre>
+          Vous pouvez optionnellement ajouter le numéro de la piste et le timing :
+          <pre>01 Nom de l'artiste : Titre de la piste (00:00:00)</pre>
         </template>
       </text-import-modal>
     </template>

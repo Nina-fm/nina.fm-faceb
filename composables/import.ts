@@ -70,10 +70,10 @@ export const useImport = (params?: { init?: boolean }) => {
   const parseTracksText = (text: string | null): TrackParams[] => {
     if (text) {
       const lines: string[] = text?.split(/\r?\n/) ?? []
-      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)/ // 01 Artist name : Track title
-      const withoutPositionFormat = /(.*)\s:\s(.*)/ // Artist name : Track title
-      const withDotFormat = /(.*)\s\.\s(.*)/ // Artist name . Track title
-      const withDashFormat = /(.*)\s\-\s(.*)/ // Artist name - Track title
+      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // 01 Artist name : Track title (00:00:00)
+      const withoutPositionFormat = /(.*)\s:\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name : Track title (00:00:00)
+      const withDotFormat = /(.*)\s\.\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name . Track title (00:00:00)
+      const withDashFormat = /(.*)\s\-\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name - Track title (00:00:00)
 
       const items = lines.reduce((res, line, i) => {
         if (defaultFormat.test(line)) {
@@ -84,6 +84,7 @@ export const useImport = (params?: { init?: boolean }) => {
               position: i,
               artist: infos?.[2],
               title: infos?.[3],
+              start_at: infos?.[5],
             } as TrackParams,
           ]
         } else if (withoutPositionFormat.test(line)) {
@@ -94,6 +95,7 @@ export const useImport = (params?: { init?: boolean }) => {
               position: i,
               artist: infos?.[1],
               title: infos?.[2],
+              start_at: infos?.[4],
             } as TrackParams,
           ]
         } else if (withDotFormat.test(line)) {
@@ -104,6 +106,7 @@ export const useImport = (params?: { init?: boolean }) => {
               position: i,
               artist: infos?.[1],
               title: infos?.[2],
+              start_at: infos?.[4],
             } as TrackParams,
           ]
         } else if (withDashFormat.test(line)) {
@@ -114,6 +117,7 @@ export const useImport = (params?: { init?: boolean }) => {
               position: i,
               artist: infos?.[1],
               title: infos?.[2],
+              start_at: infos?.[4],
             } as TrackParams,
           ]
         }

@@ -11,6 +11,11 @@ VALUES
 ('ee7841ac-aa19-4f04-9560-28075f87a308', 'ee7841ac-aa19-4f04-9560-28075f87a308', '{"sub": "ee7841ac-aa19-4f04-9560-28075f87a308"}', 'email', '2022-11-08 13:59:36.251178+00', '2022-11-08 13:59:36.251215+00', '2022-11-08 13:59:36.251218+00');
 
 -- Insert profiles
+UPDATE "public"."profiles" 
+SET role = 'admin'
+WHERE id = 'ee7841ac-aa19-4f04-9560-28075f87a308';
+
+-- Insert authors
 INSERT INTO 
 "public"."authors" ("user_id", "updated_at", "name", "avatar")
 VALUES 

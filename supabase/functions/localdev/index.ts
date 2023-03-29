@@ -6,6 +6,7 @@ import { corsHeaders } from "../_shared/cors.ts"
 console.log("Setting up localdev function...")
 
 const handlers = {
+  profile: await import("../profile/handler.ts").then((it) => it.handler),
   authors: await import("../authors/handler.ts").then((it) => it.handler),
   mixtapes: await import("../mixtapes/handler.ts").then((it) => it.handler),
   tags: await import("../tags/handler.ts").then((it) => it.handler),

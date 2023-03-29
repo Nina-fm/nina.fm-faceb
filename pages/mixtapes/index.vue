@@ -13,6 +13,7 @@ interface Filters {
   tags: TagFilter[]
 }
 
+const { actAs } = useProfileStore()
 const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
 const { data: mixtapes } = useMixtapesStoreRefs()
 const { fetchTags } = useTagsStore()
@@ -59,6 +60,7 @@ const headersDefinition = [
     sortable: false,
   },
 ]
+const actAsAdmin = computed(() => actAs("admin"))
 const headers = computed(() => {
   update()
   return headersDefinition.filter(
@@ -135,7 +137,9 @@ onMounted(() => {
   <PageHeader
     title="Les mixtapes"
     :actions="[
-      { tooltip: 'Import', icon: 'mdi-database-arrow-up', onClick: () => navigateTo('/mixtapes/import') },
+      ...(actAsAdmin
+        ? [{ tooltip: 'Import', icon: 'mdi-database-arrow-up', onClick: () => navigateTo('/mixtapes/import') }]
+        : []),
       { tooltip: 'Rafraîchir', icon: 'mdi-refresh', onClick: handleRefresh },
       { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') },
     ]"

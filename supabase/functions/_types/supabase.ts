@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[]
 
 export interface Database {
   graphql_public: {
@@ -117,6 +123,29 @@ export interface Database {
           tag_id?: number
         }
       }
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["roles"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string | null
+          id: string
+          role?: Database["public"]["Enums"]["roles"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["roles"] | null
+          updated_at?: string | null
+        }
+      }
       tags: {
         Row: {
           color: string | null
@@ -174,7 +203,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      roles: "public" | "user" | "editor" | "admin"
     }
   }
   storage: {
@@ -307,3 +336,4 @@ export interface Database {
     }
   }
 }
+

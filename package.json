@@ -13,7 +13,7 @@
     "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
     "reset:db": "supabase db reset",
     "push:db": "supabase db push",
-    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata",
+    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
     "serve": "supabase functions serve localdev",
     "deploy": "yarn push:db && yarn deploy:functions",
     "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."

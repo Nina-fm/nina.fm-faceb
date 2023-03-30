@@ -41,7 +41,9 @@ export class TracksService extends Service {
 
     const { data: existing } = await this.supabase.from("tracks").select("id").match({ mixtape_id: mixtapeId })
 
-    const toDeleteIds = existing ? existing.filter((track) => track.id && !tracksDataIds.includes(track.id)) : []
+    const toDeleteIds = existing
+      ? existing.filter((track) => track.id && !tracksDataIds.includes(track.id)).map((track) => track.id)
+      : []
 
     const { error: _deleteError } = await this.supabase.from("tracks").delete().in("id", toDeleteIds)
 

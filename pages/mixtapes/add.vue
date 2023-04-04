@@ -10,8 +10,9 @@ const handleCancel = () => {
 }
 
 const handleSubmitAndClose = async (form: MixtapeParamsExt) => {
-  const { error } = await createMixtape(form)
-  if (!error) navigateTo("/mixtapes")
+  const { error, data } = await createMixtape(form)
+  if (data.id) navigateTo(`/mixtapes/${data.id}`)
+  else if (!error) navigateTo("/mixtapes")
 }
 </script>
 

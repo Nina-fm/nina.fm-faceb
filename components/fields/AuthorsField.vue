@@ -6,6 +6,8 @@ export interface ItemBase {
 }
 </script>
 <script lang="ts" setup>
+import { formatAuthorNames } from "~~/supabase/functions/_shared/utils"
+
 interface Data {
   text: string | null
   authors: ItemBase[]
@@ -47,6 +49,13 @@ watch(
   }
 )
 
+const handleUpdateModelValue = (value: unknown) => {
+  data.authors = (value as Array<ItemBase | string>).map((item) =>
+    typeof item !== "string" ? { ...item } : authors.value.find((a) => a.name === item) || { name: item }
+  )
+  data.text = Array.isArray(value) ? formatAuthorNames(value as ItemBase[]) : ""
+}
+
 const handleOpenImport = () => {
   openImport.value = true
 }
@@ -60,16 +69,8 @@ const handleImport = () => {
   data.authors.splice(0, data.authors.length, ...parseAuthors(data.text))
 }
 
-const handleSelect = (value: unknown) => {
-  const items = value as ItemBase[]
-  data.authors = items
-  const names = Object.values(items).map((i) => i?.name ?? i)
-  if (names.length) {
-    data.text = names.length > 1 ? `${names.slice(0, -1).join(", ")} & ${names.slice(-1)}` : `${names[0]}`
-  } else {
-    data.text = ""
-  }
-}
+const handleCompareValues = (a: ItemBase, b: ItemBase | string) =>
+  a.name === (typeof b !== "string" && b?.name ? b.name : b)
 
 onBeforeMount(() => {
   fetchAuthors()
@@ -80,7 +81,7 @@ onBeforeMount(() => {
   <v-row>
     <v-col cols="12">
       <v-combobox
-        :model-value="data.authors"
+        v-model="data.authors"
         :hide-no-data="false"
         :loading="isLoadingAuthors"
         :label="label"
@@ -91,8 +92,8 @@ onBeforeMount(() => {
         closable-chips
         multiple
         variant="outlined"
-        :required="required"
-        @update:model-value="handleSelect"
+        :value-comparator="handleCompareValues"
+        @update:model-value="handleUpdateModelValue"
       >
         <template #append-inner>
           <v-tooltip text="Importer au format texte" location="top">

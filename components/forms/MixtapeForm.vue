@@ -40,7 +40,9 @@ const handleCancel = () => emit("cancel")
 
 const handleSubmit = () => emit("submit", form)
 
-const handleSubmitAndClose = () => emit("submit-and-close", form)
+const handleSubmitAndClose = () => {
+  emit("submit-and-close", form)
+}
 
 onMounted(() => {
   fetchTags()

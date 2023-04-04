@@ -43,7 +43,10 @@ export const handleLocalFileUrl = (url: string) => {
 }
 
 export const formatAuthorNames = (authors: AuthorParamsExt[]) =>
-  authors.reduce((r, a, i) => r.concat(!i ? `${a.name}` : i >= authors.length - 1 ? ` & ${a.name}` : `, ${a.name}`), "")
+  authors.reduce((r, a, i) => {
+    const n = typeof a === "string" ? a : a.name
+    return r.concat(!i ? `${n}` : i >= authors.length - 1 ? ` & ${n}` : `, ${n}`)
+  }, "")
 
 export const dataURLtoFile = (dataurl: string, filename: string) => {
   const arr = dataurl.split(",")

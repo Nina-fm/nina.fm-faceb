@@ -47,7 +47,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         })
         data.value = [...data.value, result]
         index.value = { ...index.value, [result.id]: result }
-        return data
+        return result
       },
       {
         successMsg: `Merci d'avoir ajouté ${mixtapeData.name} !`,
@@ -69,7 +69,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
         })
         data.value = [...data.value.filter((a) => a.id !== mixtapeId), result]
         index.value = { ...index.value, [mixtapeId]: result }
-        return data
+        return result
       },
       { successMsg: `Merci d'avoir mis ${mixtapeData.name} à jour !` }
     )

@@ -12,7 +12,7 @@ const handleCancel = () => {
 const handleSubmit = async (form: MixtapeParamsExt) => {
   const { error, data } = await createMixtape(form)
 
-  if (!error && data?.id) navigateTo(`/mixtapes/${data.id}`)
+  if (!error && data?.id) navigateTo(`/mixtapes/edit/${data.id}`)
 }
 
 const handleSubmitAndClose = async (form: MixtapeParamsExt) => {

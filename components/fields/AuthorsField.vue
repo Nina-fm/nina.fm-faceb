@@ -69,7 +69,6 @@ const handleImport = () => {
   const items = parseAuthors(data.text)
   const parsed = items.map((item) => authors.value.find((a) => a.name === item.name) || item)
   data.authors.splice(0, data.authors.length, ...parsed)
-  console.log({ items, parsed, data: data.authors })
 }
 
 const handleCompareValues = (a: ItemBase, b: ItemBase | string) =>

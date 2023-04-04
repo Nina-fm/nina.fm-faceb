@@ -41,7 +41,8 @@ watch(
   () => [...data.model],
   (value) => {
     emit("update:model-value", value)
-  }
+  },
+  { deep: true }
 )
 
 const handleOpenImport = () => {

@@ -70,10 +70,12 @@ export const useImport = (params?: { init?: boolean }) => {
   const parseTracksText = (text: string | null): TrackParams[] => {
     if (text) {
       const lines: string[] = text?.split(/\r?\n/) ?? []
-      const defaultFormat = /(\d+)\s(.*)\s:\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // 01 Artist name : Track title (00:00:00)
-      const withoutPositionFormat = /(.*)\s:\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name : Track title (00:00:00)
-      const withDotFormat = /(.*)\s\.\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name . Track title (00:00:00)
-      const withDashFormat = /(.*)\s\-\s(.*)(\s\((\d{2}:\d{2}:\d{2})\)?)/ // Artist name - Track title (00:00:00)
+      /**
+       * https://regex101.com/r/48Pf9u/1
+       * [<position>]<artist> <separator: [:•-]> <title>[ (<start_at: 00:00:00>)]
+       */
+      const defaultFormat =
+        /(?<position>\d+\s)?(?<artist>.+?)\s+[\:\-\•]\s+(?<title>.*?)(?=$|\s\((?<start_at>\d{2}\:\d{2}:\d{2})\))/
 
       const items = lines.reduce((res, line, i) => {
         if (defaultFormat.test(line)) {
@@ -82,42 +84,9 @@ export const useImport = (params?: { init?: boolean }) => {
             ...res,
             {
               position: i,
-              artist: infos?.[2],
-              title: infos?.[3],
-              start_at: infos?.[5],
-            } as TrackParams,
-          ]
-        } else if (withoutPositionFormat.test(line)) {
-          const infos = withoutPositionFormat.exec(line)
-          return [
-            ...res,
-            {
-              position: i,
-              artist: infos?.[1],
-              title: infos?.[2],
-              start_at: infos?.[4],
-            } as TrackParams,
-          ]
-        } else if (withDotFormat.test(line)) {
-          const infos = withDotFormat.exec(line)
-          return [
-            ...res,
-            {
-              position: i,
-              artist: infos?.[1],
-              title: infos?.[2],
-              start_at: infos?.[4],
-            } as TrackParams,
-          ]
-        } else if (withDashFormat.test(line)) {
-          const infos = withDashFormat.exec(line)
-          return [
-            ...res,
-            {
-              position: i,
-              artist: infos?.[1],
-              title: infos?.[2],
-              start_at: infos?.[4],
+              artist: infos?.groups?.artist,
+              title: infos?.groups?.title,
+              start_at: infos?.groups?.start_at,
             } as TrackParams,
           ]
         }

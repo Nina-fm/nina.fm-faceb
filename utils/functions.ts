@@ -43,6 +43,8 @@ export const findAuthorNames = (str: string) =>
     .replaceAll(" vs ", ", ")
     .replaceAll(" feat ", ", ")
     .replaceAll(" feat. ", ", ")
+    .replaceAll(" ft ", ", ")
+    .replaceAll(" ft. ", ", ")
     .split(", ")
 
 export const isValidImageUrl = (url: string): boolean => {

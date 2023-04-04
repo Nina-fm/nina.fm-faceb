@@ -66,7 +66,9 @@ const handleCancelImport = () => {
 
 const handleImport = () => {
   openImport.value = false
-  data.authors.splice(0, data.authors.length, ...parseAuthors(data.text))
+  const items = parseAuthors(data.text)
+  const parsed = items.map((item) => authors.value.find((a) => a.name === item.name) || item)
+  data.authors.splice(0, data.authors.length, ...parsed)
 }
 
 const handleCompareValues = (a: ItemBase, b: ItemBase | string) =>

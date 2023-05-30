@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "node ./netlify/enableCookies.js && nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -16,7 +16,8 @@
     "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
     "serve": "supabase functions serve localdev",
     "deploy": "yarn push:db && yarn deploy:functions",
-    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."
+    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore .",
+    "pm2:deploy": "pm2 deploy ecosystem.config.js production"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

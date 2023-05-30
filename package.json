@@ -10,14 +10,14 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
-    "reset:db": "supabase db reset",
-    "push:db": "supabase db push",
-    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
-    "serve": "supabase functions serve localdev",
-    "deploy": "yarn push:db && yarn deploy:functions",
+    "supa:gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
+    "supa:reset:db": "supabase db reset",
+    "supa:push:db": "supabase db push",
+    "supa:deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
+    "supa:serve": "supabase functions serve localdev",
+    "supa:deploy": "yarn push:db && yarn deploy:functions",
     "lint": "eslint --ext .js,.ts --ignore-path .eslintignore .",
-    "pm2:deploy": "pm2 deploy ecosystem.config.js production"
+    "deploy": "pm2 deploy ecosystem.config.js production"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

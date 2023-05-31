@@ -16,8 +16,7 @@
     "supa:deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
     "supa:serve": "supabase functions serve localdev",
     "supa:deploy": "yarn push:db && yarn deploy:functions",
-    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore .",
-    "deploy": "pm2 deploy ecosystem.config.js production"
+    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

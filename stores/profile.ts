@@ -15,7 +15,7 @@ export const useProfileStore = defineStore("profile", () => {
           id: userId,
         },
       })
-      data.value = result
+      data.value = result as Profile
     })
 
   const load = () => {
@@ -24,7 +24,7 @@ export const useProfileStore = defineStore("profile", () => {
     }
   }
 
-  const actAs = (role: Role) => !!data && data.value.role === role
+  const actAs = (role: Role) => !!data && data?.value?.role === role
 
   watch(isLoggedIn, (value) => {
     if (value) {
@@ -44,5 +44,6 @@ export const useProfileStore = defineStore("profile", () => {
 export const useProfileStoreRefs = () => storeToRefs(useProfileStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useProfileStore, import.meta.hot))
 }

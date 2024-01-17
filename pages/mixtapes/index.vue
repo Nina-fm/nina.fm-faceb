@@ -23,6 +23,7 @@ const filters: Filters = reactive({
   tags: [],
 })
 const itemsPerPage = ref(20)
+const page = ref(1)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false)
 const { smAndUp, mdAndUp, update } = useDisplay()
@@ -60,6 +61,11 @@ const headersDefinition = [
     sortable: false,
   },
 ]
+
+watch(filters, (value) => {
+  page.value = 1
+})
+
 const actAsAdmin = computed(() => actAs("admin"))
 const headers = computed(() => {
   update()
@@ -94,6 +100,11 @@ const handleAddFilter = (tag: Tag) => {
 
 const handleClearTagFilters = () => {
   filters.tags.splice(0, filters.tags.length)
+}
+
+const handlePageChange = (p: number) => {
+  console.log({ p })
+  page.value = p
 }
 
 const handleRowClick = (event: Event, value: DataTableRow) => {
@@ -165,7 +176,9 @@ onMounted(() => {
           :headers="headers"
           :items="filteredMixtapes"
           :search="search"
+          :page="page"
           class="clickable"
+          @update:page="handlePageChange"
           @click:row="handleRowClick"
         >
           <template #top>

@@ -1,21 +1,21 @@
 {
   "name": "nina.fm-admin",
-  "version": "0.4.8",
+  "version": "0.5.0",
   "description": "The official Nina.fm admin",
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "node ./netlify/enableCookies.js && nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
-    "reset:db": "supabase db reset",
-    "push:db": "supabase db push",
-    "deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
-    "serve": "supabase functions serve localdev",
-    "deploy": "yarn push:db && yarn deploy:functions",
+    "supa:gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
+    "supa:reset:db": "supabase db reset",
+    "supa:push:db": "supabase db push",
+    "supa:deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
+    "supa:serve": "supabase functions serve localdev",
+    "supa:deploy": "yarn push:db && yarn deploy:functions",
     "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."
   },
   "dependencies": {
@@ -32,7 +32,7 @@
     "vuetify": "^3.1.12"
   },
   "devDependencies": {
-    "@nuxtjs/supabase": "^0.3.1",
+    "@nuxtjs/supabase": "^1.1.5",
     "@nuxtjs/svg": "^0.4.0",
     "@pinia/nuxt": "^0.4.6",
     "@types/lodash.debounce": "^4.0.7",

@@ -47,5 +47,6 @@ export const useSnackbarStore = defineStore("snackbar", () => {
 export const useSnackbarStoreRefs = () => storeToRefs(useSnackbarStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useSnackbarStore, import.meta.hot))
 }

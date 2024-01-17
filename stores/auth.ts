@@ -7,7 +7,7 @@ export const useAuthStore = defineStore("auth", () => {
   const { $supabase } = useNuxtApp()
   const { snackError } = useSnackbarStore()
   const user = useSupabaseUser()
-  const token = useSupabaseToken()
+  const token = ref<string | null>()
   const isLoading = ref<boolean>(false)
   const isLoggedIn = computed(() => !!user.value && !!token.value)
 
@@ -20,7 +20,8 @@ export const useAuthStore = defineStore("auth", () => {
   /**
    * Listen for login state changes
    */
-  $supabase.auth.onAuthStateChange((event, session) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $supabase.auth.onAuthStateChange((event: any, session: { user: null; access_token: null }) => {
     user.value = session?.user || null
     token.value = session?.access_token || null
     isLoading.value = false
@@ -127,5 +128,6 @@ export const useAuthStore = defineStore("auth", () => {
 export const useAuthStoreRefs = () => storeToRefs(useAuthStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
 }

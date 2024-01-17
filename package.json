@@ -32,7 +32,7 @@
     "vuetify": "^3.1.12"
   },
   "devDependencies": {
-    "@nuxtjs/supabase": "^0.3.1",
+    "@nuxtjs/supabase": "^1.1.5",
     "@nuxtjs/svg": "^0.4.0",
     "@pinia/nuxt": "^0.4.6",
     "@types/lodash.debounce": "^4.0.7",

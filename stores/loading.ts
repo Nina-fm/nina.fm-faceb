@@ -62,5 +62,6 @@ export const useLoadingStore = defineStore("loading", () => {
 export const useLoadingStoreRefs = () => storeToRefs(useLoadingStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useLoadingStore, import.meta.hot))
 }

@@ -37,9 +37,9 @@ export const useTagsStore = defineStore("tags", () => {
   const createTag = async (tagData: TagParams) =>
     await process(
       async () => {
-        const result: Tag = await api.post(`/tags`, {
+        const result = (await api.post(`/tags`, {
           body: { data: tagData },
-        })
+        })) as Tag
         data.value = [...data.value, result]
         index.value = { ...index.value, [result.id]: result }
         return data
@@ -50,10 +50,10 @@ export const useTagsStore = defineStore("tags", () => {
   const updateTag = async (tagId: string | number, tagData: TagParams) =>
     await process(
       async () => {
-        const result: Tag = await api.patch(`/tags`, {
+        const result = (await api.patch(`/tags`, {
           query: { id: tagId },
           body: { data: tagData },
-        })
+        })) as Tag
         data.value = [...data.value.filter((a) => a.id !== tagId), result]
         index.value = { ...index.value, [tagId]: result }
         return data
@@ -89,5 +89,6 @@ export const useTagsStore = defineStore("tags", () => {
 export const useTagsStoreRefs = () => storeToRefs(useTagsStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useTagsStore, import.meta.hot))
 }

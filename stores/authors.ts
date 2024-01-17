@@ -37,9 +37,9 @@ export const useAuthorsStore = defineStore("authors", () => {
   const createAuthor = async (authorData: AuthorParams) =>
     await process(
       async () => {
-        const result: AuthorExt = await api.post(`/authors`, {
+        const result = (await api.post(`/authors`, {
           body: { data: authorData },
-        })
+        })) as AuthorExt
         data.value = [...data.value, result]
         index.value = { ...index.value, [result.id]: result }
         return data
@@ -50,10 +50,10 @@ export const useAuthorsStore = defineStore("authors", () => {
   const updateAuthor = async (authorId: string | number, authorData: AuthorParams) =>
     await process(
       async () => {
-        const result: AuthorExt = await api.patch(`/authors`, {
+        const result = (await api.patch(`/authors`, {
           query: { id: authorId },
           body: { data: authorData },
-        })
+        })) as AuthorExt
         data.value = [...data.value.filter((a) => a.id !== authorId), result]
         index.value = { ...index.value, [authorId]: result }
         return data
@@ -87,5 +87,6 @@ export const useAuthorsStore = defineStore("authors", () => {
 export const useAuthorsStoreRefs = () => storeToRefs(useAuthorsStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useAuthorsStore, import.meta.hot))
 }

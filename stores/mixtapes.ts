@@ -42,9 +42,9 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   ) =>
     await process(
       async () => {
-        const result: MixtapeExt = await api.post(`/mixtapes`, {
+        const result = (await api.post(`/mixtapes`, {
           body: { data: mixtapeData },
-        })
+        })) as MixtapeExt
         data.value = [...data.value, result]
         index.value = { ...index.value, [result.id]: result }
         return result
@@ -61,12 +61,12 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   ) =>
     await process(
       async () => {
-        const result: MixtapeExt = await api.patch(`/mixtapes`, {
+        const result = (await api.patch(`/mixtapes`, {
           query: { id: mixtapeId },
           body: {
             data: mixtapeData,
           },
-        })
+        })) as MixtapeExt
         data.value = [...data.value.filter((a) => a.id !== mixtapeId), result]
         index.value = { ...index.value, [mixtapeId]: result }
         return result
@@ -100,5 +100,6 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
 export const useMixtapesStoreRefs = () => storeToRefs(useMixtapesStore())
 
 if (import.meta.hot) {
+  // @ts-expect-error it's ok
   import.meta.hot.accept(acceptHMRUpdate(useMixtapesStore, import.meta.hot))
 }

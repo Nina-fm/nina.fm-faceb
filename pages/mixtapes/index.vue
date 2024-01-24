@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useDisplay } from "vuetify/lib/framework.mjs"
-import { Tag } from "~~/types/supatypes"
+import { MixtapeExt, MixtapesTags, Tag } from "~~/types/supatypes"
 
 definePageMeta({ middleware: ["auth"] })
 
@@ -74,11 +74,14 @@ const headers = computed(() => {
   )
 })
 const filteredMixtapes = computed(() =>
-  mixtapes.value.filter((m) => {
+  (mixtapes.value as MixtapeExt[]).filter((m) => {
     if (filters.tags.length) {
-      return filters.tags.reduce((r: boolean, at: Tag) => {
-        const isMatching = m.tags.reduce((match: boolean, t: Tag) => (t.id === at.id ? true : match), false)
-        return !isMatching ? false : r
+      return filters.tags.reduce((acc: boolean, filterTag: Tag) => {
+        const isMatching = m.tags.reduce(
+          (match: boolean, mixtapeTag: Tag) => (mixtapeTag.id === filterTag.id ? true : match),
+          false
+        )
+        return !isMatching ? false : acc
       }, true)
     }
     return true
@@ -141,6 +144,10 @@ onMounted(() => {
   fetchMixtapes()
   fetchTags()
   document.body.addEventListener("resize", () => update())
+})
+
+onBeforeUnmount(() => {
+  document.body.removeEventListener("resize", () => update())
 })
 </script>
 

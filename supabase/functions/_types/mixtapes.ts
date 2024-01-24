@@ -5,6 +5,7 @@ import {
   mixtapeAuthorsWithAuthorsRelation,
   mixtapeTagsRelation,
   mixtapeTagsWithTagsRelation,
+  tagRelation,
   tracksRelation,
 } from "../_shared/relations.ts"
 
@@ -22,7 +23,7 @@ export type WithAuthor = ResolveRelationQuery<typeof authorRelation, "one">
 export type WithMixtapeAuthors = ResolveRelationQuery<typeof mixtapeAuthorsRelation, "many">
 export type WithMixtapeAuthorsExt = ResolveRelationQuery<typeof mixtapeAuthorsWithAuthorsRelation, "many">
 
-export type WithTag = ResolveRelationQuery<typeof authorRelation, "one">
+export type WithTags = ResolveRelationQuery<typeof tagRelation, "one">
 export type WithMixtapeTags = ResolveRelationQuery<typeof mixtapeTagsRelation, "many">
 export type WithMixtapeTagsExt = ResolveRelationQuery<typeof mixtapeTagsWithTagsRelation, "many">
 
@@ -39,6 +40,7 @@ export type MixtapesTagsParams = DParams<"mixtapes_tags">
 
 export type MixtapeExt = Mixtape &
   WithMixtapeAuthorsExt &
+  WithTags &
   WithMixtapeTagsExt &
   WithTracks & {
     authors_text?: string | null

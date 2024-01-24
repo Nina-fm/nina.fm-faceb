@@ -1,29 +1,14 @@
 <script lang="ts" setup>
 import { useDisplay } from "vuetify/lib/framework.mjs"
-import { Tag } from "~~/types/supatypes"
+import { MixtapeExt, Tag } from "~~/types/supatypes"
 
 definePageMeta({ middleware: ["auth"] })
 
-interface TagFilter {
-  id: number
-  exclude?: boolean
-}
-
-interface Filters {
-  tags: TagFilter[]
-}
-
 const { actAs } = useProfileStore()
-const { fetchMixtapes, deleteMixtape } = useMixtapesStore()
-const { data: mixtapes } = useMixtapesStoreRefs()
+const { fetchMixtapes, deleteMixtape, filters } = useMixtapesStore()
+const { data: mixtapes, search, itemsPerPage, page } = useMixtapesStoreRefs()
 const { fetchTags } = useTagsStore()
 const { data: tags } = useTagsStoreRefs()
-const search = ref(null)
-const filters: Filters = reactive({
-  tags: [],
-})
-const itemsPerPage = ref(20)
-const page = ref(1)
 const idToDelete = ref<string | number | null>(null)
 const openConfirm = ref(false)
 const { smAndUp, mdAndUp, update } = useDisplay()
@@ -74,11 +59,14 @@ const headers = computed(() => {
   )
 })
 const filteredMixtapes = computed(() =>
-  mixtapes.value.filter((m) => {
+  (mixtapes.value as MixtapeExt[]).filter((m) => {
     if (filters.tags.length) {
-      return filters.tags.reduce((r: boolean, at: Tag) => {
-        const isMatching = m.tags.reduce((match: boolean, t: Tag) => (t.id === at.id ? true : match), false)
-        return !isMatching ? false : r
+      return filters.tags.reduce((acc: boolean, filterTag: Tag) => {
+        const isMatching = m.tags.reduce(
+          (match: boolean, mixtapeTag: Tag) => (mixtapeTag.id === filterTag.id ? true : match),
+          false
+        )
+        return !isMatching ? false : acc
       }, true)
     }
     return true
@@ -141,6 +129,10 @@ onMounted(() => {
   fetchMixtapes()
   fetchTags()
   document.body.addEventListener("resize", () => update())
+})
+
+onBeforeUnmount(() => {
+  document.body.removeEventListener("resize", () => update())
 })
 </script>
 

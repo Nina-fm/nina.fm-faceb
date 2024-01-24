@@ -1,11 +1,28 @@
 import { MixtapeExt, MixtapeParamsExt, ObjectOf } from "~~/types/supatypes"
 
+export interface TagFilter {
+  id: number
+  exclude?: boolean
+}
+
+export interface Filters {
+  tags: TagFilter[]
+}
+
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi()
   const isLoading = ref<boolean>(false)
   const { process } = useProcess({ isLoading })
   const data = ref<MixtapeExt[]>([])
   const index = ref<ObjectOf<MixtapeExt>>()
+
+  // List query params
+  const search = ref(null)
+  const filters: Filters = reactive({
+    tags: [],
+  })
+  const itemsPerPage = ref(20)
+  const page = ref(1)
 
   const fetchMixtapes = async () =>
     await process(async () => {
@@ -94,6 +111,10 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     updateMixtape,
     deleteMixtape,
     getById,
+    search,
+    filters,
+    itemsPerPage,
+    page,
   }
 })
 

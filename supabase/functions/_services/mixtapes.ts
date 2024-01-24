@@ -27,20 +27,13 @@ export class MixtapesService extends Service {
    */
   format(mixtape: MixtapeExt) {
     const _authors = new AuthorsService(this.headers)
-    const { mixtapes_authors, mixtapes_tags, cover, ...rest } = mixtape
+    const { mixtapes_authors, tags, cover, ...rest } = mixtape
     const authors = mixtapes_authors
-      ? mixtapes_authors.map(({ authors: author, position }) => {
+      ? mixtapes_authors.map(({ authors: author, position }: MixtapeExt["authors"]) => {
           return _authors.format({
             position,
             ...author,
           })
-        })
-      : []
-    const tags = mixtapes_tags
-      ? mixtapes_tags.map(({ tags: tag }) => {
-          return {
-            ...tag,
-          }
         })
       : []
 
@@ -54,9 +47,11 @@ export class MixtapesService extends Service {
       tags,
       authors_text: formatAuthorNames(authors),
       tracks: mixtape.tracks
-        ? mixtape.tracks.map(({ created_at: _created_at, mixtape_id: _mixtape_id, ...track }) => ({
-            ...track,
-          }))
+        ? mixtape.tracks.map(
+            ({ created_at: _created_at, mixtape_id: _mixtape_id, ...track }: MixtapeExt["tracks"]) => ({
+              ...track,
+            })
+          )
         : [],
     }
   }

@@ -140,9 +140,6 @@ onBeforeUnmount(() => {
   <PageHeader
     title="Les mixtapes"
     :actions="[
-      ...(actAsAdmin
-        ? [{ tooltip: 'Import', icon: 'mdi-database-arrow-up', onClick: () => navigateTo('/mixtapes/import') }]
-        : []),
       { tooltip: 'Rafraîchir', icon: 'mdi-refresh', onClick: handleRefresh },
       { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo('/mixtapes/add') },
     ]"

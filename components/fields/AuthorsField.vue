@@ -26,8 +26,9 @@ const emit = defineEmits<{
 
 const { parseAuthors } = useImport()
 const { modelValue, textValue } = toRefs(props)
+const { isLoading } = useLoadingStore()
 const { fetchAuthors } = useAuthorsStore()
-const { data: authorsData, isLoading: isLoadingAuthors } = useAuthorsStoreRefs()
+const { data: authorsData } = useAuthorsStoreRefs()
 const openImport = ref(false)
 const authors = computed(() => authorsData.value.map(({ id, name }) => ({ id, name })))
 const data: Data = reactive({
@@ -85,7 +86,7 @@ onBeforeMount(() => {
       <v-combobox
         v-model="data.authors"
         :hide-no-data="false"
-        :loading="isLoadingAuthors"
+        :loading="isLoading('authors')"
         :label="label"
         :items="authors"
         item-title="name"

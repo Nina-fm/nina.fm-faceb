@@ -3,7 +3,6 @@ const { $version } = useNuxtApp()
 const config = useRuntimeConfig()
 const { logout } = useAuthStore()
 const { user, isLoggedIn } = useAuthStoreRefs()
-const { actAs } = useProfileStore()
 const showNewVersion = ref(false)
 
 const handleLogout = async () => {

@@ -4,7 +4,6 @@ import * as directives from "vuetify/directives"
 // plugins/vuetify.js
 import { ThemeDefinition, createVuetify } from "vuetify"
 
-import { VDataTable } from "vuetify/labs/VDataTable"
 import { fr } from "vuetify/locale"
 
 const NinaTheme: ThemeDefinition = {
@@ -33,7 +32,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     components: {
       ...components,
-      VDataTable,
     },
     directives,
     defaults: {

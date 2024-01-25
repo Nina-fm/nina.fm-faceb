@@ -6,7 +6,7 @@ definePageMeta({ middleware: ["auth"] })
 
 const { snackError } = useSnackbarStore()
 const { fetchFromUrl, importData, keysImported, keysWithErrors } = useImport()
-const { isLoading } = useLoadingStoreRefs()
+const { isLoading } = useLoadingStore()
 const data = ref<MixtapeParamsExt[]>([])
 const url = ref<string | null>(null)
 const importEnded = ref<boolean>(false)
@@ -59,7 +59,7 @@ const handleCancel = () => {
               </v-alert>
             </v-col>
           </v-row>
-          <v-row v-if="keysImported.length && !isLoading">
+          <v-row v-if="keysImported.length && !isLoading('import')">
             <v-col>
               <v-alert icon="mdi-database" color="success" variant="tonal">
                 <v-alert-title>{{ keysImported.length }} mixtapes Importées !</v-alert-title>

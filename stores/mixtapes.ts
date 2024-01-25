@@ -1,28 +1,28 @@
-import { MixtapeExt, MixtapeParamsExt, ObjectOf } from "~~/types/supatypes"
-
-export interface TagFilter {
-  id: number
-  exclude?: boolean
-}
-
-export interface Filters {
-  tags: TagFilter[]
-}
+import { MixtapeExt, MixtapeParamsExt, ObjectOf, Tag } from "~~/types/supatypes"
 
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi()
-  const isLoading = ref<boolean>(false)
-  const { process } = useProcess({ isLoading })
+  const { process } = useProcess({ loadingKey: "mixtapes" })
   const data = ref<MixtapeExt[]>([])
   const index = ref<ObjectOf<MixtapeExt>>()
 
   // List query params
   const search = ref(null)
-  const filters: Filters = reactive({
-    tags: [],
-  })
-  const itemsPerPage = ref(20)
+  const tagFilters = ref<number[]>([])
+  const itemsPerPage = ref(25)
   const page = ref(1)
+
+  const resetSearch = () => (search.value = null)
+  const resetTagFilters = () => tagFilters.value.splice(0, tagFilters.value.length)
+
+  const toggleTagFilter = (tag: Tag) => {
+    const index = tagFilters.value.findIndex((id) => id === tag.id)
+    if (index >= 0) {
+      tagFilters.value.splice(index, 1)
+    } else {
+      tagFilters.value.push(tag.id)
+    }
+  }
 
   const fetchMixtapes = async () =>
     await process(async () => {
@@ -102,9 +102,24 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
       { successMsg: "Merci d'avoir fait du ménage !" }
     )
 
+  const filteredData = computed(() =>
+    data.value.filter((m: MixtapeExt) => {
+      if (tagFilters.value.length) {
+        return tagFilters.value.reduce((acc: boolean, id: number) => {
+          const isMatching = m.tags.reduce(
+            (match: boolean, mixtapeTag: Tag) => (mixtapeTag.id === id ? true : match),
+            false
+          )
+          return !isMatching ? false : acc
+        }, true)
+      }
+      return true
+    })
+  )
+
   return {
-    isLoading,
     data,
+    filteredData,
     index,
     fetchMixtapes,
     createMixtape,
@@ -112,9 +127,12 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     deleteMixtape,
     getById,
     search,
-    filters,
+    tagFilters,
     itemsPerPage,
     page,
+    resetSearch,
+    resetTagFilters,
+    toggleTagFilter,
   }
 })
 

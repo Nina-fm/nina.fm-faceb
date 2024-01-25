@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { user } = useAuthStoreRefs()
 const { profile } = useProfileStoreRefs()
-const { isLoading, loadingPercent } = useLoadingStoreRefs()
+const { loading, loadingPercent } = useLoadingStoreRefs()
 const { snackbars } = useSnackbarStoreRefs()
 </script>
 
@@ -10,7 +10,7 @@ const { snackbars } = useSnackbarStoreRefs()
     <NuxtLoadingIndicator />
     <NuxtPage />
   </NuxtLayout>
-  <Loading :model-value="isLoading" :percent-value="loadingPercent" />
+  <Loading :model-value="loading" :percent-value="loadingPercent" />
   <Notifier v-model="snackbars" />
 </template>
 

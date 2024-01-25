@@ -4,8 +4,7 @@ import { Role } from "~~/supabase/functions/_types/database"
 export const useProfileStore = defineStore("profile", () => {
   const api = useApi()
   const { isLoggedIn, user } = useAuthStoreRefs()
-  const isLoading = ref<boolean>(false)
-  const { process } = useProcess({ isLoading })
+  const { process } = useProcess({ loadingKey: "profile" })
   const data = ref<Profile | null>(null)
 
   const loadProfile = async (userId: string) =>

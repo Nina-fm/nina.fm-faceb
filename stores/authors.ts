@@ -2,8 +2,7 @@ import { AuthorExt, AuthorParams, ObjectOf } from "~~/types/supatypes"
 
 export const useAuthorsStore = defineStore("authors", () => {
   const api = useApi()
-  const isLoading = ref<boolean>(false)
-  const { process } = useProcess({ isLoading })
+  const { process } = useProcess({ loadingKey: "authors" })
   const data = ref<AuthorExt[]>([])
   const index = ref<ObjectOf<AuthorExt>>()
 
@@ -73,7 +72,6 @@ export const useAuthorsStore = defineStore("authors", () => {
     )
 
   return {
-    isLoading,
     data,
     index,
     fetchAuthors,

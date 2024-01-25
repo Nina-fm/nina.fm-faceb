@@ -1,28 +1,18 @@
 import { defineStore, storeToRefs } from "pinia"
 
 export const useLoadingStore = defineStore("loading", () => {
-  const loading = ref<boolean>(false)
   const loadingPercent = ref<number | null>(null)
   const loadingPercentInc = ref<number | null>(null)
   const loadingPercentTotal = ref<number | null>(null)
+  const loadingStack = ref<string[]>([])
 
-  const { isLoading: authIsLoading } = storeToRefs(useAuthStore())
-  const { isLoading: mixtapesIsLoading } = storeToRefs(useMixtapesStore())
-  const { isLoading: authorsIsLoading } = storeToRefs(useAuthorsStore())
-
-  const isLoading = computed<boolean>(
-    () => loading.value || authIsLoading.value || mixtapesIsLoading.value || authorsIsLoading.value
-  )
+  const loading = computed<boolean>(() => !!loadingStack.value.length)
 
   watch(loadingPercentInc, (value: number | null) => {
     if (typeof value === "number" && typeof loadingPercentTotal.value === "number") {
       loadingPercent.value = getPercent(value, loadingPercentTotal.value)
     }
   })
-
-  const toggleLoading = () => {
-    loading.value = !loading.value
-  }
 
   const setLoadingPercent = (percent: number) => {
     loadingPercent.value = percent
@@ -32,26 +22,31 @@ export const useLoadingStore = defineStore("loading", () => {
     loadingPercentInc.value = (loadingPercentInc.value ?? 0) + 1
   }
 
-  const loadingOn = (total?: number | null) => {
+  const loadingOn = (key: string, total?: number | null) => {
+    loadingStack.value.push(key)
+
     if (typeof total === "number") {
       loadingPercentTotal.value = total
       loadingPercentInc.value = 0
     }
-    loading.value = true
   }
 
-  const loadingOff = () => {
+  const loadingOff = (key: string) => {
     loadingPercent.value = null
     loadingPercentInc.value = null
     loadingPercentTotal.value = null
-    loading.value = false
+    const index = loadingStack.value.findIndex((k) => k === key)
+    if (index >= 0) {
+      loadingStack.value.splice(index, 1)
+    }
   }
+
+  const isLoading = (key: string) => loadingStack.value.includes(key)
 
   return {
     loading,
     loadingPercent,
     isLoading,
-    toggleLoading,
     loadingOff,
     loadingOn,
     setLoadingPercent,

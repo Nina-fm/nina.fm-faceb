@@ -6,9 +6,9 @@ import { log } from "~~/utils/console"
 export const useAuthStore = defineStore("auth", () => {
   const { $supabase } = useNuxtApp()
   const { snackError } = useSnackbarStore()
+  const { loadingOn, loadingOff } = useLoadingStore()
   const user = useSupabaseUser()
   const token = ref<string | null>()
-  const isLoading = ref<boolean>(false)
   const isLoggedIn = computed(() => !!user.value && !!token.value)
 
   watchEffect(() => {
@@ -24,12 +24,12 @@ export const useAuthStore = defineStore("auth", () => {
   $supabase.auth.onAuthStateChange((event: any, session: { user: null; access_token: null }) => {
     user.value = session?.user || null
     token.value = session?.access_token || null
-    isLoading.value = false
+    loadingOff("auth")
   })
 
   const errorHandler = async (fn: AnyFn) => {
     try {
-      isLoading.value = true
+      loadingOn("auth")
       const result = await fn()
       if (result.error) throw result.error
       return result
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore("auth", () => {
       log(error)
       snackError(error.error_description || error.message)
     } finally {
-      isLoading.value = false
+      loadingOff("auth")
     }
   }
 
@@ -112,7 +112,6 @@ export const useAuthStore = defineStore("auth", () => {
   return {
     user,
     token,
-    isLoading,
     login,
     loginWithEmail,
     loginWithSocialProvider,

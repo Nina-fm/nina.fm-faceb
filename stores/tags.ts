@@ -2,8 +2,7 @@ import { ObjectOf, Tag, TagParams } from "~~/types/supatypes"
 
 export const useTagsStore = defineStore("tags", () => {
   const api = useApi()
-  const isLoading = ref<boolean>(false)
-  const { process } = useProcess({ isLoading })
+  const { process } = useProcess({ loadingKey: "tags" })
   const data = ref<Tag[]>([])
   const index = ref<ObjectOf<Tag>>()
 
@@ -75,7 +74,6 @@ export const useTagsStore = defineStore("tags", () => {
     )
 
   return {
-    isLoading,
     data,
     index,
     fetchTags,

@@ -1,22 +1,14 @@
 import { AnyFn } from "~~/types/supatypes"
-import { Ref } from "nuxt/dist/app/compat/capi"
 import { log } from "~~/utils/console"
 
-export const useProcess = ({ isLoading }: { isLoading?: Ref<boolean> }) => {
+export const useProcess = ({ loadingKey, withLoading = true }: { withLoading?: boolean; loadingKey: string }) => {
   const { snackError, snackSuccess } = useSnackbarStore()
-  const loading = ref<boolean>(isLoading?.value ?? false)
-
-  watch(
-    () => isLoading?.value,
-    (value) => {
-      loading.value = value ?? false
-    }
-  )
+  const { loadingOn, loadingOff } = useLoadingStore()
 
   const process = async (fn: AnyFn, opts?: { successMsg?: string; withMessages?: boolean }) => {
     try {
-      if (loading) {
-        loading.value = true
+      if (withLoading) {
+        loadingOn(loadingKey)
       }
       const result = await fn()
       if (opts?.successMsg && (opts?.withMessages ?? true)) snackSuccess(opts.successMsg)
@@ -29,8 +21,8 @@ export const useProcess = ({ isLoading }: { isLoading?: Ref<boolean> }) => {
       }
       return { data: null, error }
     } finally {
-      if (loading) {
-        loading.value = false
+      if (withLoading) {
+        loadingOff(loadingKey)
       }
     }
   }

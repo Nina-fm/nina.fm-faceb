@@ -11,8 +11,7 @@ export interface Filters {
 
 export const useMixtapesStore = defineStore("mixtapes", () => {
   const api = useApi()
-  const isLoading = ref<boolean>(false)
-  const { process } = useProcess({ isLoading })
+  const { process } = useProcess({ loadingKey: "mixtapes" })
   const data = ref<MixtapeExt[]>([])
   const index = ref<ObjectOf<MixtapeExt>>()
 

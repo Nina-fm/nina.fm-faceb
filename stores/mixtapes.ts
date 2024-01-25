@@ -12,6 +12,10 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   const itemsPerPage = ref(25)
   const page = ref(1)
 
+  watch(tagFilters, (value, prevValue) => {
+    page.value = 1
+  })
+
   const resetSearch = () => (search.value = null)
   const resetTagFilters = () => tagFilters.value.splice(0, tagFilters.value.length)
 

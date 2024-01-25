@@ -45,10 +45,6 @@ const headersDefinition = [
   },
 ]
 
-watch(tagFilters, (value) => {
-  page.value = 1
-})
-
 const headers = computed(() => {
   update()
   return headersDefinition.filter(
@@ -87,14 +83,19 @@ const handleRefresh = async () => {
 }
 
 onMounted(() => {
-  fetchMixtapes()
-  fetchTags()
+  if (!filteredMixtapes.value.length) {
+    fetchMixtapes()
+  }
+  if (!tags.value.length) {
+    fetchTags()
+  }
   document.body.addEventListener("resize", () => update())
 })
 
 onBeforeUnmount(() => {
   document.body.removeEventListener("resize", () => update())
 })
+console.log(tagFilters.value)
 </script>
 
 <template>
@@ -122,8 +123,8 @@ onBeforeUnmount(() => {
     <v-row>
       <v-col cols="12">
         <v-data-table
-          v-model:page="page"
           v-model:items-per-page="itemsPerPage"
+          v-model:page="page"
           :headers="headers"
           :items="filteredMixtapes"
           :search="search"
@@ -133,15 +134,9 @@ onBeforeUnmount(() => {
           <template #top>
             <v-toolbar class="pa-4" color="transparent" height="auto">
               <v-chip-group v-model:model-value="tagFilters" multiple column>
-                <v-chip
-                  v-for="tag in tags"
-                  :key="tag.id"
-                  :value="tag.id"
-                  filter
-                  selected-class="text-primary"
-                  size="small"
-                  >{{ tag.name }}</v-chip
-                >
+                <v-chip v-for="tag in tags" :key="tag.id" :value="tag.id" selected-class="text-primary" size="small">{{
+                  tag.name
+                }}</v-chip>
               </v-chip-group>
               <v-spacer></v-spacer>
               <v-btn

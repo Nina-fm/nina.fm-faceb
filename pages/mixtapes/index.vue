@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import { useDisplay } from "vuetify/lib/framework.mjs"
-import { MixtapeExt, Tag } from "~~/types/supatypes"
 
 definePageMeta({ middleware: ["auth"] })
 
-const { actAs } = useProfileStore()
-const { fetchMixtapes, deleteMixtape, filters } = useMixtapesStore()
-const { data: mixtapes, search, itemsPerPage, page } = useMixtapesStoreRefs()
+const { fetchMixtapes, deleteMixtape, resetTagFilters } = useMixtapesStore()
+const { filteredData: filteredMixtapes, tagFilters, search, itemsPerPage, page } = useMixtapesStoreRefs()
 const { fetchTags } = useTagsStore()
 const { data: tags } = useTagsStoreRefs()
 const idToDelete = ref<string | number | null>(null)
@@ -47,56 +45,19 @@ const headersDefinition = [
   },
 ]
 
-watch(filters, (value) => {
+watch(tagFilters, (value) => {
   page.value = 1
 })
 
-const actAsAdmin = computed(() => actAs("admin"))
 const headers = computed(() => {
   update()
   return headersDefinition.filter(
     (h) => !("show" in h) || (h.show === "mdAndUp" && mdAndUp.value) || (h.show === "smAndUp" && smAndUp.value)
   )
 })
-const filteredMixtapes = computed(() =>
-  (mixtapes.value as MixtapeExt[]).filter((m) => {
-    if (filters.tags.length) {
-      return filters.tags.reduce((acc: boolean, filterTag: Tag) => {
-        const isMatching = m.tags.reduce(
-          (match: boolean, mixtapeTag: Tag) => (mixtapeTag.id === filterTag.id ? true : match),
-          false
-        )
-        return !isMatching ? false : acc
-      }, true)
-    }
-    return true
-  })
-)
 
-const isFilterActive = (tagId: number) => !!filters.tags.find((t) => t.id === tagId)
-
-const handleAddFilter = (tag: Tag) => {
-  const index = filters.tags.findIndex((t) => t.id === tag.id)
-  if (index >= 0) {
-    filters.tags.splice(index, 1)
-  } else {
-    filters.tags.push({
-      id: tag.id,
-    })
-  }
-}
-
-const handleClearTagFilters = () => {
-  filters.tags.splice(0, filters.tags.length)
-}
-
-const handlePageChange = (p: number) => {
-  console.log({ p })
-  page.value = p
-}
-
-const handleRowClick = (event: Event, value: DataTableRow) => {
-  navigateTo(`/mixtapes/${value.item.raw.id}`)
+const handleRowClick = (event: Event, value: VDataTableRow) => {
+  navigateTo(`/mixtapes/${value.item.id}`)
 }
 
 const handleEdit = (event: Event, id: string | number) => {
@@ -161,64 +122,64 @@ onBeforeUnmount(() => {
     <v-row>
       <v-col cols="12">
         <v-data-table
+          v-model:page="page"
           v-model:items-per-page="itemsPerPage"
           :headers="headers"
           :items="filteredMixtapes"
           :search="search"
-          :page="page"
           class="clickable"
-          @update:page="handlePageChange"
           @click:row="handleRowClick"
         >
           <template #top>
             <v-toolbar class="pa-4" color="transparent" height="auto">
-              <v-chip-group multiple column>
+              <v-chip-group v-model:model-value="tagFilters" multiple column>
                 <v-chip
                   v-for="tag in tags"
                   :key="tag.id"
-                  :filter="isFilterActive(tag.id)"
+                  :value="tag.id"
+                  filter
+                  selected-class="text-primary"
                   size="small"
-                  @click="() => handleAddFilter(tag)"
                   >{{ tag.name }}</v-chip
                 >
               </v-chip-group>
               <v-spacer></v-spacer>
               <v-btn
-                v-if="filters.tags.length"
+                v-if="tagFilters.length"
                 icon="mdi-close-circle"
                 size="small"
                 variant="plain"
-                @click="handleClearTagFilters"
+                @click="resetTagFilters"
               />
             </v-toolbar>
           </template>
           <template #item.name="{ item }">
             <div class="d-flex flex-row align-center">
               <v-avatar v-if="smAndUp" rounded color="grey-darken-3" class="mr-4">
-                <v-img v-if="item.raw.cover_url" :src="item.raw.cover_url" cover />
+                <v-img v-if="item.cover_url" :src="item.cover_url" cover />
                 <v-icon v-else icon="mdi-image-off" color="grey-darken-2" />
               </v-avatar>
-              <div>{{ item.raw.name }}</div>
+              <div>{{ item.name }}</div>
             </div>
           </template>
           <template #item.tracks="{ item }">
-            <v-chip density="comfortable" :color="item.raw.tracks.length ? 'success' : 'error'">{{
-              item.raw.tracks.length
+            <v-chip density="comfortable" :color="item.tracks.length ? 'success' : 'error'">{{
+              item.tracks.length
             }}</v-chip>
           </template>
           <template #item.tags="{ item }">
-            <v-tooltip location="bottom" content-class="bg-grey-darken-3" :disabled="!item.raw.tags.length">
+            <v-tooltip location="bottom" content-class="bg-grey-darken-3" :disabled="!item.tags.length">
               <template #activator="{ props: activatorProps }">
                 <v-chip
                   v-bind="activatorProps"
-                  :color="!!item.raw.tags.length ? 'info' : 'default'"
+                  :color="!!item.tags.length ? 'info' : 'default'"
                   density="comfortable"
-                  >{{ item.raw.tags.length }}</v-chip
+                  >{{ item.tags.length }}</v-chip
                 >
               </template>
               <template #default>
                 <v-chip
-                  v-for="tag in item.raw.tags"
+                  v-for="tag in item.tags"
                   :key="tag.id"
                   color="info"
                   variant="flat"
@@ -237,14 +198,14 @@ onBeforeUnmount(() => {
                 color="default"
                 size="small"
                 variant="text"
-                @click.stop="(e: Event) => handleEdit(e, item.raw.id)"
+                @click.stop="(e: Event) => handleEdit(e, item.id)"
               />
               <v-btn
                 icon="mdi-delete"
                 color="default"
                 size="small"
                 variant="text"
-                @click.stop="(e: Event) => handleDelete(e, item.raw.id)"
+                @click.stop="(e: Event) => handleDelete(e, item.id)"
               />
             </div>
           </template>

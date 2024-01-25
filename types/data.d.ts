@@ -1,14 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { VDataTableRow } from "vuetify/lib/components/index.mjs"
+
 declare global {
-  interface DataTableRow {
-    item: {
-      title: string
-      value: any
-      props: { title: string; value: any }
-      children: any[]
-      raw: any
-    } & { type: "item"; columns: Record<string, unknown> }
-  }
+  type VDataTableRow = InstanceType<typeof VDataTableRow>
 }
 
 export {}

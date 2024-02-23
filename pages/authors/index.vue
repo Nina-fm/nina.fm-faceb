@@ -28,7 +28,7 @@ const headers = [
 
 const isMe = (userId: string) => user.value?.id === userId
 
-const handleRowClick = (event: Event, value: DataTableRow) => {
+const handleRowClick = (event: Event, value: VDataTableRow) => {
   navigateTo(`/authors/${value.item.raw.id}`)
 }
 
@@ -94,13 +94,13 @@ onMounted(() => fetchAuthors())
           @click:row="handleRowClick"
         >
           <template #item.user_id="{ item }">
-            <v-chip v-if="isMe(item.raw.user_id)" color="primary" size="small">Moi</v-chip>
+            <v-chip v-if="isMe(item.user_id)" color="primary" size="small">Moi</v-chip>
             <v-badge
               v-else
-              :class="`${item.raw.user_id ? '' : 'outlined'}`"
+              :class="`${item.user_id ? '' : 'outlined'}`"
               dot
               inline
-              :color="item.raw.user_id ? 'primary' : 'default'"
+              :color="item.user_id ? 'primary' : 'default'"
             />
           </template>
           <template #item.actions="{ item }">
@@ -110,14 +110,14 @@ onMounted(() => fetchAuthors())
                 color="default"
                 size="small"
                 variant="text"
-                @click.stop="(e: Event) => handleEdit(e, item.raw.id)"
+                @click.stop="(e: Event) => handleEdit(e, item.id)"
               />
               <v-btn
                 icon="mdi-delete"
                 color="default"
                 size="small"
                 variant="text"
-                @click.stop="(e: Event) => handleDelete(e, item.raw.id)"
+                @click.stop="(e: Event) => handleDelete(e, item.id)"
               />
             </div>
           </template>

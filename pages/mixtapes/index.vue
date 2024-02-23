@@ -95,7 +95,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.body.removeEventListener("resize", () => update())
 })
-console.log(tagFilters.value)
 </script>
 
 <template>

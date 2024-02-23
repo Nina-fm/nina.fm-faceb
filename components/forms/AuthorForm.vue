@@ -18,8 +18,8 @@ const rules = useFieldRules()
 const valid = ref(false)
 const isEdit = computed(() => !!author.value)
 const form = reactive({
-  name: author.value?.name ?? null,
-  user_id: author.value?.user_id ?? null,
+  name: author.value?.name ?? "",
+  user_id: author.value?.user_id ?? "",
 })
 
 const handleCancel = () => emit("cancel")

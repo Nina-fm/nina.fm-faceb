@@ -29,13 +29,7 @@ const handleAutoFill = () => {
         <template #append-inner>
           <v-tooltip activator="parent" location="start" :text="tooltip ?? 'C\'est moi'">
             <template #activator="{ props: activatorProps }">
-              <v-btn
-                variant="plain"
-                icon="mdi-hand-front-left"
-                class="field-inner-button"
-                v-bind="activatorProps"
-                @click="handleAutoFill"
-              />
+              <v-btn variant="plain" icon="mdi-hand-front-left" v-bind="activatorProps" @click="handleAutoFill" />
             </template>
           </v-tooltip>
         </template>

@@ -84,7 +84,7 @@ const { getRootProps, getInputProps, isDragActive, isFocused, open } = useDropzo
       </template>
       <template v-else>
         <v-responsive :aspect-ratio="ratio" content-class="d-flex">
-          <v-sheet class="dropzone mt-5 h-auto" :class="{ active: isDragActive }" rounded="xl">
+          <v-sheet class="dropzone mt-8 h-auto" :class="{ active: isDragActive }" rounded="xl">
             <v-icon v-if="isDragActive" icon="mdi-tray-arrow-down" :size="40" />
             <p v-else class="w-75">Déposer un fichier ici ou cliquez pour le sélectionner</p>
           </v-sheet>
@@ -106,6 +106,11 @@ const { getRootProps, getInputProps, isDragActive, isFocused, open } = useDropzo
     :deep(.v-responsive__content) {
       display: flex;
     }
+  }
+
+  :deep(> .v-field__field > .v-field-label) {
+    top: 8px;
+    transform: translateY(50%);
   }
 
   .image-overlay {

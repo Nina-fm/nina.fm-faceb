@@ -86,24 +86,12 @@ const handleUpdate = (event: any) => {
       <slot name="prepend-buttons" />
       <v-tooltip text="Ajouter une piste" location="top">
         <template #activator="{ props: activatorProps }">
-          <v-btn
-            icon="mdi-plus"
-            variant="plain"
-            class="field-inner-button"
-            v-bind="activatorProps"
-            @click.stop="handleAdd"
-          />
+          <v-btn icon="mdi-plus" variant="plain" v-bind="activatorProps" @click.stop="handleAdd" />
         </template>
       </v-tooltip>
       <v-tooltip text="Tout supprimer" location="top">
         <template #activator="{ props: activatorProps }">
-          <v-btn
-            icon="mdi-playlist-remove"
-            variant="plain"
-            class="field-inner-button"
-            v-bind="activatorProps"
-            @click.stop="handleClear"
-          />
+          <v-btn icon="mdi-playlist-remove" variant="plain" v-bind="activatorProps" @click.stop="handleClear" />
         </template>
       </v-tooltip>
     </template>
@@ -151,13 +139,14 @@ const handleUpdate = (event: any) => {
     padding: 5px;
   }
 
-  :deep(.v-field-label) {
-    margin-top: 2px;
+  :deep(> .v-field__field > .v-field-label) {
+    top: 8px;
+    transform: translateY(50%);
   }
 
   :deep(.v-field__append-inner) {
     position: absolute;
-    top: 0px;
+    top: 3px;
     right: 0px;
   }
 

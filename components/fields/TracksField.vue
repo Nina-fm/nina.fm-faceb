@@ -72,13 +72,7 @@ const handleClick = () => {
     <template #prepend-buttons>
       <v-tooltip text="Importer au format texte" location="top">
         <template #activator="{ props: activatorProps }">
-          <v-btn
-            icon="mdi-import"
-            variant="plain"
-            class="field-inner-button"
-            v-bind="activatorProps"
-            @click.stop="handleOpenImport"
-          />
+          <v-btn icon="mdi-import" variant="plain" v-bind="activatorProps" @click.stop="handleOpenImport" />
         </template>
       </v-tooltip>
     </template>

@@ -31,10 +31,12 @@ jobs:
           script: |
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
+            source /home/${{ secrets.USERNAME }}/.bashrc
+            cd /var/www/html/nina.fm-website
             git fetch --all
             git checkout main -f
             git reset --hard origin/main
-            git pull origin main
+            git pull origin temp
             npm install
             npm run build
             npm run pm2:restart

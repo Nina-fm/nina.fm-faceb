@@ -29,14 +29,14 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            source /home/${{ secrets.USERNAME }}/.profile
-            export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
-            source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
-            cd ~/apps/nina.fm-faceb
-            alias
             echo "Deploying to server..."
             echo "Current directory: $(pwd)"
             echo "Current user: $(whoami)"
+            source ~/.profile
+            alias
+            export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
+            source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
+            cd ~/apps/nina.fm-faceb
             node -v
             nvm use 18
 

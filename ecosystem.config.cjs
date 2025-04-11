@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "nina-face-b",
+      name: "nina-faceb",
       port: "3002",
       exec_mode: "cluster",
       instances: "max",

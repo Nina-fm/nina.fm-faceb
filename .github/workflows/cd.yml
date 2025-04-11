@@ -32,6 +32,9 @@ jobs:
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
             cd /var/www/html/nina.fm-faceb
+            echo "Deploying to server..."
+            echo "Current directory: $(pwd)"
+            echo "Current user: $(whoami)"
             node -v
             nvm use 18
 

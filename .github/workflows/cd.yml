@@ -33,7 +33,7 @@ jobs:
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
             cd ~/apps/nina.fm-faceb
-            aliases
+            alias
             echo "Deploying to server..."
             echo "Current directory: $(pwd)"
             echo "Current user: $(whoami)"

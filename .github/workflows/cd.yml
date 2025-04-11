@@ -32,11 +32,12 @@ jobs:
             echo "Deploying to server..."
             echo "Current directory: $(pwd)"
             echo "Current user: $(whoami)"
+            echo "Home: $HOME"
             source ~/.profile
             alias
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
-            cd ~/apps/nina.fm-faceb
+            cdnvm ~/apps/nina.fm-faceb
             node -v
             nvm use 18
 

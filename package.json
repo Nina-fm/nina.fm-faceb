@@ -1,5 +1,5 @@
 {
-  "name": "nina.fm-admin",
+  "name": "nina.fm-faceb",
   "version": "0.6.6",
   "description": "The official Nina.fm admin",
   "private": true,
@@ -16,7 +16,8 @@
     "supa:deploy:functions": "supabase functions deploy mixtapes && supabase functions deploy authors && supabase functions deploy tags && supabase functions deploy metadata && supabase functions deploy profile",
     "supa:serve": "supabase functions serve localdev",
     "supa:deploy": "yarn push:db && yarn deploy:functions",
-    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."
+    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore .",
+    "pm2:restart": "pm2 restart nina-face-b"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

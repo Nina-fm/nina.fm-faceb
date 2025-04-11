@@ -29,18 +29,12 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            echo "Deploying to server..."
-            echo "Current directory: $(pwd)"
-            echo "Current user: $(whoami)"
-            echo "Home: $HOME"
             source ~/.profile
-            alias
-            cd ~/apps/nina.fm-faceb
-
-#            git fetch --all
-#            git checkout main -f
-#            git reset --hard origin/main
-#            git pull origin temp
-#            npm install
-#            npm run build
-#            npm run pm2:restart
+            cdnvm ~/apps/nina.fm-faceb
+            git fetch --all
+            git checkout main -f
+            git reset --hard origin/main
+            git pull origin temp
+            npm install
+            npm run build
+            npm run pm2:restart

@@ -29,7 +29,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            #!/bin/bash
+            cat .bashrc
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
             cdnvm /var/www/html/nina.fm-faceb

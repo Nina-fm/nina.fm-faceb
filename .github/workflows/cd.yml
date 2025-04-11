@@ -22,10 +22,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Deploy using ssh
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
-          script: whoami
+          script: |
+            export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
+            source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
+            echo $PATH
+            whoami
+            cdnvm /var/www/html/nina.fm-faceb
+            git fetch --all
+            git checkout main -f
+            git reset --hard origin/main
+            git pull origin temp
+            npm install
+            npm run build
+            npm run pm2:restart

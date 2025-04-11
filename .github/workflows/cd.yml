@@ -31,7 +31,7 @@ jobs:
           script: |
             export NVM_DIR=/home/${{ secrets.USERNAME }}/.nvm
             source /home/${{ secrets.USERNAME }}/.nvm/nvm.sh
-            cd /var/www/html/nina.fm-faceb
+            source /home/${{ secrets.USERNAME }}/.bashrc
             git fetch --all
             git checkout main -f
             git reset --hard origin/main

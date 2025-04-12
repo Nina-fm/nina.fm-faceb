@@ -1,0 +1,40 @@
+<script lang="ts" setup>
+  withDefaults(
+    defineProps<{
+      name: string
+      label: string
+      description?: string
+      placeholder?: string
+      options?: Array<{ value: string; label: string }>
+    }>(),
+    {
+      placeholder: 'Selectionner…',
+    },
+  )
+</script>
+
+<template>
+  <FormField v-slot="{ componentField }" :name="name">
+    <FormItem v-bind="$attrs">
+      <FormLabel v-if="label">{{ label }}</FormLabel>
+      <Select v-bind="componentField">
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue :placeholder="placeholder" />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem v-for="option in options" :key="option.value" :value="option.value">
+              {{ option.label ?? option.value }}
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <FormDescription v-if="description">{{ description }}</FormDescription>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<style></style>

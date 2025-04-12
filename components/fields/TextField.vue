@@ -1,0 +1,30 @@
+<script lang="ts" setup>
+  withDefaults(
+    defineProps<{
+      name: string
+      label?: string
+      description?: string
+      placeholder?: string
+      multiline?: boolean
+    }>(),
+    {
+      placeholder: '',
+    },
+  )
+</script>
+
+<template>
+  <FormField v-slot="{ componentField }" :name="name">
+    <FormItem v-bind="$attrs">
+      <FormLabel v-if="label">{{ label }}</FormLabel>
+      <FormControl>
+        <Textarea v-if="multiline" v-bind="componentField" class="h-80" />
+        <Input v-else v-bind="componentField" :placeholder="placeholder" />
+      </FormControl>
+      <FormDescription v-if="description">{{ description }}</FormDescription>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<style></style>

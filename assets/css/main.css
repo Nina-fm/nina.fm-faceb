@@ -1,0 +1,15 @@
+.background-image::before {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: url('/background-night.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.075;
+  pointer-events: none;
+}

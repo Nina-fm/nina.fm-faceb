@@ -11,8 +11,8 @@
     <Card class="bg-foreground/3 border-none">
       <CardHeader>
         <div class="flex gap-5">
-          <div class="aspect-square size-40 overflow-hidden rounded">
-            <img v-if="mixtape?.cover_url" :src="mixtape.cover_url" alt="cover" class="object-contain" />
+          <div v-if="mixtape?.cover_url" class="aspect-square size-40 overflow-hidden rounded">
+            <img :src="mixtape.cover_url" alt="cover" class="object-contain" />
           </div>
           <div class="flex flex-col gap-2">
             <div class="text-3xl font-bold">{{ mixtape?.name }}</div>

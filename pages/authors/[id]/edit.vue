@@ -1,23 +1,23 @@
 <script lang="ts" setup>
   import { SaveIcon, XIcon } from 'lucide-vue-next'
-  import type { MixtapeParamsExt } from '~/types/supatypes'
+  import type { AuthorParamsExt } from '~/types/supatypes'
 
   definePageMeta({ middleware: ['auth'] })
 
   const { params } = useRoute()
   const id = params.id as string
-  const { updateMixtape, getById } = useMixtapesStore()
-  const { data } = await useAsyncData('mixtape', () => getById(id))
+  const { updateAuthor, getById } = useAuthorsStore()
+  const { data } = await useAsyncData('author', () => getById(id))
 
   const isFormDirty = ref(false)
-  const mixtape = computed(() => data.value)
+  const author = computed(() => data.value)
 
   useBreadcrumbItems({
     overrides: [
       undefined,
       undefined,
       {
-        label: mixtape.value?.name ?? 'Modification de la Mixtape',
+        label: author.value?.name ?? 'Modification du DJ',
       },
       {
         label: 'Modifier',
@@ -32,16 +32,16 @@
   const handleSave = async () => {}
 
   const handleCancel = async () => {
-    await navigateTo('/mixtapes')
+    await navigateTo('/authors')
   }
 
-  const handleSubmit = async (values: MixtapeParamsExt) => {
-    const { error } = await updateMixtape(id, values)
+  const handleSubmit = async (values: AuthorParamsExt) => {
+    const { error } = await updateAuthor(id, values)
   }
 </script>
 
 <template>
-  <PageHeader title="Modifier la mixtape">
+  <PageHeader title="Modifier le DJ">
     <template #actions>
       <Transition name="fade">
         <Button v-if="isFormDirty" size="icon" @click="handleSave">
@@ -53,13 +53,11 @@
       </Button>
     </template>
   </PageHeader>
-  <MixtapeForm
-    v-if="mixtape"
-    :mixtape="mixtape"
+  <AuthorForm
+    v-if="author"
+    :author="author"
     @form:dirty="handleFormDirty"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />
 </template>
-
-<style scoped></style>

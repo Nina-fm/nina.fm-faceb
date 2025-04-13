@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-vue-next'
+
   definePageMeta({ middleware: ['auth'] })
 
   const { params } = useRoute()
@@ -9,6 +11,16 @@
   const { data } = await useAsyncData('author', () => getById(id))
   const openConfirm = ref(false)
   const author = computed(() => data.value)
+
+  useBreadcrumbItems({
+    overrides: [
+      undefined,
+      undefined,
+      {
+        label: author.value?.name ?? 'Détails du DJ',
+      },
+    ],
+  })
 
   const handleDelete = () => {
     openConfirm.value = true
@@ -27,25 +39,24 @@
 </script>
 
 <template>
-  <PageHeader
-    title="Le DJ en détails"
-    :actions="[
-      { icon: 'mdi-pencil', onClick: () => navigateTo(`/authors/edit/${id}`) },
-      { tooltip: 'Supprimer', icon: 'mdi-delete', onClick: handleDelete },
-      { tooltip: 'Ajouter', icon: 'mdi-plus', onClick: () => navigateTo(`/authors/add`) },
-    ]"
-  />
-  <v-container class="n-page-content">
-    <v-card>
-      <v-card-title>{{ author?.name }}</v-card-title>
-      <v-card-subtitle>Admin : {{ author?.user_id || 'aucun' }}</v-card-subtitle>
-      <v-card-text></v-card-text>
-    </v-card>
-    <Confirm v-model="openConfirm" @close="handleCloseConfirm" @confirm="handleConfirmDelete">
-      <p>Le DJ sera supprimé définitivement.</p>
-      <p>Confirmez-vous l'action ?</p>
-    </Confirm>
-  </v-container>
+  <PageHeader title="Le DJ en détails">
+    <template #actions>
+      <Button size="icon" variant="destructiveOutline" @click="handleDelete">
+        <Trash2Icon />
+      </Button>
+      <Button size="icon" variant="outline">
+        <NuxtLink :to="`/authors/${id}/edit`">
+          <PencilIcon />
+        </NuxtLink>
+      </Button>
+      <Button size="icon" variant="outline">
+        <NuxtLink to="/authors/add">
+          <PlusIcon />
+        </NuxtLink>
+      </Button>
+    </template>
+  </PageHeader>
+  <AuthorDetails v-if="author" :author="author" />
 </template>
 
 <style scoped></style>

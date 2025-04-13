@@ -11,6 +11,7 @@
   }>()
 
   const emit = defineEmits<{
+    (e: 'form:dirty', value: boolean): void
     (e: 'cancel'): void
     (e: 'submit', value: MixtapeParamsExt): void
   }>()
@@ -20,7 +21,6 @@
 
   const years = generateYearsSince(2007)
   const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
-  const isEdit = computed(() => !!mixtape.value)
 
   const formSchema = toTypedSchema(
     z.object({
@@ -50,11 +50,16 @@
     },
   })
 
-  const handleCancel = () => emit('cancel')
-
   const handleSubmit = form.handleSubmit((values) => {
     emit('submit', values as MixtapeParamsExt)
   })
+
+  watch(
+    () => form.meta.value.dirty,
+    (value) => {
+      emit('form:dirty', value)
+    },
+  )
 
   onMounted(() => {
     fetchTags()
@@ -73,7 +78,7 @@
               <div
                 class="flex w-full flex-col gap-5 @xl/mixtapeform:w-1/2 @2xl/mixtapeform:w-2/3 @4xl/mixtapeform:w-3/4"
               >
-                <TextField name="name" label="Nom" description="Attention à bien respecter le format AirTime !" />
+                <TextField name="name" label="Nom" :description="hint" />
                 <div class="flex w-full gap-5">
                   <SelectField name="year" label="Année" :options="yearsOptions" />
                   <BadgesField name="authors" label="DJ's" itemLabelKey="name" class="grow" />

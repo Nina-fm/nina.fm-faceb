@@ -1,43 +1,64 @@
 <script lang="ts" setup>
-definePageMeta({ layout: "naked" })
+  import { toast } from 'vue-sonner'
+  import * as z from 'zod'
 
-const route = useRoute()
+  definePageMeta({ layout: 'naked' })
 
-const { update } = useAuthStore()
-const valid = ref(false)
-const form = reactive({
-  password: "",
-})
+  const route = useRoute()
+  const { update } = useAuthStore()
 
-onMounted(() => {
-  if (!route.hash) {
-    return navigateTo("/login")
+  const formSchema = z
+    .object({
+      password: z.string().min(1, 'Mot de passe requis'),
+      confirm: z.string().min(1, 'Mot de passe requis'),
+    })
+    .refine((data) => data.password === data.confirm, {
+      message: 'Le mot de passe et la confirmation doivent être identiques',
+      path: ['confirm'],
+    })
+
+  const handleSubmit = async ({ password, confirm }: Record<string, any>) => {
+    if (password !== confirm) {
+      toast.error('Le mot de passe et la confirmation doivent être identiques')
+      return
+    }
+    await update({ password })
+    await navigateTo('/')
   }
-})
 
-const handleSavePassword = async () => {
-  await update({ password: form.password })
-  navigateTo("/")
-}
+  onMounted(() => {
+    if (!route.hash) {
+      return navigateTo('/login')
+    }
+  })
 </script>
 
 <template>
-  <auth-box title="Mot de passe">
-    <v-form v-model="valid" @submit.prevent>
-      <v-container>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field v-model="form.password" type="password" label="Nouveau mot de passe" required></v-text-field>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <v-btn variant="tonal" @click="handleSavePassword"> Continuer </v-btn>
-      </span>
-    </template>
-  </auth-box>
+  <AuthBox title="Mot de passe">
+    <AutoForm
+      class="space-y-6"
+      :schema="formSchema"
+      :field-config="{
+        password: {
+          label: 'Nouveau Mmt de passe',
+          inputProps: {
+            type: 'password',
+          },
+        },
+        confirm: {
+          label: 'Confirmation',
+          inputProps: {
+            type: 'password',
+          },
+        },
+      }"
+      @submit="handleSubmit"
+    >
+      <div class="flex flex-col items-center gap-4">
+        <div class="flex gap-2">
+          <Button type="submit">Sauvegarder</Button>
+        </div>
+      </div>
+    </AutoForm>
+  </AuthBox>
 </template>
-
-<style scoped></style>

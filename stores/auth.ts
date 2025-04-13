@@ -4,10 +4,11 @@ import { toast } from 'vue-sonner'
 import type { AnyFn, Obj } from '~/types/supatypes'
 
 export const useAuthStore = defineStore('auth', () => {
-  const $supabase = useSupabaseClient()
-  const { loadingOn, loadingOff } = useLoadingStore()
+  const supabase = useSupabaseClient()
   const user = useSupabaseUser()
   const session = useSupabaseSession()
+  const { loadingOn, loadingOff } = useLoadingStore()
+
   const token = computed(() => session.value?.access_token)
   const isLoggedIn = computed(() => !!user.value && !!token.value)
 
@@ -38,7 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async ({ email, password }: SignInParams) =>
     await errorHandler(
       async () =>
-        await $supabase.auth.signInWithPassword({
+        await supabase.auth.signInWithPassword({
           email,
           password,
         }),
@@ -48,7 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
    * Login with email (magic)
    */
   const loginWithEmail = async ({ email }: Pick<SignInParams, 'email'>) =>
-    await errorHandler(async () => await $supabase.auth.signInWithOtp({ email }))
+    await errorHandler(async () => await supabase.auth.signInWithOtp({ email }))
 
   /**
    * Login with google, github, etc
@@ -57,7 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loginWithSocialProvider = async (provider: Provider) =>
     await errorHandler(
       async () =>
-        await $supabase.auth.signInWithOAuth({
+        await supabase.auth.signInWithOAuth({
           provider,
         }),
     )
@@ -65,7 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Logout
    */
-  const logout = async () => await errorHandler(async () => await $supabase.auth.signOut())
+  const logout = async () => await errorHandler(async () => await supabase.auth.signOut())
 
   /**
    * Register
@@ -73,7 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async ({ email, password, ...meta }: SignUpParams) =>
     await errorHandler(
       async () =>
-        await $supabase.auth.signUp({
+        await supabase.auth.signUp({
           email,
           password,
         }),
@@ -82,19 +83,19 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Update user email, password, or meta data
    */
-  const update = async (userData: Obj) => await errorHandler(async () => await $supabase.auth.updateUser(userData))
+  const update = async (userData: Obj) => await errorHandler(async () => await supabase.auth.updateUser(userData))
 
   /**
    * Send user an email to reset their password
    * (ie. support "Forgot Password?")
    */
   const sendPasswordRestEmail = async (email: string) =>
-    await errorHandler(async () => await $supabase.auth.resetPasswordForEmail(email))
+    await errorHandler(async () => await supabase.auth.resetPasswordForEmail(email))
 
   const resetPassword = async (accessToken: string, newPassword: string) =>
     await errorHandler(
       async () =>
-        await $supabase.auth.admin.updateUserById(accessToken, {
+        await supabase.auth.admin.updateUserById(accessToken, {
           password: newPassword,
         }),
     )

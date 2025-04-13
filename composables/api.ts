@@ -1,14 +1,13 @@
-import queryString, { type StringifiableRecord } from "query-string"
-import type { Obj } from "~/types/supatypes"
-
+import queryString, { type StringifiableRecord } from 'query-string'
+import type { Obj } from '~/types/supatypes'
 
 export enum Methods {
-  DELETE = "DELETE",
-  GET = "GET",
-  HEAD = "HEAD",
-  PATCH = "PATCH",
-  POST = "POST",
-  PUT = "PUT",
+  DELETE = 'DELETE',
+  GET = 'GET',
+  HEAD = 'HEAD',
+  PATCH = 'PATCH',
+  POST = 'POST',
+  PUT = 'PUT',
 }
 
 export interface ApiOptions {
@@ -24,7 +23,7 @@ export const useApi = () => {
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
     if (!token.value) {
-      return navigateTo("/login")
+      return navigateTo('/login')
     }
 
     return await $fetch(
@@ -40,7 +39,7 @@ export const useApi = () => {
           ...(!!token.value ? { Authorization: `Bearer ${token.value}` } : {}),
         },
         body: options?.body ?? null,
-      }
+      },
     )
   }
 

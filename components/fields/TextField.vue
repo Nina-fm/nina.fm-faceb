@@ -17,10 +17,13 @@
   <FormField v-slot="{ componentField }" :name="name">
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
-      <FormControl>
-        <Textarea v-if="multiline" v-bind="componentField" class="h-80" />
-        <Input v-else v-bind="componentField" :placeholder="placeholder" />
-      </FormControl>
+      <div class="flex gap-2">
+        <FormControl>
+          <Textarea v-if="multiline" v-bind="componentField" class="h-80" />
+          <Input v-else v-bind="componentField" :placeholder="placeholder" />
+        </FormControl>
+        <slot name="suffix" />
+      </div>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />
     </FormItem>

@@ -5,7 +5,13 @@ const sitename = 'Face B • Nina.fm'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+    // timeline: {
+    //   enabled: true,
+    // },
+  },
+  // debug: true,
   ssr: false,
 
   modules: ['@nuxt/eslint', '@vueuse/nuxt', '@nuxtjs/supabase', '@pinia/nuxt', 'shadcn-nuxt', 'nuxt-seo-utils'],

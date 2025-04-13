@@ -13,9 +13,11 @@
       </SidebarMenuButton>
       <SidebarTrigger class="text-muted-foreground size-8" />
     </SidebarHeader>
-    <SidebarContent>
+    <SidebarContent class="pt-14">
       <SidebarGroup v-if="navigation" v-for="group in navigation" :key="group.label">
-        <SidebarGroupLabel class="text-sidebar-foreground/20">{{ group.label }}</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-sidebar-foreground/20 group-data-[collapsible=icon]:hidden">
+          {{ group.label }}
+        </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem v-for="item in group.children" :key="item.label">

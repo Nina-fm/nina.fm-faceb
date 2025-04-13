@@ -14,7 +14,7 @@
   }
 
   const handleRowEdit = (id: string | number) => {
-    navigateTo(`/authors/edit/${id}`)
+    navigateTo(`/authors/${id}/edit`)
   }
 
   const handleRowDelete = (id: string | number) => {

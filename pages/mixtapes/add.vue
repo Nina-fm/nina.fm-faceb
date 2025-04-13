@@ -2,7 +2,9 @@
   import { XIcon } from 'lucide-vue-next'
   import type { MixtapeParamsExt } from '~~/types/supatypes'
 
-  definePageMeta({ middleware: ['auth'], breadcrumb: { label: 'Nouvelle mixtape' } })
+  const pageTitle = 'Nouvelle mixtape'
+
+  definePageMeta({ middleware: ['auth'], breadcrumb: { label: pageTitle } })
 
   const { createMixtape } = useMixtapesStore()
 
@@ -13,12 +15,12 @@
   const handleSubmit = async (form: MixtapeParamsExt) => {
     const { error, data } = await createMixtape(form)
 
-    if (!error && data?.id) await navigateTo(`/mixtapes/edit/${data.id}`)
+    if (!error && data?.id) await navigateTo(`/mixtapes/${data.id}/edit`)
   }
 </script>
 
 <template>
-  <PageHeader title="Nouvelle mixtape">
+  <PageHeader :title="pageTitle">
     <template #actions>
       <Button size="icon" variant="outline" @click="handleCancel">
         <XIcon />

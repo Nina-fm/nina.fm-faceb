@@ -48,7 +48,7 @@
               'size-3 p-0': !userId || !isMe(userId),
             }),
           },
-          userId && isMe(userId) ? 'Me' : '',
+          userId && isMe(userId) ? 'Moi' : '',
         )
       },
     },

@@ -29,7 +29,7 @@
             <span class="text-muted-foreground text-xs">{{ placeholder }}</span>
           </div>
 
-          <div v-else class="flex flex-col gap-2">
+          <div v-else class="mr-2 ml-4 flex flex-col gap-2">
             <div class="flex gap-2">
               <div class="w-3"></div>
               <FormLabel

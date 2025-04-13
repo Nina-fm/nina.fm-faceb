@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <auth-box title="Connexion">
+  <AuthBox title="Connexion">
     <AutoForm
       class="space-y-6"
       :schema="formSchema"
@@ -37,16 +37,14 @@
       }"
       @submit="handleSubmit"
     >
-      <div class="flex flex-col items-center gap-4">
-        <div class="flex gap-2 text-xs">
-          <nuxt-link to="/reset-password">Mot de passe oublié ?</nuxt-link>
-        </div>
+      <div class="flex flex-col items-center gap-5">
         <div class="flex gap-2">
           <Button type="submit">Se connecter</Button>
         </div>
+        <div class="flex gap-2 text-xs">
+          <NuxtLink to="/reset-password">Mot de passe oublié ?</NuxtLink>
+        </div>
       </div>
     </AutoForm>
-  </auth-box>
+  </AuthBox>
 </template>
-
-<style scoped></style>

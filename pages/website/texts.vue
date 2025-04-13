@@ -1,13 +1,14 @@
-<template>
-  <div>
-    
-  </div>
-</template>
-
 <script lang="ts" setup>
-
+  definePageMeta({
+    middleware: ['auth'],
+    breadcrumb: {
+      label: 'Textes',
+    },
+  })
 </script>
 
-<style>
+<template>
+  <PageHeader title="Les textes du site" />
+</template>
 
-</style>
+<style></style>

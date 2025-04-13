@@ -164,6 +164,7 @@ export type Database = {
         Row: {
           avatar: string | null
           created_at: string | null
+          email: string | null
           id: string
           name: string | null
           role: Database["public"]["Enums"]["roles"] | null
@@ -172,6 +173,7 @@ export type Database = {
         Insert: {
           avatar?: string | null
           created_at?: string | null
+          email?: string | null
           id: string
           name?: string | null
           role?: Database["public"]["Enums"]["roles"] | null
@@ -180,6 +182,7 @@ export type Database = {
         Update: {
           avatar?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           name?: string | null
           role?: Database["public"]["Enums"]["roles"] | null

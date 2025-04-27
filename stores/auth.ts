@@ -12,11 +12,11 @@ export const useAuthStore = defineStore('auth', () => {
   const token = computed(() => session.value?.access_token)
   const isLoggedIn = computed(() => !!user.value && !!token.value)
 
-  watch(isLoggedIn, (value) => {
-    if (!value) {
-      return navigateTo('/login')
-    }
-  })
+  // watch(isLoggedIn, (value) => {
+  //   if (!value) {
+  //     return navigateTo('/login')
+  //   }
+  // })
 
   const errorHandler = async (fn: AnyFn) => {
     try {

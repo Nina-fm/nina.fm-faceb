@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-  useAuthStoreRefs()
-  useProfileStoreRefs()
-  const { loading, loadingPercent } = useLoadingStoreRefs()
+  // useAuthStoreRefs()
+  // useProfileStoreRefs()
+  // const { loading, loadingPercent } = useLoadingStoreRefs()
 </script>
 
 <template>

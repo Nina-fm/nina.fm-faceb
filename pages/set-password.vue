@@ -2,7 +2,7 @@
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
-  definePageMeta({ layout: 'naked' })
+  definePageMeta({ layout: 'naked', auth: false })
 
   const route = useRoute()
   const { update } = useAuthStore()

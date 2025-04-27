@@ -23,7 +23,7 @@ export const useApi = () => {
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
     if (!token.value) {
-      return navigateTo('/login')
+      // return navigateTo('/login')
     }
 
     return await $fetch(

@@ -5,16 +5,18 @@ const sitename = 'Face B • Nina.fm'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: {
-    enabled: true,
-    // timeline: {
-    //   enabled: true,
-    // },
-  },
-  // debug: true,
-  ssr: false,
+  devtools: { enabled: true },
 
-  modules: ['@nuxt/eslint', '@vueuse/nuxt', '@nuxtjs/supabase', '@pinia/nuxt', 'shadcn-nuxt', 'nuxt-seo-utils'],
+  modules: [
+    '@nuxt/eslint',
+    '@vueuse/nuxt',
+    // '@nuxtjs/supabase',
+    '@pinia/nuxt',
+    'shadcn-nuxt',
+    'nuxt-seo-utils',
+    '@prisma/nuxt',
+    '@vee-validate/nuxt',
+  ],
 
   css: ['~/assets/css/tailwind.css', '~/assets/css/main.css'],
 
@@ -32,6 +34,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     debug: false,
+    auth: {
+      name: 'nuxt-session',
+      password: process.env.AUTH_SECRET,
+      defaultProtected: true,
+    },
     public: {
       sitename,
       siteurl: process.env.SITE_URL,
@@ -41,8 +48,17 @@ export default defineNuxtConfig({
     },
   },
 
+  prisma: {
+    autoSetupPrisma: true,
+  },
+
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
+      },
+    },
   },
 
   typescript: {

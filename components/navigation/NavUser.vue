@@ -3,14 +3,12 @@
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
-  const { logout } = useAuthStore()
-  const { user } = useAuthStoreRefs()
-  const { profile } = useProfileStoreRefs()
+  const { logout, user } = useAuth()
 
   const currentUser = computed(() => ({
-    name: profile.value?.name,
+    name: user.value?.name,
     email: user.value?.email,
-    avatar: profile.value?.avatar,
+    avatar: user.value?.image,
   }))
 
   const handleLogout = async () => {

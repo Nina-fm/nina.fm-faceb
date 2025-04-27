@@ -4,12 +4,18 @@
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { login } = useAuth()
+  const { register } = useAuth()
 
-  const formSchema = z.object({
-    email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
-    password: z.string().min(1, 'Mot de passe requis'),
-  })
+  const formSchema = z
+    .object({
+      email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
+      password: z.string().min(1, 'Mot de passe requis'),
+      confirm: z.string().min(1, 'Mot de passe requis'),
+    })
+    .refine((data) => data.password === data.confirm, {
+      message: 'Les mot de passe ne correspondent pas.',
+      path: ['confirm'],
+    })
 
   const handleError = (error: any) => {
     if (error?.response?.status === 401) {
@@ -20,12 +26,13 @@
   }
 
   const handleSubmit = async ({ email, password }: Record<string, any>) => {
-    await login(email, password).catch(handleError)
+    await register(email, password).catch(handleError)
+    await navigateTo('/')
   }
 </script>
 
 <template>
-  <AuthBox title="Connexion">
+  <AuthBox title="Création de compte">
     <AutoForm
       class="space-y-6"
       :schema="formSchema"
@@ -36,16 +43,18 @@
             type: 'password',
           },
         },
+        confirm: {
+          label: 'Confirmation du mot de passe',
+          inputProps: {
+            type: 'password',
+          },
+        },
       }"
       @submit="handleSubmit"
     >
       <div class="flex flex-col items-center gap-5">
         <div class="flex gap-2">
-          <Button type="submit">Se connecter</Button>
-        </div>
-        <div class="flex gap-2 text-xs">
-          <NuxtLink to="/reset-password">Mot de passe oublié ?</NuxtLink>
-          <NuxtLink to="/register">Pas encore de compte ?</NuxtLink>
+          <Button type="submit">Créer le compte</Button>
         </div>
       </div>
     </AutoForm>

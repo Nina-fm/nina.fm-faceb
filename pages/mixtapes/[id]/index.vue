@@ -1,8 +1,6 @@
 <script lang="ts" setup>
   import { PencilIcon, Trash2Icon, XIcon } from 'lucide-vue-next'
 
-  definePageMeta({ middleware: ['auth'] })
-
   const { params } = useRoute()
   const { getById } = useMixtapesStore()
   const { deleteMixtape } = useMixtapesStore()

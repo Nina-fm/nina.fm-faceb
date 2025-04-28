@@ -1,6 +1,7 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.linkedEditing": true,
   "deno.enable": false,
   "deno.enablePaths": ["supabase/functions"],
   "files.associations": {

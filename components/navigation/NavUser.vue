@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ChevronsUpDown, CogIcon, IdCardIcon, LogOut } from 'lucide-vue-next'
+  import { ChevronsUpDown, CogIcon, IdCardIcon, LogOut, SendIcon } from 'lucide-vue-next'
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
@@ -8,7 +8,7 @@
   const currentUser = computed(() => ({
     name: user.value?.name,
     email: user.value?.email,
-    avatar: user.value?.image,
+    avatar: user.value?.avatar,
   }))
 
   const handleLogout = async () => {
@@ -41,6 +41,12 @@
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
+            <DropdownMenuItem as-child>
+              <NuxtLink to="/invitations">
+                <SendIcon />
+                Invitations
+              </NuxtLink>
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <IdCardIcon />
               Profil

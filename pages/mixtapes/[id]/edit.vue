@@ -2,8 +2,6 @@
   import { SaveIcon, XIcon } from 'lucide-vue-next'
   import type { MixtapeParamsExt } from '~/types/supatypes'
 
-  definePageMeta({ middleware: ['auth'] })
-
   const { params } = useRoute()
   const id = params.id as string
   const { updateMixtape, getById } = useMixtapesStore()

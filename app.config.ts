@@ -1,6 +1,9 @@
 import { CompassIcon, LibraryIcon, MusicIcon, PlusIcon, ScrollTextIcon, UsersIcon } from 'lucide-vue-next'
 
 export default defineAppConfig({
+  resend: {
+    from: 'Nina.fm <noreply@nina.fm>',
+  },
   navigation: [
     {
       label: 'Bibliothèque musicale',

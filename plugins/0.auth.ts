@@ -21,13 +21,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
    *  auth: false
    * })
    */
-  const defaultAuthMeta = useRuntimeConfig().auth?.defaultProtected ?? true
+  const defaultAuthMeta = useRuntimeConfig().app.auth?.defaultProtected ?? true
 
   addRouteMiddleware(
     'auth',
     (to) => {
-      const authMeta = to.meta?.auth ?? defaultAuthMeta
-      if (authMeta && !isLoggedIn.value) {
+      const toRequireAuth = to.meta?.auth ?? defaultAuthMeta
+      if (!isLoggedIn.value && toRequireAuth) {
         redirectTo.value = to.path
         return '/login'
       }
@@ -36,11 +36,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   )
 
   const currentRoute = useRoute()
-  const currentRouteAuthMeta = currentRoute.meta?.auth ?? defaultAuthMeta
+  const currentRouteRequireAuth = currentRoute.meta?.auth ?? defaultAuthMeta
 
   if (import.meta.client) {
     watch(isLoggedIn, async (loggedIn) => {
-      if (!loggedIn && currentRouteAuthMeta) {
+      if (!loggedIn && currentRouteRequireAuth) {
         redirectTo.value = currentRoute.path
         await navigateTo('/login')
       }

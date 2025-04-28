@@ -4,7 +4,7 @@
 
   const pageTitle = 'Nouveau DJ'
 
-  definePageMeta({ middleware: ['auth'], breadcrumb: { label: pageTitle } })
+  definePageMeta({ breadcrumb: { label: pageTitle } })
 
   const { createAuthor } = useAuthorsStore()
 

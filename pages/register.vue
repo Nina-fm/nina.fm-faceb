@@ -8,6 +8,7 @@
 
   const formSchema = z
     .object({
+      name: z.string().optional().describe('Nom'),
       email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
       password: z.string().min(1, 'Mot de passe requis'),
       confirm: z.string().min(1, 'Mot de passe requis'),
@@ -25,8 +26,8 @@
     }
   }
 
-  const handleSubmit = async ({ email, password }: Record<string, any>) => {
-    await register(email, password).catch(handleError)
+  const handleSubmit = async ({ email, name, password }: Record<string, any>) => {
+    await register({ email, name, password }).catch(handleError)
     await navigateTo('/')
   }
 </script>
@@ -37,6 +38,18 @@
       class="space-y-6"
       :schema="formSchema"
       :field-config="{
+        name: {
+          label: 'Nom',
+          inputProps: {
+            type: 'text',
+          },
+        },
+        email: {
+          label: 'Email',
+          inputProps: {
+            type: 'email',
+          },
+        },
         password: {
           label: 'Mot de passe',
           inputProps: {
@@ -55,6 +68,9 @@
       <div class="flex flex-col items-center gap-5">
         <div class="flex gap-2">
           <Button type="submit">Créer le compte</Button>
+        </div>
+        <div class="flex gap-2 text-xs">
+          <NuxtLink to="/login">Déjà un compte ?</NuxtLink>
         </div>
       </div>
     </AutoForm>

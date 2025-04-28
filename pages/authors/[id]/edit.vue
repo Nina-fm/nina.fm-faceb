@@ -2,8 +2,6 @@
   import { SaveIcon, XIcon } from 'lucide-vue-next'
   import type { AuthorParamsExt } from '~/types/supatypes'
 
-  definePageMeta({ middleware: ['auth'] })
-
   const { params } = useRoute()
   const id = params.id as string
   const { updateAuthor, getById } = useAuthorsStore()

@@ -4,7 +4,7 @@
 
   const pageTitle = 'Nouvelle mixtape'
 
-  definePageMeta({ middleware: ['auth'], breadcrumb: { label: pageTitle } })
+  definePageMeta({ breadcrumb: { label: pageTitle } })
 
   const { createMixtape } = useMixtapesStore()
 

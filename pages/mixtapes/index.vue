@@ -1,8 +1,6 @@
 <script lang="ts" setup>
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
 
-  definePageMeta({ middleware: ['auth'] })
-
   // const { smAndUp, mdAndUp, update } = useDisplay()
   const { loading } = useLoadingStoreRefs()
   const { fetchMixtapes, deleteMixtape, resetTagFilters } = useMixtapesStore()

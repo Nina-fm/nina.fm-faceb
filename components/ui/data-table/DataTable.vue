@@ -9,6 +9,7 @@
     loading?: boolean
     pagination?: boolean
     background?: boolean
+    emptyText?: string
   }>()
 
   const emits = defineEmits<{
@@ -72,7 +73,9 @@
         </template>
         <template v-else>
           <TableRow>
-            <TableCell :colspan="columns.length" class="text-center">Aucun résultat.</TableCell>
+            <TableCell :colspan="columns.length" class="text-center">
+              {{ props.emptyText ?? 'Aucun résultat.' }}
+            </TableCell>
           </TableRow>
         </template>
       </TableBody>

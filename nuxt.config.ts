@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
+import vue from '@vitejs/plugin-vue'
 
 const sitename = 'Face B • Nina.fm'
 
@@ -11,6 +12,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@vueuse/nuxt',
     // '@nuxtjs/supabase',
+    'nuxt-resend',
     '@pinia/nuxt',
     'shadcn-nuxt',
     'nuxt-seo-utils',
@@ -34,10 +36,12 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     debug: false,
-    auth: {
-      name: 'nuxt-session',
-      password: process.env.AUTH_SECRET,
-      defaultProtected: true,
+    app: {
+      auth: {
+        name: 'nuxt-session',
+        password: process.env.AUTH_SECRET,
+        defaultProtected: true,
+      },
     },
     public: {
       sitename,
@@ -58,6 +62,13 @@ export default defineNuxtConfig({
       alias: {
         '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
       },
+    },
+  },
+
+  nitro: {
+    rollupConfig: {
+      //@ts-ignore
+      plugins: [vue()],
     },
   },
 

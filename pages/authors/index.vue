@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-  definePageMeta({ middleware: ['auth'] })
-
   const { loading } = useLoadingStoreRefs()
   const { fetchAuthors, deleteAuthor } = useAuthorsStore()
   const { data: authors } = useAuthorsStoreRefs()

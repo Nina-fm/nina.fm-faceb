@@ -1,8 +1,5 @@
 <script lang="ts" setup>
   const items = useBreadcrumbItems()
-  const route = useRoute()
-  console.log('breadcrumb', items.value)
-  console.log('route', route)
 </script>
 
 <template>

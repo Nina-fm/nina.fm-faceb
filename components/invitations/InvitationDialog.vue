@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-  const emit = defineEmits<{
-    (e: 'submit', email: string): void | Promise<void>
+  defineProps<{
+    modelValue: boolean
   }>()
 
-  const open = ref(false)
+  const emit = defineEmits<{
+    'update:modelValue': [value: boolean]
+    submit: [email: string]
+  }>()
 
   const handleSubmit = async (email: string) => {
-    open.value = false
+    emit('update:modelValue', false)
     emit('submit', email)
   }
 </script>
 
 <template>
   <ClientOnly>
-    <Dialog v-model:open="open" @update:open="(value) => (open = value)">
-      <DialogTrigger>
-        <slot />
-      </DialogTrigger>
+    <Dialog :open="modelValue" @update:open="(value: boolean) => emit('update:modelValue', value)">
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Inviter un utilisateur</DialogTitle>

@@ -1,10 +1,11 @@
-import { User } from '@prisma/client'
 import type { H3Event, SessionConfig } from 'h3'
 
-const sessionConfig: SessionConfig = useRuntimeConfig().app.auth || {}
+const sessionConfig: SessionConfig = {
+  ...useRuntimeConfig().app.auth,
+}
 
 export const useAuthSession = async (event: H3Event) => {
-  const session = await useSession<User>(event, sessionConfig)
+  const session = await useSession(event, sessionConfig)
   return session
 }
 

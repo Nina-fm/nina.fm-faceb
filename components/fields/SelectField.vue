@@ -1,15 +1,19 @@
 <script lang="ts" setup>
-  withDefaults(
+  const props = withDefaults(
     defineProps<{
       name: string
       label: string
       description?: string
       placeholder?: string
-      options?: Array<{ value: string; label: string }>
+      options?: { value: string; label: string }[] | string[]
     }>(),
     {
       placeholder: 'Selectionner…',
     },
+  )
+
+  const options = computed(() =>
+    props.options?.map((option) => (typeof option === 'string' ? { value: option, label: option } : option)),
   )
 </script>
 

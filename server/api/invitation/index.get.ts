@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const token = getQuery(event).token as string
 
-  const invitation = await getInvitation(token)
+  const result = await getInvitation(token)
 
-  return invitation
+  return result
 })

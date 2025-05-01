@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client'
+import type { SessionData } from 'h3'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Skip plugin when rendering error page
@@ -6,8 +6,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     return {}
   }
 
-  const { data: session, refresh: updateSession } = await useFetch<User>('/api/auth/session')
+  const { data, refresh: updateSession } = await useFetch('/api/auth/session')
 
+  const session = data as SessionData
   const isLoggedIn = computed(() => !!session.value?.email)
 
   // Create a ref to know where to redirect the user when logged in

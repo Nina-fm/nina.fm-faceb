@@ -1,4 +1,5 @@
-import { CompassIcon, LibraryIcon, MusicIcon, PlusIcon, ScrollTextIcon, UsersIcon } from 'lucide-vue-next'
+import { Role } from '@prisma/client'
+import { CompassIcon, LibraryIcon, MusicIcon, PlusIcon, ScrollTextIcon, SendIcon, UsersIcon } from 'lucide-vue-next'
 
 export default defineAppConfig({
   resend: {
@@ -31,12 +32,29 @@ export default defineAppConfig({
     },
     {
       label: 'Gestion du site web',
-      Icon: CompassIcon,
+      icon: CompassIcon,
       children: [
         {
           label: 'Textes',
           icon: ScrollTextIcon,
           to: '/website/texts',
+        },
+      ],
+    },
+    {
+      label: 'Administration',
+      icon: UsersIcon,
+      roles: [Role.ADMIN],
+      children: [
+        {
+          label: 'Utilisateurs',
+          icon: UsersIcon,
+          to: '/users',
+        },
+        {
+          label: 'Invitations',
+          icon: SendIcon,
+          to: '/invitations',
         },
       ],
     },

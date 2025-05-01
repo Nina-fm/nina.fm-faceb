@@ -3,7 +3,7 @@
 
   const { params } = useRoute()
   const { getById } = useAuthorsStore()
-  const { deleteMixtape } = useMixtapesStore()
+  const { deleteAuthor } = useAuthorsStore()
 
   const id = params.id as string
   const { data } = await useAsyncData('author', () => getById(id))
@@ -29,7 +29,7 @@
   }
 
   const handleConfirmDelete = async () => {
-    const { error } = await deleteMixtape(id)
+    const { error } = await deleteAuthor(id)
     if (!error) {
       navigateTo('/authors')
     }

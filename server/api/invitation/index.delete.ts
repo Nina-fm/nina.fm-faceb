@@ -1,5 +1,7 @@
 export default defineEventHandler(async (event) => {
   const id = getQuery(event).id as string
 
-  const invitation = await deleteInvitation(id)
+  const result = await deleteInvitation(id)
+
+  return result
 })

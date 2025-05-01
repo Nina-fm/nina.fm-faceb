@@ -17,6 +17,8 @@ export const badgeVariants = cva(
         warning:
           'border-transparent bg-warning text-white [a&]:hover:bg-warning/90 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 dark:bg-warning/60',
         // Muted
+        primaryMuted:
+          'border-none bg-primary/25 text-primary [a&]:hover:bg-primary/90 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/40 ',
         destructiveMuted:
           'border-none bg-destructive/25 text-destructive [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 ',
         successMuted:

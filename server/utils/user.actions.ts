@@ -1,6 +1,54 @@
 import { User } from '@prisma/client'
 import prisma from '~/lib/prisma'
 
+type UserEdit = Omit<User, 'password' | 'createdAt' | 'updatedAt'>
+
+export async function fetchUsers(page: number, limit: number) {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerified: true,
+      roles: true,
+      createdAt: true,
+      updatedAt: true,
+      avatar: true,
+    },
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  })
+
+  const total = await prisma.user.count()
+
+  return {
+    users,
+    total,
+    page,
+    limit,
+  }
+}
+
+export async function getUserById(id: string) {
+  if (!id) {
+    throw createError({ message: 'Id is required!', statusCode: 400 })
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      avatar: true,
+    },
+  })
+
+  if (!user) {
+    throw createError({ message: 'User not found!', statusCode: 404 })
+  }
+
+  return user
+}
+
 export async function findUserByEmail(email: string): Promise<User> {
   if (!email) {
     throw createError({ message: 'Email is required!', statusCode: 400 })
@@ -8,6 +56,9 @@ export async function findUserByEmail(email: string): Promise<User> {
 
   const user = await prisma.user.findUnique({
     where: { email },
+    include: {
+      avatar: true,
+    },
   })
 
   if (!user) {
@@ -55,127 +106,66 @@ export async function createUser(data: Partial<User>, invitationToken?: string) 
   return user as User
 }
 
-export async function inviteUser(data: { email: string; invitedById: string }, baseUrl: string) {
+export async function updateUser(id: string, data: UserEdit) {
+  if (!id) {
+    throw createError({ message: 'Id is required!', statusCode: 400 })
+  }
   if (!data.email) {
     throw createError({ message: 'Email is required!', statusCode: 400 })
   }
+  if (!data.roles) {
+    throw createError({ message: 'At least one Role is required!', statusCode: 400 })
+  }
 
   const user = await prisma.user.findUnique({
-    where: { email: data.email },
+    where: { id },
   })
 
-  if (user) {
-    throw createError({ message: 'User already exists!', statusCode: 400 })
+  if (!user) {
+    throw createError({ message: 'User not found!', statusCode: 404 })
   }
 
-  const invitation = await prisma.invitation.create({
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
     data: {
-      email: data.email!,
-      token: crypto.randomUUID(),
-      invitedById: data.invitedById!,
+      ...data,
+      updatedAt: new Date(),
+    },
+    include: {
+      avatar: true,
     },
   })
 
-  if (!invitation) {
-    throw createError({ message: 'Failed to create invitation!', statusCode: 500 })
-  }
-
-  try {
-    const acceptUrl = `${baseUrl}/invitations/${invitation.token}/accept`
-    await sendInvitationEmail(data.email!, acceptUrl)
-  } catch (error) {
-    throw createError({ message: 'Failed to send invitation email', statusCode: 500 })
+  if (!updatedUser) {
+    throw createError({ message: 'Failed to update user!', statusCode: 500 })
   }
 
   return {
-    message: 'Invitation successfully resent!',
+    ...updatedUser,
+    emailVerified: updatedUser.emailVerified ? new Date(updatedUser.emailVerified) : null,
+    createdAt: new Date(updatedUser.createdAt),
+    updatedAt: new Date(updatedUser.updatedAt),
   }
 }
 
-export async function resendInvitation(data: { id: string | number }, baseUrl: string) {
-  if (!data.id) {
-    throw createError({ message: 'Id is required!', statusCode: 400 })
-  }
-
-  const invitation = await prisma.invitation.findUnique({
-    where: { id: data.id.toString() },
-  })
-
-  if (!invitation) {
-    throw createError({ message: 'Invitation not found!', statusCode: 404 })
-  }
-
-  try {
-    const acceptUrl = `${baseUrl}/invitations/${invitation.token}/accept`
-    await sendInvitationEmail(invitation.email, acceptUrl)
-  } catch (error) {
-    throw createError({ message: 'Failed to send invitation email', statusCode: 500 })
-  }
-
-  return {
-    email: invitation.email,
-    message: 'Invitation successfully resent!',
-  }
-}
-
-export async function getInvitations(page: number, limit: number) {
-  const invitations = await prisma.invitation.findMany({
-    select: {
-      id: true,
-      email: true,
-      token: true,
-      invitedBy: true,
-      createdAt: true,
-    },
-    skip: (page - 1) * limit,
-    take: limit,
-    orderBy: { createdAt: 'desc' },
-  })
-
-  const total = await prisma.invitation.count()
-
-  return {
-    invitations,
-    total,
-    page,
-    limit,
-  }
-}
-
-export async function getInvitation(token: string) {
-  if (!token) {
-    throw createError({ message: 'Token is required!', statusCode: 400 })
-  }
-
-  const invitation = await prisma.invitation.findUnique({
-    where: { token },
-  })
-
-  if (!invitation) {
-    throw createError({ message: 'Invalid invitation token!', statusCode: 400 })
-  }
-
-  return invitation
-}
-
-export async function deleteInvitation(id: string | number) {
+export async function deleteUser(id: string | number) {
   if (!id) {
     throw createError({ message: 'Id is required!', statusCode: 400 })
   }
 
-  const invitation = await prisma.invitation.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: id.toString() },
   })
 
-  if (!invitation) {
-    throw createError({ message: 'Invitation not found!', statusCode: 404 })
+  if (!user) {
+    throw createError({ message: 'User not found!', statusCode: 404 })
   }
 
-  await prisma.invitation.delete({
-    where: { id: invitation.id },
+  await prisma.user.delete({
+    where: { id: user.id },
   })
 
   return {
-    message: 'Invitation successfully deleted!',
+    message: 'User successfully deleted!',
   }
 }

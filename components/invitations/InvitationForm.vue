@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-  import { toast } from 'vue-sonner'
-  import * as z from 'zod'
+  import { toast } from 'vue-sonner';
+import * as z from 'zod';
 
   const emit = defineEmits<{
     (e: 'submit', email: string): void | Promise<void>
   }>()
 
-  const { invite } = useAuth()
+  const { createInvitation } = useInvitationApi()
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
@@ -18,10 +18,10 @@
 
   const handleSubmit = async ({ email }: Record<string, any>) => {
     try {
-      await invite(email)
+      await createInvitation(email)
       form.resetForm()
       emit('submit', email)
-      toast.success('Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !')
+      toast.success("Si un compte correspond à cet email, un lien d'invitation y a été envoyé !")
     } catch (error) {
       toast.error("Une erreur est survenue lors de l'envoi de l'invitation.")
     }

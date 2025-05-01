@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ChevronsUpDown, CogIcon, IdCardIcon, LogOut, SendIcon } from 'lucide-vue-next'
+  import { ChevronsUpDown, CogIcon, IdCardIcon, LogOut } from 'lucide-vue-next'
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
@@ -29,24 +29,11 @@
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-          :side="isMobile ? 'bottom' : 'right'"
-          align="end"
+          class="w-[--reka-dropdown-menu-trigger-width] min-w-60 rounded-lg"
+          :side="isMobile ? 'bottom' : 'top'"
           :side-offset="4"
         >
-          <DropdownMenuLabel class="p-0 font-normal">
-            <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-              <UserSlimCard :user="currentUser" />
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem as-child>
-              <NuxtLink to="/invitations">
-                <SendIcon />
-                Invitations
-              </NuxtLink>
-            </DropdownMenuItem>
             <DropdownMenuItem>
               <IdCardIcon />
               Profil

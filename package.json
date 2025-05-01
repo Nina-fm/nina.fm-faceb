@@ -40,7 +40,7 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue-email/components": "^0.0.21",
     "@vue-email/render": "^0.0.9",
-    "@vueuse/core": "^13.0.0",
+    "@vueuse/core": "^13.1.0",
     "@vueuse/nuxt": "13.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

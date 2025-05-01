@@ -60,7 +60,7 @@
     <div class="flex-1">
       <slot name="content" />
     </div>
-    <div class="flex justify-end gap-2">
+    <div class="flex items-stretch justify-end gap-2" id="page-header-actions">
       <slot name="actions" />
     </div>
   </div>

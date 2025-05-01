@@ -4,7 +4,7 @@
 
   type ImageFile = {
     filename: string
-    url: string
+    alt: string
   }
 
   const props = defineProps<{
@@ -24,8 +24,9 @@
   const fileRef = ref<HTMLInputElement | null>(null)
   const isDragging = ref(false)
   const isZoomed = ref(false)
+
   const file = ref<File | null>(null)
-  const fileSrc = ref<string | null>(modelValue.value?.url ?? null)
+  const fileSrc = ref<string | null>(modelValue.value?.filename ? getImagePublicUrl(modelValue.value?.filename) : null)
 
   const generateFakeUrl = (file: Blob) => {
     let src = URL.createObjectURL(file)

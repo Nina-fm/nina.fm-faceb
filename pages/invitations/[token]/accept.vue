@@ -5,7 +5,8 @@
   definePageMeta({ layout: 'naked', auth: false })
 
   const { params } = useRoute()
-  const { register, getInvitationByToken } = useAuth()
+  const { register } = useAuth()
+  const { getInvitationByToken } = useInvitationApi()
 
   const token = ref(Array.isArray(params.token) ? params.token[0] : params.token)
 

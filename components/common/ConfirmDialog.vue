@@ -21,7 +21,7 @@
           {{
             description ??
             `Vous êtes sur le point de supprimer cet élément. Cette action est irréversible et supprimera toutes les
-          données associées. Confirmez-vous votre volonté d'effectuer cette suppression ?`
+            données associées. Confirmez-vous votre volonté d'effectuer cette suppression ?`
           }}
         </AlertDialogDescription>
       </AlertDialogHeader>

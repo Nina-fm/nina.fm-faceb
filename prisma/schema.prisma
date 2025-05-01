@@ -22,11 +22,11 @@ model User {
   email         String       @unique
   emailVerified DateTime?
   password      String
-  avatar        String?
-  role          Role[]       @default([USER])
+  avatar        Image?
+  roles         Role[]       @default([USER])
+  invitations   Invitation[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  invitations   Invitation[]
 }
 
 model Invitation {
@@ -37,4 +37,14 @@ model Invitation {
   invitedBy   User     @relation(fields: [invitedById], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  filename  String
+  alt       String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

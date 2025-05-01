@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import { VisuallyHidden } from 'reka-ui'
+
   defineProps<{
     active: boolean
   }>()
@@ -6,7 +8,13 @@
 
 <template>
   <Dialog :open="active">
-    <DialogContent class="border-none bg-transparent">
+    <DialogContent class="border-none bg-transparent" :closable="false">
+      <VisuallyHidden asChild>
+        <DialogHeader>
+          <DialogTitle>Chargement...</DialogTitle>
+          <DialogDescription />
+        </DialogHeader>
+      </VisuallyHidden>
       <div class="flex flex-col items-center justify-center">
         <AnimatedLoader />
       </div>

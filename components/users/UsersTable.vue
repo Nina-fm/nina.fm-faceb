@@ -34,36 +34,10 @@
 
   const roleFilterOptions = computed(() => {
     return [
-      { label: 'Tous', value: undefined },
       { label: 'Administrateur', value: Role.ADMIN },
       { label: 'Utilisateur', value: Role.USER },
     ]
   })
-
-  const handleRowEdit = (id: string) => {
-    emit('rowEdit', id)
-  }
-
-  const handleRowDelete = (id: string) => {
-    idToDelete.value = id
-    openConfirm.value = true
-  }
-
-  const handleCancelDelete = () => {
-    openConfirm.value = false
-  }
-
-  const handleConfirmDelete = async () => {
-    if (idToDelete.value) {
-      try {
-        emit('rowDelete', idToDelete.value)
-      } catch (error) {
-        toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
-      } finally {
-        openConfirm.value = false
-      }
-    }
-  }
 
   const defaultSorting = ref<SortingState>([
     {
@@ -71,6 +45,15 @@
       desc: true,
     },
   ])
+
+  const filters: FilterDef[] = [
+    {
+      id: 'roles',
+      label: 'Rôle',
+      options: roleFilterOptions.value,
+      multiple: true,
+    },
+  ]
 
   const columns: ColumnDef<User>[] = [
     {
@@ -116,9 +99,9 @@
         const isAdmin = roles.includes(Role.ADMIN)
         return isAdmin ? [h(RoleBadge, { name })] : null
       },
-      filterFn: (row, columnId, value) => {
+      filterFn: (row, columnId, values) => {
         const roles = row.getValue(columnId) as string[]
-        return roles.includes(value)
+        return values.reduce((res: boolean, value: string) => roles.includes(value) || res, false)
       },
     },
     {
@@ -159,13 +142,30 @@
     },
   ]
 
-  const filters: FilterDef[] = [
-    {
-      id: 'roles',
-      label: 'Rôle',
-      options: roleFilterOptions.value,
-    },
-  ]
+  const handleRowEdit = (id: string) => {
+    emit('rowEdit', id)
+  }
+
+  const handleRowDelete = (id: string) => {
+    idToDelete.value = id
+    openConfirm.value = true
+  }
+
+  const handleCancelDelete = () => {
+    openConfirm.value = false
+  }
+
+  const handleConfirmDelete = async () => {
+    if (idToDelete.value) {
+      try {
+        emit('rowDelete', idToDelete.value)
+      } catch (error) {
+        toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
+      } finally {
+        openConfirm.value = false
+      }
+    }
+  }
 </script>
 
 <template>

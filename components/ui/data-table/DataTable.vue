@@ -8,6 +8,7 @@
     getSortedRowModel,
     useVueTable,
   } from '@tanstack/vue-table'
+  import { XIcon } from 'lucide-vue-next'
   import type { FilterDef } from '~/components/ui/data-table'
 
   const DataTableHeader = resolveComponent('DataTableHeader')
@@ -59,31 +60,84 @@
     },
   })
 
+  const filterValues = computed(() =>
+    table.getState().columnFilters.map((filter) => ({
+      id: filter.id,
+      value: filter.value,
+      label: props.filters?.find((f) => f.id === filter.id)?.label,
+      optionLabel: props.filters?.find((f) => f.id === filter.id)?.options.find((o) => o.value === filter.value)?.label,
+    })),
+  )
+
+  const filterValuesForBadges = computed(() =>
+    filterValues.value.reduce<{ id: string; value: unknown; label?: string; optionLabel?: string }[]>((res, filter) => {
+      return [
+        ...res,
+        ...(Array.isArray(filter.value)
+          ? filter.value?.map((value) => ({
+              id: filter.id,
+              value,
+              label: filter.label,
+              optionLabel: props.filters?.find((f) => f.id === filter.id)?.options.find((o) => o.value === value)
+                ?.label,
+            }))
+          : [filter]),
+      ]
+    }, []),
+  )
+
   const handleSearchUpdateModelValue = (value: string | number) => {
     searchText.value = value
     table.setGlobalFilter(value)
   }
+
+  const handleRemoveFilter = (id: string, value: unknown) => {
+    const column = table.getColumn(id)
+    if (!column) return
+    const isMultiple = props.filters?.find((f) => f.id === id)?.multiple
+    const filterValue = column.getFilterValue() as string[]
+    if (isMultiple) {
+      const filteredArray = filterValue.filter((v) => v !== value)
+      const newFilterValue = filteredArray.length ? filteredArray : undefined
+      column.setFilterValue(newFilterValue)
+    } else {
+      column.setFilterValue(undefined)
+    }
+  }
 </script>
 
 <template>
-  <div v-if="props.search || props.filters?.length" class="flex justify-between gap-4 pb-4">
-    <Input
-      v-if="props.search"
-      class="h-8 max-w-sm"
-      placeholder="Rechercher..."
-      :model-value="searchText"
-      @update:model-value="handleSearchUpdateModelValue"
-    />
-    <div class="flex items-center justify-end gap-2">
-      <template v-if="props.filters?.length">
-        <DataTableFilter
-          v-for="filter in props.filters"
-          :id="filter.id"
-          :table="table"
-          :label="filter.label"
-          :options="filter.options"
-        />
-      </template>
+  <div v-if="props.search || props.filters?.length" class="flex flex-col gap-4 pb-4">
+    <div class="flex justify-between gap-4">
+      <Input
+        v-if="props.search"
+        class="h-8 max-w-sm"
+        placeholder="Rechercher..."
+        :model-value="searchText"
+        @update:model-value="handleSearchUpdateModelValue"
+      />
+      <div class="flex items-center justify-end gap-2">
+        <template v-if="props.filters?.length">
+          <template v-for="filter in props.filters">
+            <DataTableMultiFilter
+              v-if="filter.multiple"
+              :id="filter.id"
+              :table="table"
+              :label="filter.label"
+              :options="filter.options"
+            />
+            <DataTableFilter v-else :id="filter.id" :table="table" :label="filter.label" :options="filter.options" />
+          </template>
+        </template>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <Badge v-for="filter in filterValuesForBadges" :key="filter.id" variant="secondary" class="font-normal">
+        <p>{{ filter.label }} : {{ filter.optionLabel }}</p>
+        <div class="cursor-pointer text-xs" @click="() => handleRemoveFilter(filter.id, filter.value)">
+          <XIcon class="size-4" />
+        </div>
+      </Badge>
     </div>
   </div>
   <div :class="cn('rounded-md', { 'bg-foreground/3 px-4 py-2': props.background })">

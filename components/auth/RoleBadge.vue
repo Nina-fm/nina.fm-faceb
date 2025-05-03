@@ -9,7 +9,7 @@
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger as-child>
-        <Badge variant="successMuted" class="size-5 p-0">
+        <Badge variant="successMuted" class="m-0 size-5 p-0">
           <ShieldUserIcon />
         </Badge>
       </TooltipTrigger>

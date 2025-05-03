@@ -1,7 +1,16 @@
 <script setup lang="ts" generic="TData, TValue">
-  import type { ColumnDef } from '@tanstack/vue-table'
-  import { FlexRender, getCoreRowModel, getPaginationRowModel, useVueTable } from '@tanstack/vue-table'
-  import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next'
+  import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
+  import {
+    FlexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useVueTable,
+  } from '@tanstack/vue-table'
+  import type { FilterDef } from '~/components/ui/data-table'
+
+  const DataTableHeader = resolveComponent('DataTableHeader')
 
   const props = defineProps<{
     columns: ColumnDef<TData & { id: string | number }, TValue>[]
@@ -10,6 +19,9 @@
     pagination?: boolean
     background?: boolean
     emptyText?: string
+    sorting?: SortingState
+    filters?: FilterDef[]
+    search?: boolean
   }>()
 
   const emits = defineEmits<{
@@ -20,6 +32,10 @@
     return !!getCurrentInstance()?.vnode.props?.['onRowClick']
   })
 
+  const sorting = ref<SortingState>(props.sorting ?? [])
+  const columnFilters = ref<ColumnFiltersState>([])
+  const searchText = ref<string | number>('')
+
   const table = useVueTable({
     get data() {
       return props.data
@@ -29,10 +45,47 @@
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+    onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      get sorting() {
+        return sorting.value
+      },
+      get columnFilters() {
+        return columnFilters.value
+      },
+    },
   })
+
+  const handleSearchUpdateModelValue = (value: string | number) => {
+    searchText.value = value
+    table.setGlobalFilter(value)
+  }
 </script>
 
 <template>
+  <div v-if="props.search || props.filters?.length" class="flex justify-between gap-4 pb-4">
+    <Input
+      v-if="props.search"
+      class="h-8 max-w-sm"
+      placeholder="Rechercher..."
+      :model-value="searchText"
+      @update:model-value="handleSearchUpdateModelValue"
+    />
+    <div class="flex items-center justify-end gap-2">
+      <template v-if="props.filters?.length">
+        <DataTableFilter
+          v-for="filter in props.filters"
+          :id="filter.id"
+          :table="table"
+          :label="filter.label"
+          :options="filter.options"
+        />
+      </template>
+    </div>
+  </div>
   <div :class="cn('rounded-md', { 'bg-foreground/3 px-4 py-2': props.background })">
     <Table>
       <TableHeader>
@@ -40,7 +93,11 @@
           <TableHead v-for="header in headerGroup.headers" :key="header.id">
             <FlexRender
               v-if="!header.isPlaceholder"
-              :render="header.column.columnDef.header"
+              :render="
+                header.column.getCanSort()
+                  ? h(DataTableHeader, { column: header.column, title: header.column.columnDef.header })
+                  : header.column.columnDef.header
+              "
               :props="header.getContext()"
             />
           </TableHead>
@@ -81,15 +138,5 @@
       </TableBody>
     </Table>
   </div>
-  <div v-if="props.pagination" class="flex items-center justify-end space-x-2 py-4">
-    <div class="text-muted-foreground flex-1 text-sm">{{ table.getFilteredRowModel().rows.length }} résultat(s)</div>
-    <div class="space-x-2">
-      <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
-        <ChevronLeftIcon />
-      </Button>
-      <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
-        <ChevronRightIcon />
-      </Button>
-    </div>
-  </div>
+  <DataTablePagination v-if="props.pagination" :table="table" />
 </template>

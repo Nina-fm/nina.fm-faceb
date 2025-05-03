@@ -22,7 +22,7 @@
         <DropdownMenuTrigger as-child>
           <SidebarMenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            class="data-[state=open]:bg-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <UserSlimCard :user="currentUser" />
             <ChevronsUpDown class="ml-auto size-4" />

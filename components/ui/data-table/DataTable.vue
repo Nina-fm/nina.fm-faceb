@@ -1,5 +1,4 @@
 <script setup lang="ts" generic="TData, TValue">
-  import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
   import {
     FlexRender,
     getCoreRowModel,
@@ -7,6 +6,9 @@
     getPaginationRowModel,
     getSortedRowModel,
     useVueTable,
+    type ColumnDef,
+    type ColumnFiltersState,
+    type SortingState,
   } from '@tanstack/vue-table'
   import { XIcon } from 'lucide-vue-next'
   import type { FilterDef } from '~/components/ui/data-table'
@@ -33,6 +35,30 @@
     return !!getCurrentInstance()?.vnode.props?.['onRowClick']
   })
 
+  const multiValuesFilterFn = (row: { getValue: (arg0: any) => string[] }, columnId: any, values: any[]) => {
+    const roles = row.getValue(columnId) as string[]
+    return values.reduce((res: boolean, value: string) => roles.includes(value) || res, false)
+  }
+
+  const overrideFilterFn = (column: { filterFn: any; accessorKey: string }) => {
+    if (column.filterFn) {
+      return column.filterFn
+    }
+    if (!!props.filters?.find((f) => f.id === column.accessorKey)?.multiple) {
+      return multiValuesFilterFn
+    }
+    return undefined
+  }
+
+  const columns = computed(() => {
+    return props.columns.map((column) => {
+      return {
+        ...column,
+        filterFn: overrideFilterFn(column as { filterFn: any; accessorKey: string }),
+      }
+    })
+  })
+
   const sorting = ref<SortingState>(props.sorting ?? [])
   const columnFilters = ref<ColumnFiltersState>([])
   const searchText = ref<string | number>('')
@@ -42,7 +68,7 @@
       return props.data
     },
     get columns() {
-      return props.columns
+      return columns.value
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

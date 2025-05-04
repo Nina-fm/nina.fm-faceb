@@ -21,19 +21,19 @@
   const isActive = computed(() => filterValue !== undefined && filterValue !== null)
 
   const getModelValue = (value: string | number) => {
-    return filterValue.value.includes(value) ?? false
+    return filterValue.value?.includes(value) ?? false
   }
 
   const handleUpdateModelValue = (option: string | number, value: Checked) => {
     const column = props.table.getColumn(props.id)
     if (column) {
       const previousValue = column?.getFilterValue() ?? []
-      const newValue = value
-        ? [...(previousValue as Checked[]), option]
-        : Array.isArray(previousValue)
-          ? previousValue.filter((o) => o !== option)
-          : []
-      column.setFilterValue(newValue)
+      if (value) {
+        column.setFilterValue([...(previousValue as Checked[]), option])
+      } else {
+        const newValue = Array.isArray(previousValue) ? previousValue.filter((o) => o !== option) : []
+        column.setFilterValue(newValue.length ? newValue : undefined)
+      }
     }
   }
 </script>
@@ -50,8 +50,8 @@
           })
         "
       >
+        <FunnelIcon class="mr-1 size-3" />
         <span>{{ label }}</span>
-        <FunnelIcon class="ml-2 h-4 w-4" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent class="w-56">

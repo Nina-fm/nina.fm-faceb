@@ -49,7 +49,7 @@
   const filters: FilterDef[] = [
     {
       id: 'roles',
-      label: 'Rôle',
+      label: 'Rôles',
       options: roleFilterOptions.value,
       multiple: true,
     },
@@ -98,10 +98,6 @@
         const name = cell.row.original.name
         const isAdmin = roles.includes(Role.ADMIN)
         return isAdmin ? [h(RoleBadge, { name })] : null
-      },
-      filterFn: (row, columnId, values) => {
-        const roles = row.getValue(columnId) as string[]
-        return values.reduce((res: boolean, value: string) => roles.includes(value) || res, false)
       },
     },
     {

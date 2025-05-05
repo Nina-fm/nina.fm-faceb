@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <div class="container flex h-screen flex-col items-center justify-center">
+  <div class="container flex h-full flex-col items-center justify-center">
     <div
       class="spin bg-primary relative flex aspect-square size-80 flex-col items-center justify-center rounded-full text-neutral-900"
     >

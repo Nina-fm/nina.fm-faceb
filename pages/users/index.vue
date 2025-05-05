@@ -2,6 +2,10 @@
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
+  definePageMeta({
+    roles: ['ADMIN'],
+  })
+
   const { user } = useAuth()
   const { fetchUsers, deleteUser } = useUserApi()
   const { data, error, refresh, status } = await useAsyncData('users', () => fetchUsers())

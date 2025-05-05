@@ -1,3 +1,4 @@
+import type { Role } from '@prisma/client'
 import type { SessionData } from 'h3'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
@@ -9,7 +10,23 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const { data, refresh: updateSession } = await useFetch('/api/auth/session')
 
   const session = data as SessionData
-  const isLoggedIn = computed(() => !!session.value?.email)
+  const isLoggedIn = computed(() => !!session.value.email)
+
+  const hasRole = (role: Role) => {
+    if (!session.value) {
+      return false
+    }
+    const userRoles = session.value.roles || []
+    return userRoles.includes(role)
+  }
+
+  const hasAnyRole = (roles: Role[]) => {
+    if (!session.value.roles?.length) {
+      return false
+    }
+    const userRoles = session.value.roles || []
+    return roles.some((role) => userRoles.includes(role))
+  }
 
   // Create a ref to know where to redirect the user when logged in
   const redirectTo = useState('authRedirect')
@@ -23,6 +40,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
    * })
    */
   const defaultAuthMeta = useRuntimeConfig().app.auth?.defaultProtected ?? true
+  const defaultRolesMeta = useRuntimeConfig().app.roles?.defaultRolesRequired ?? false
 
   addRouteMiddleware(
     'auth',
@@ -36,8 +54,20 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     { global: true },
   )
 
+  addRouteMiddleware(
+    'roles',
+    (to) => {
+      const toRequireRoles = to.meta?.roles ?? defaultRolesMeta
+      if (Array.isArray(toRequireRoles) && !hasAnyRole(toRequireRoles)) {
+        throw createError({ statusCode: 403 })
+      }
+    },
+    { global: true },
+  )
+
   const currentRoute = useRoute()
   const currentRouteRequireAuth = currentRoute.meta?.auth ?? defaultAuthMeta
+  const currentRouteRequireRoles = currentRoute.meta?.roles ?? defaultRolesMeta
 
   if (import.meta.client) {
     watch(isLoggedIn, async (loggedIn) => {
@@ -46,6 +76,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         await navigateTo('/login')
       }
     })
+    watch(
+      () => hasAnyRole(currentRouteRequireRoles || []),
+      async (hasRole) => {
+        if (!hasRole && currentRouteRequireRoles) {
+          throw createError({ statusCode: 403 })
+        }
+      },
+    )
   }
 
   if (isLoggedIn.value && currentRoute.path === '/login') {
@@ -55,9 +93,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   return {
     provide: {
       auth: {
+        hasRole,
+        hasAnyRole,
         isLoggedIn,
-        session,
         redirectTo,
+        session,
         updateSession,
       },
     },

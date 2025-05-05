@@ -5,7 +5,7 @@
   definePageMeta({ layout: 'naked', auth: false })
 
   const { params } = useRoute()
-  const { register } = useAuth()
+  const { register, isLoggedIn } = useAuth()
   const { getInvitationByToken } = useInvitationApi()
 
   const token = ref(Array.isArray(params.token) ? params.token[0] : params.token)
@@ -46,6 +46,10 @@
   }
 
   onBeforeMount(async () => {
+    if (isLoggedIn.value) {
+      await navigateTo('/')
+    }
+
     const invitation = await getInvitationByToken(token.value)
 
     if (!invitation) {

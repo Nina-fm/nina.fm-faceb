@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client'
 import { CompassIcon, LibraryIcon, MusicIcon, PlusIcon, ScrollTextIcon, SendIcon, UsersIcon } from 'lucide-vue-next'
 
 export default defineAppConfig({
@@ -44,7 +43,6 @@ export default defineAppConfig({
     {
       label: 'Administration',
       icon: UsersIcon,
-      roles: [Role.ADMIN],
       children: [
         {
           label: 'Utilisateurs',
@@ -58,5 +56,5 @@ export default defineAppConfig({
         },
       ],
     },
-  ],
+  ] as NavigationDef,
 })

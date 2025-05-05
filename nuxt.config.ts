@@ -42,6 +42,9 @@ export default defineNuxtConfig({
         password: process.env.AUTH_SECRET,
         defaultProtected: true,
       },
+      roles: {
+        defaultRolesRequired: false,
+      },
     },
     public: {
       sitename,

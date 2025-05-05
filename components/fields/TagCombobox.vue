@@ -6,6 +6,7 @@
       modelValue: string[]
       name: string
       placeholder?: string
+      readonly?: boolean
       optionLabelKey?: string
       options:
         | string[]

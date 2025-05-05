@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   defineProps<{
     title: string
+    subtitle?: string
   }>()
 
   const config = useRuntimeConfig()
@@ -13,7 +14,7 @@
         {{ title }}
       </h2>
       <p class="text-center text-sm text-gray-500">
-        {{ config.public.sitename }}
+        {{ subtitle ?? config.public.sitename }}
       </p>
     </CardHeader>
     <CardContent>

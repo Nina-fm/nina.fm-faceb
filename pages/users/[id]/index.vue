@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+  import { Role } from '@prisma/client'
   import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
+
+  definePageMeta({ roles: [Role.ADMIN] })
 
   const { params } = useRoute()
   const id = params.id as string

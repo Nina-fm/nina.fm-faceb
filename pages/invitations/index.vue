@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+  import { Role } from '@prisma/client'
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
+
+  definePageMeta({ roles: [Role.ADMIN] })
 
   const { deleteInvitation, fetchInvitations, resendInvitation } = useInvitationApi()
   const { data, error, refresh, status } = await useAsyncData('invitations', () => fetchInvitations())

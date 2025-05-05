@@ -16,6 +16,7 @@
 
   const props = defineProps<{
     user: User
+    canEditRoles: boolean
     teleportTo?: string
   }>()
 
@@ -59,7 +60,7 @@
             <div class="flex w-3/4 flex-col gap-5">
               <TextField name="name" label="Nom" />
               <TextField name="email" label="Email" readonly />
-              <BadgedOptionsField name="roles" label="Rôles" :options="[Role.ADMIN, Role.USER]" />
+              <BadgedOptionsField v-if="canEditRoles" name="roles" label="Rôles" :options="[Role.ADMIN, Role.USER]" />
             </div>
           </div>
         </CardContent>

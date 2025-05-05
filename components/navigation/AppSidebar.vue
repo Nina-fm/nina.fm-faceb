@@ -1,8 +1,5 @@
 <script lang="ts" setup>
-  const { navigation } = useAppConfig()
-  const { hasAnyRole } = useAuth()
-
-  const allowedNavigation = computed(() => navigation.filter((group) => (group.roles ? hasAnyRole(group.roles) : true)))
+  const navigation = useNavigation()
 </script>
 
 <template>
@@ -17,7 +14,7 @@
       <SidebarTrigger class="text-muted-foreground size-8" />
     </SidebarHeader>
     <SidebarContent class="pt-14">
-      <SidebarGroup v-if="navigation" v-for="group in allowedNavigation" :key="group.label">
+      <SidebarGroup v-if="navigation" v-for="group in navigation" :key="group.label">
         <SidebarGroupLabel class="text-sidebar-foreground/20 group-data-[collapsible=icon]:hidden">
           {{ group.label }}
         </SidebarGroupLabel>
@@ -30,7 +27,7 @@
                   <span>{{ item.label }}</span>
                 </NuxtLink>
               </SidebarMenuButton>
-              <SidebarMenuAction v-if="'action' in item" asChild>
+              <SidebarMenuAction v-if="item?.action" asChild>
                 <NuxtLink :to="item.action.to">
                   <component :is="item.action.icon" />
                 </NuxtLink>

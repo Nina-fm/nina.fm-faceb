@@ -1,22 +1,15 @@
 <script lang="ts" setup>
-  import { Role } from '@prisma/client'
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.ADMIN] })
-
-  const { params } = useRoute()
-  const id = params.id as string
-  const { getUserById, editUser } = useUserApi()
-  const { data } = await useAsyncData('user', () => getUserById(id))
-  const user = computed(() => data.value)
+  const { user } = useAuth()
+  const { editUser } = useUserApi()
 
   useBreadcrumbItems({
     overrides: [
       undefined,
-      undefined,
       {
-        label: user.value?.name ?? "Modification de l'utilisateur",
+        label: 'Mon profil',
       },
       {
         label: 'Modifier',
@@ -25,12 +18,16 @@
   })
 
   const handleCancel = async () => {
-    await navigateTo('/users')
+    await navigateTo('/profile')
   }
 
   const handleSubmit = async (values: Record<string, any>) => {
+    if (!user.value?.id) {
+      toast.error('Utilisateur introuvable.')
+      return
+    }
     try {
-      await editUser(id, values as UserEdit)
+      await editUser(user.value.id, values as UserEdit)
       toast.success('Utilisateur modifié.')
     } catch (error) {
       console.error('Error editing user:', error)
@@ -40,7 +37,7 @@
 </script>
 
 <template>
-  <PageHeader title="Modifier l'utilisateur">
+  <PageHeader title="Modifier mon profil utilisateur">
     <template #actions>
       <Button size="icon" variant="outline" @click="handleCancel">
         <XIcon />
@@ -51,6 +48,7 @@
     v-if="user"
     :user="user"
     teleport-to="page-header-actions"
+    :canEditRoles="false"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />

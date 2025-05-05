@@ -19,7 +19,7 @@
 </script>
 
 <template>
-  <DataTableRowActions>
+  <DataTableRowActions v-if="editable || deletable">
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="icon" variant="ghost" class="text-muted-foreground">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ChevronsUpDown, CogIcon, IdCardIcon, LogOut } from 'lucide-vue-next'
+  import { ChevronsUpDown, IdCardIcon, LogOut } from 'lucide-vue-next'
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
@@ -34,14 +34,16 @@
           :side-offset="4"
         >
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <IdCardIcon />
-              Profil
+            <DropdownMenuItem asChild>
+              <NuxtLink to="/profile">
+                <IdCardIcon />
+                Mon profil
+              </NuxtLink>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <!-- <DropdownMenuItem>
               <CogIcon />
               Préférences
-            </DropdownMenuItem>
+            </DropdownMenuItem> -->
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click="handleLogout">

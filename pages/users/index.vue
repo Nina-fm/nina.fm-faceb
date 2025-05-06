@@ -2,17 +2,15 @@
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({
-    roles: ['ADMIN'],
-  })
+  definePageMeta({ roles: ['ADMIN'] })
 
-  const { user } = useAuth()
+  const { user } = useAuthApi()
   const { fetchUsers, deleteUser } = useUserApi()
   const { data, error, refresh, status } = await useAsyncData('users', () => fetchUsers())
 
   const isLoading = ref(false)
   const openInviteDialog = ref(false)
-  const users = computed(() => data.value?.users || [])
+  const users = computed(() => data.value?.results || [])
 
   watch(status, (newStatus) => {
     if (newStatus === 'pending') {
@@ -36,11 +34,11 @@
     await navigateTo('/invitations')
   }
 
-  const handleEditUser = (id: string) => {
+  const handleEditRow = (id: string) => {
     return navigateTo(`/users/${id}/edit`)
   }
 
-  const handleDeleteUser = async (id: string) => {
+  const handleDeleteRow = async (id: string) => {
     try {
       await deleteUser(id)
       await refresh()
@@ -66,8 +64,8 @@
     :data="users"
     :undeletableIds="user?.id ? [user.id] : []"
     @invite="openInviteDialog = true"
-    @row-edit="handleEditUser"
-    @row-delete="handleDeleteUser"
+    @row-edit="handleEditRow"
+    @row-delete="handleDeleteRow"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
   <LoadingOverlay :active="isLoading" />

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+  import { useAuthApi } from '#imports'
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { login } = useAuth()
+  const { login } = useAuthApi()
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),

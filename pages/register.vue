@@ -4,7 +4,7 @@
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { register } = useAuth()
+  const { register } = useAuthApi()
 
   const formSchema = z
     .object({

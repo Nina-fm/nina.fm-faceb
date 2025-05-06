@@ -38,6 +38,24 @@
     },
   })
 
+  watch(
+    () => props.user,
+    (user) => {
+      form.resetForm({
+        values: {
+          name: user.name || '',
+          email: user.email,
+          avatar: {
+            filename: user.avatar?.filename,
+            alt: user.avatar?.alt,
+          },
+          roles: user.roles,
+        },
+      })
+    },
+    { immediate: true },
+  )
+
   const dirty = computed(() => form.meta.value.dirty)
 
   const handleCancel = () => {

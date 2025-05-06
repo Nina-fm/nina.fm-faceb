@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-  import { type User, Role } from '@prisma/client';
+  import { Role } from '@prisma/client'
+  import type { User } from '~/types/db'
 
   const props = defineProps<{
     user: User
   }>()
 
-  const { user: currentUser } = useAuth()
+  const { user: currentUser } = useAuthApi()
 
   const isMe = computed(() => currentUser.value?.id === props.user?.id)
 </script>

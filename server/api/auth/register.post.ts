@@ -1,7 +1,9 @@
+import UserFactory from '~/server/factory/user'
+
 export default defineEventHandler(async (event) => {
   const { email, name, password, invitationToken } = await readBody(event)
 
-  await createUser(
+  await UserFactory.create(
     {
       email,
       name: name ?? email.split('@')[0],

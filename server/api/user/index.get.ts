@@ -1,7 +1,9 @@
+import UserFactory from '~/server/factory/user'
+
 export default defineEventHandler(async (event) => {
   const id = getQuery(event).id as string
 
-  const user = await getUserById(id)
+  const user = await UserFactory.getById(id)
 
   if (!user) {
     throw createError({

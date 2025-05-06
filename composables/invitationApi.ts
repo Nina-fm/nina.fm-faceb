@@ -1,18 +1,9 @@
 export const useInvitationApi = () => {
   const fetchInvitations = async (params?: { page: number; limit: number }) => {
-    const result = await $fetch('/api/invitations', {
+    return await $fetch('/api/invitations', {
       method: 'GET',
       params,
     })
-
-    return {
-      ...result,
-      invitations: result.invitations.map((invitation: any) => ({
-        ...invitation,
-        createdAt: new Date(invitation.createdAt),
-        updatedAt: new Date(invitation.updatedAt),
-      })),
-    }
   }
 
   const getInvitationById = async (id: string | number) => {
@@ -45,6 +36,7 @@ export const useInvitationApi = () => {
   }
 
   const resendInvitation = async (id: string | number) => {
+    console.log('resend invitaiton', id)
     const baseUrl = window.origin
     const response = await $fetch('/api/invitation/resend', {
       method: 'POST',

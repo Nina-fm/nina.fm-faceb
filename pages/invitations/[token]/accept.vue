@@ -1,11 +1,12 @@
 <script lang="ts" setup>
+  import { useAuthApi } from '#imports'
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
   definePageMeta({ layout: 'naked', auth: false })
 
   const { params } = useRoute()
-  const { register, isLoggedIn } = useAuth()
+  const { register, isLoggedIn } = useAuthApi()
   const { getInvitationByToken } = useInvitationApi()
 
   const token = ref(Array.isArray(params.token) ? params.token[0] : params.token)

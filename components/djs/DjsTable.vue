@@ -1,23 +1,18 @@
 <script setup lang="ts">
-  import { Role } from '@prisma/client'
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
-  import type { FilterDef } from '~/components/ui/data-table'
-  import type { User } from '~/types/db'
+  import type { Dj } from '~/types/db'
 
-  const ShieldUserIcon = await import('lucide-vue-next').then((module) => module.ShieldUserIcon)
+  const FingerprintIcon = await import('lucide-vue-next').then((module) => module.FingerprintIcon)
 
-  const Avatar = resolveComponent('Avatar')
-  const AvatarFallback = resolveComponent('AvatarFallback')
-  const AvatarImage = resolveComponent('AvatarImage')
   const IconBadge = resolveComponent('IconBadge')
-  const UsersTableActions = resolveComponent('UsersTableActions')
+  const DjsTableActions = resolveComponent('DjsTableActions')
 
   const props = withDefaults(
     defineProps<{
-      data: User[]
-      undeletableIds?: string[]
+      data: Dj[]
       loading?: boolean
+      currentUserId?: string
     }>(),
     {
       data: () => [],
@@ -26,20 +21,12 @@
   )
 
   const emit = defineEmits<{
-    invite: []
     rowEdit: [id: string]
     rowDelete: [id: string]
   }>()
 
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
-
-  const roleFilterOptions = computed(() => {
-    return [
-      { label: 'Administrateur', value: Role.ADMIN },
-      { label: 'Utilisateur', value: Role.USER },
-    ]
-  })
 
   const defaultSorting = ref<SortingState>([
     {
@@ -48,75 +35,42 @@
     },
   ])
 
-  const filters: FilterDef[] = [
-    {
-      id: 'roles',
-      label: 'Rôles',
-      options: roleFilterOptions.value,
-      multiple: true,
-    },
-  ]
-
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<Dj>[] = [
     {
       accessorKey: 'name',
-      header: 'Utilisateur',
+      header: 'Dj',
       cell: ({ cell }) => {
         const name = cell.getValue() as string
-        const avatar = cell.row.original.avatar
         return h(
           'span',
           { class: 'flex gap-3 items-center' },
           {
-            default: () => [
-              h(
-                Avatar,
-                {},
-                {
-                  default: () => [
-                    ...(avatar
-                      ? [
-                          h(AvatarImage, {
-                            src: avatar.filename,
-                            alt: avatar.alt,
-                          }),
-                        ]
-                      : []),
-                    h(AvatarFallback, {}, { default: () => [cell.row.original.name?.slice(0, 1)] }),
-                  ],
-                },
-              ),
-              name,
-            ],
+            default: () => [name],
           },
         )
       },
     },
     {
-      accessorKey: 'roles',
-      header: '',
+      accessorKey: 'userId',
+      header: 'Utilisateur',
       cell: ({ cell }) => {
-        const roles = cell.getValue() as string[]
-        const name = cell.row.original.name
-        const isAdmin = roles.includes(Role.ADMIN)
-        return isAdmin
-          ? [
-              h(
-                IconBadge,
-                { variant: 'successMuted', label: `${name} est Administrateur` },
-                { default: () => [h(ShieldUserIcon)] },
-              ),
-            ]
+        const userId = cell.getValue() as string
+        const isCurrentUser = userId === props.currentUserId
+        return userId
+          ? h(
+              IconBadge,
+              {
+                variant: isCurrentUser ? 'default' : 'secondary',
+                label: isCurrentUser ? 'Moi' : userId,
+              },
+              { default: () => h(FingerprintIcon) },
+            )
           : null
       },
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
-    },
-    {
       accessorKey: 'createdAt',
-      header: 'Inscription',
+      header: 'Création',
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const createdAt = cell.getValue() as Date
@@ -139,8 +93,7 @@
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
-        return h(UsersTableActions, {
-          deletable: !props.undeletableIds?.includes(id),
+        return h(DjsTableActions, {
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),
         })
@@ -166,7 +119,7 @@
       try {
         emit('rowDelete', idToDelete.value)
       } catch (error) {
-        toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
+        toast.error('Une erreur est survenue lors de la suppression du dj.')
       } finally {
         openConfirm.value = false
       }
@@ -181,19 +134,16 @@
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
-      :filters="filters"
       search
       pagination
       background
     />
-    <EmptyBlock v-else title="Aucun utilisateur actuellement.">
-      <Button variant="secondary" class="w-fit" @click="$emit('invite')">Inviter un utilisateur</Button>
-    </EmptyBlock>
+    <EmptyBlock v-else title="Aucun dj actuellement." />
   </div>
   <ConfirmDialog
     v-model="openConfirm"
     title="Attention ! Suppression définitive"
-    description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
+    description="Êtes-vous sûr de vouloir supprimer ce dj ?"
     @confirm="handleConfirmDelete"
     @cancel="handleCancelDelete"
   />

@@ -1,5 +1,5 @@
 import type { Role } from '@prisma/client'
-import type { SessionData } from 'h3'
+import type { User } from '~/types/db'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Skip plugin when rendering error page
@@ -9,19 +9,19 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   const { data, refresh: updateSession } = await useFetch('/api/auth/session')
 
-  const session = data as SessionData
-  const isLoggedIn = computed(() => !!session.value.email)
+  const session = data as Ref<User | null>
+  const isLoggedIn = computed(() => !!session.value?.email)
 
   const hasRole = (role: Role) => {
     if (!session.value) {
       return false
     }
-    const userRoles = session.value.roles || []
+    const userRoles = session.value?.roles || []
     return userRoles.includes(role)
   }
 
   const hasAnyRole = (roles: Role[]) => {
-    if (!session.value.roles?.length) {
+    if (!session.value?.roles?.length) {
       return false
     }
     const userRoles = session.value.roles || []

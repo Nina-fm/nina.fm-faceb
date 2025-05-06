@@ -7,16 +7,17 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUserById, editUser } = useUserApi()
-  const { data, refresh } = await useAsyncData('user', () => getUserById(id))
-  const user = computed(() => data.value)
+  const { user: currentUser } = useAuthApi()
+  const { getDjById, editDj } = useDjApi()
+  const { data, refresh } = await useAsyncData('dj', () => getDjById(id))
+  const dj = computed(() => data.value)
 
   useBreadcrumbItems({
     overrides: [
       undefined,
       undefined,
       {
-        label: user.value?.name ?? "Modification de l'utilisateur",
+        label: dj.value?.name ?? 'Modification du dj',
       },
       {
         label: 'Modifier',
@@ -25,34 +26,34 @@
   })
 
   const handleCancel = async () => {
-    await navigateTo('/users')
+    await navigateTo('/djs')
   }
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await editUser(id, values as UserEdit)
+      await editDj(id, values as DjEdit)
       await refresh()
-      toast.success('Utilisateur modifié.')
+      toast.success('Dj modifié.')
     } catch (error) {
-      console.error('Error editing user:', error)
-      toast.error("Erreur lors de la modification de l'utilisateur.")
+      console.error('Error editing dj:', error)
+      toast.error('Erreur lors de la modification du dj.')
     }
   }
 </script>
 
 <template>
-  <PageHeader title="Modifier l'utilisateur">
+  <PageHeader title="Modifier le dj">
     <template #actions>
       <Button size="icon" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
   </PageHeader>
-  <UserForm
-    v-if="user"
-    :user="user"
-    canEditRoles
+  <DjForm
+    v-if="dj"
+    :dj="dj"
     teleport-to="page-header-actions"
+    :currentUserId="currentUser?.id"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />

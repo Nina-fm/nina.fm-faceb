@@ -2,7 +2,7 @@
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  const { user } = useAuth()
+  const { user, refreshSession } = useAuthApi()
   const { editUser } = useUserApi()
 
   useBreadcrumbItems({
@@ -28,6 +28,7 @@
     }
     try {
       await editUser(user.value.id, values as UserEdit)
+      await refreshSession()
       toast.success('Utilisateur modifié.')
     } catch (error) {
       console.error('Error editing user:', error)
@@ -44,7 +45,7 @@
       </Button>
     </template>
   </PageHeader>
-  <UserEditForm
+  <UserForm
     v-if="user"
     :user="user"
     teleport-to="page-header-actions"

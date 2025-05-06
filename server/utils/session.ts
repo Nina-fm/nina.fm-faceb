@@ -6,12 +6,6 @@ const sessionConfig: SessionConfig = {
 
 export const useAuthSession = async (event: H3Event) => {
   const session = await useSession(event, sessionConfig)
-  const user = await findUserByEmail(session.data.email)
-
-  await session.update({
-    roles: user.roles,
-  })
-
   return session
 }
 

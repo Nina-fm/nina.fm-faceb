@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { PencilIcon } from 'lucide-vue-next'
 
-  const { user } = useAuth()
+  const { user } = useAuthApi()
 
   useBreadcrumbItems({
     overrides: [

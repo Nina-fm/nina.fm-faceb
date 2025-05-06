@@ -1,4 +1,13 @@
-import { CompassIcon, LibraryIcon, MusicIcon, PlusIcon, ScrollTextIcon, SendIcon, UsersIcon } from 'lucide-vue-next'
+import {
+  CompassIcon,
+  HeadphonesIcon,
+  LibraryIcon,
+  MusicIcon,
+  PlusIcon,
+  ScrollTextIcon,
+  SendIcon,
+  UsersIcon,
+} from 'lucide-vue-next'
 
 export default defineAppConfig({
   resend: {
@@ -10,7 +19,16 @@ export default defineAppConfig({
       icon: MusicIcon,
       children: [
         {
-          label: 'Mixtapes',
+          label: "DJ's",
+          icon: HeadphonesIcon,
+          to: '/djs',
+          action: {
+            icon: PlusIcon,
+            to: '/djs/add',
+          },
+        },
+        {
+          label: 'Mixtapes (supabase)',
           icon: LibraryIcon,
           to: '/mixtapes',
           action: {
@@ -19,7 +37,7 @@ export default defineAppConfig({
           },
         },
         {
-          label: "DJ's",
+          label: "DJ's (supabase",
           icon: UsersIcon,
           to: '/authors',
           action: {

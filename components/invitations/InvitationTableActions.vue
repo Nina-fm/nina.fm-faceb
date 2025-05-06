@@ -14,7 +14,7 @@
 
   defineEmits<{
     delete: []
-    send: []
+    resend: []
   }>()
 </script>
 
@@ -26,7 +26,7 @@
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuItem v-if="sendable" @click="$emit('send')">Renvoyer</DropdownMenuItem>
+      <DropdownMenuItem v-if="sendable" @click="$emit('resend')">Renvoyer</DropdownMenuItem>
       <DropdownMenuItem v-if="deletable" class="text-destructive" @click="$emit('delete')">Supprimer</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

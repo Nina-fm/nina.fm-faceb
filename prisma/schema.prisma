@@ -45,6 +45,73 @@ model Image {
   alt       String
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
+  // mixtapeId String   @unique
+  // mixtape   Mixtape  @relation(fields: [mixtapeId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Dj {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  // mixtapes  DjOnMixtape[]
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// model DjOnMixtape {
+//   djId      String
+//   dj        Dj      @relation(fields: [djId], references: [id])
+//   mixtapeId String
+//   mixtape   Mixtape @relation(fields: [mixtapeId], references: [id])
+//   position  Int?
+
+//   @@id([djId, mixtapeId])
+// }
+
+// model Mixtape {
+//   id           String         @id @default(cuid())
+//   name         String         @unique
+//   description  String?
+//   year         Int?
+//   comment      String?
+//   djAsText     String?
+//   tracksAsText String?
+//   cover        Image?
+//   tracks       Track[]
+//   djs          DjOnMixtape[]
+//   tags         TagOnMixtape[]
+//   createdAt    DateTime       @default(now())
+//   updatedAt    DateTime       @updatedAt
+// }
+
+// model Track {
+//   id        String   @id @default(cuid())
+//   title     String
+//   artist    String?
+//   startTime String?
+//   position  Int?
+//   mixtapeId String
+//   mixtape   Mixtape  @relation(fields: [mixtapeId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model TagOnMixtape {
+//   tagId     String
+//   tag       Tag     @relation(fields: [tagId], references: [id])
+//   mixtapeId String
+//   mixtape   Mixtape @relation(fields: [mixtapeId], references: [id])
+
+//   @@id([tagId, mixtapeId])
+// }
+
+// model Tag {
+//   id        String         @id @default(cuid())
+//   name      String         @unique
+//   color     String?
+//   mixtapes  TagOnMixtape[]
+//   createdAt DateTime       @default(now())
+//   updatedAt DateTime       @updatedAt
+// }

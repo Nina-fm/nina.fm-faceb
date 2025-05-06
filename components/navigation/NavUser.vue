@@ -3,7 +3,7 @@
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
-  const { logout, user } = useAuth()
+  const { logout, user } = useAuthApi()
 
   const currentUser = computed(() => ({
     name: user.value?.name,

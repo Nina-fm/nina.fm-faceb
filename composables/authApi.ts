@@ -2,19 +2,10 @@ import type { User } from '~/types/db'
 
 export type UserEdit = Omit<User, 'id' | 'password' | 'createdAt' | 'updatedAt'>
 
-export const useAuth = () => {
+export const useAuthApi = () => {
   const { hasRole, hasAnyRole, isLoggedIn, redirectTo, session, updateSession } = useNuxtApp().$auth
-  const { getUserById } = useUserApi()
 
-  const user = ref<User | null>(null)
-
-  onMounted(() => {
-    updateUser()
-  })
-
-  const updateUser = async () => {
-    user.value = await getUserById(session.value.id)
-  }
+  const user = computed(() => session.value)
 
   const register = async ({
     email,
@@ -43,8 +34,8 @@ export const useAuth = () => {
     await $fetch('/api/auth/login', {
       method: 'POST',
       body: {
-        email: email,
-        password: password,
+        email,
+        password,
       },
     })
     redirectTo.value = null
@@ -57,7 +48,16 @@ export const useAuth = () => {
       method: 'POST',
     })
     await updateSession()
-    user.value = null
+  }
+
+  const refreshSession = async () => {
+    await $fetch('/api/auth/session', {
+      method: 'GET',
+      params: {
+        refresh: true,
+      },
+    })
+    await updateSession()
   }
 
   return {
@@ -67,7 +67,8 @@ export const useAuth = () => {
     hasRole,
     hasAnyRole,
     login,
-    register,
     logout,
+    refreshSession,
+    register,
   }
 }

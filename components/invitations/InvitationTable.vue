@@ -82,7 +82,7 @@
     },
     {
       accessorKey: 'actions',
-      header: () => h('span', { class: 'flex justify-end' }, 'Actions'),
+      header: '',
       size: 60,
       cell: ({ cell }) => {
         const id = cell.row.original.id

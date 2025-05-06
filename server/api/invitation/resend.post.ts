@@ -1,7 +1,9 @@
+import InvitationFactory from '~/server/factory/invitation'
+
 export default defineEventHandler(async (event) => {
   const { id, baseUrl } = await readBody(event)
 
-  const result = await resendInvitation({ id }, baseUrl)
+  const result = await InvitationFactory.resend({ id }, baseUrl)
 
   return result
 })

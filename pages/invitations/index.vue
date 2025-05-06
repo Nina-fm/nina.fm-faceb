@@ -10,7 +10,7 @@
 
   const isLoading = ref(false)
   const openInviteDialog = ref(false)
-  const invitations = computed(() => data.value?.invitations || [])
+  const invitations = computed(() => data.value?.results || [])
 
   watch(status, (newStatus) => {
     if (newStatus === 'pending') {

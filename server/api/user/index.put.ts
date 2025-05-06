@@ -1,18 +1,20 @@
+import UserFactory from '~/server/factory/user'
+
 export default defineEventHandler(async (event) => {
   const { id, ...data } = await readBody(event)
 
-  const user = await updateUser(id, data)
+  const result = await UserFactory.updateById(id, data)
 
   return formattedResponse({
-    ...user,
-    createdAt: new Date(user.createdAt),
-    updatedAt: new Date(user.updatedAt),
-    emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
-    avatar: user.avatar
+    ...result,
+    createdAt: new Date(result.createdAt),
+    updatedAt: new Date(result.updatedAt),
+    emailVerified: result.emailVerified ? new Date(result.emailVerified) : null,
+    avatar: result.avatar
       ? {
-          ...user.avatar,
-          createdAt: new Date(user.avatar.createdAt),
-          updatedAt: new Date(user.avatar.updatedAt),
+          ...result.avatar,
+          createdAt: new Date(result.avatar.createdAt),
+          updatedAt: new Date(result.avatar.updatedAt),
         }
       : null,
   })

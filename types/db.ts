@@ -19,3 +19,7 @@ export type Image = Prisma.ImageGetPayload<{
 }>
 
 export type Dj = Prisma.DjGetPayload<{}>
+
+export type Mixtape = Prisma.MixtapeGetPayload<{
+  include: { cover: true }
+}>

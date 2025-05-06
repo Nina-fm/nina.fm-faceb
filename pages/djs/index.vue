@@ -3,9 +3,7 @@
   import { toast } from 'vue-sonner'
   import { useDjApi } from '~/composables/djApi'
 
-  definePageMeta({
-    roles: ['ADMIN'],
-  })
+  definePageMeta({ roles: ['ADMIN'] })
 
   const { user: currentUser } = useAuthApi()
   const { fetchDjs, deleteDj } = useDjApi()
@@ -29,15 +27,19 @@
     }
   })
 
+  const handleRowShow = (id: string) => {
+    return navigateTo(`/djs/${id}`)
+  }
+
   const handleRefresh = async () => {
     await refresh()
   }
 
-  const handleEditRow = (id: string) => {
+  const handleRowEdit = (id: string) => {
     return navigateTo(`/djs/${id}/edit`)
   }
 
-  const handleDeleteRow = async (id: string) => {
+  const handleRowDelete = async (id: string) => {
     try {
       await deleteDj(id)
       await refresh()
@@ -49,7 +51,7 @@
 </script>
 
 <template>
-  <PageHeader title="Djs">
+  <PageHeader title="Les Djs">
     <template #actions>
       <Button size="icon" variant="outline" @click="handleRefresh">
         <RefreshCwIcon />
@@ -59,6 +61,12 @@
       </Button>
     </template>
   </PageHeader>
-  <DjsTable :data="djs" :currentUserId="currentUser?.id" @row-edit="handleEditRow" @row-delete="handleDeleteRow" />
+  <DjsTable
+    :data="djs"
+    :currentUserId="currentUser?.id"
+    @row-show="handleRowShow"
+    @row-edit="handleRowEdit"
+    @row-delete="handleRowDelete"
+  />
   <LoadingOverlay :active="isLoading" />
 </template>

@@ -22,7 +22,7 @@
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <Select v-bind="componentField">
-        <FormControl>
+        <FormControl class="w-full">
           <SelectTrigger>
             <SelectValue :placeholder="placeholder" />
           </SelectTrigger>

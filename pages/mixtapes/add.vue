@@ -1,33 +1,45 @@
 <script lang="ts" setup>
+  import { Role } from '@prisma/client'
   import { XIcon } from 'lucide-vue-next'
-  import type { MixtapeParamsExt } from '~~/types/supatypes'
+  import { toast } from 'vue-sonner'
 
-  const pageTitle = 'Nouvelle mixtape'
+  definePageMeta({ roles: [Role.ADMIN] })
 
-  definePageMeta({ breadcrumb: { label: pageTitle } })
+  const { createMixtape } = useMixtapeApi()
 
-  const { createMixtape } = useMixtapesStore()
+  useBreadcrumbItems({
+    overrides: [
+      undefined,
+      undefined,
+      {
+        label: 'Nouvelle mixtape',
+      },
+    ],
+  })
 
   const handleCancel = async () => {
     await navigateTo('/mixtapes')
   }
 
-  const handleSubmit = async (form: MixtapeParamsExt) => {
-    const { error, data } = await createMixtape(form)
-
-    if (!error && data?.id) await navigateTo(`/mixtapes/${data.id}/edit`)
+  const handleSubmit = async (values: Record<string, any>) => {
+    try {
+      await createMixtape(values as MixtapeEdit)
+      toast.success('Mixtape créée.')
+      await navigateTo('/mixtapes')
+    } catch (error) {
+      console.error('Error creating mixtape:', error)
+      toast.error('Erreur lors de la création de la mixtape.')
+    }
   }
 </script>
 
 <template>
-  <PageHeader :title="pageTitle">
+  <PageHeader title="Nouvelle mixtape">
     <template #actions>
       <Button size="icon" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
   </PageHeader>
-  <MixtapeForm @cancel="handleCancel" @submit="handleSubmit" />
+  <MixtapeForm teleport-to="page-header-actions" @cancel="handleCancel" @submit="handleSubmit" />
 </template>
-
-<style scoped></style>

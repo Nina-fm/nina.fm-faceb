@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-  import { SaveIcon, XIcon } from 'lucide-vue-next'
-  import type { MixtapeParamsExt } from '~/types/supatypes'
+  import { Role } from '@prisma/client'
+  import { XIcon } from 'lucide-vue-next'
+  import { toast } from 'vue-sonner'
+
+  definePageMeta({ roles: [Role.ADMIN] })
 
   const { params } = useRoute()
   const id = params.id as string
-  const { updateMixtape, getById } = useMixtapesStore()
-  const { data } = await useAsyncData('mixtape', () => getById(id))
-
-  const isFormDirty = ref(false)
+  const { getMixtapeById, editMixtape } = useMixtapeApi()
+  const { data, refresh } = await useAsyncData('mixtape', () => getMixtapeById(id))
   const mixtape = computed(() => data.value)
 
   useBreadcrumbItems({
@@ -15,7 +16,7 @@
       undefined,
       undefined,
       {
-        label: mixtape.value?.name ?? 'Modification de la Mixtape',
+        label: mixtape.value?.name ?? 'Modification de la mixtape',
       },
       {
         label: 'Modifier',
@@ -23,29 +24,25 @@
     ],
   })
 
-  const handleFormDirty = (value: boolean) => {
-    isFormDirty.value = value
-  }
-
-  const handleSave = async () => {}
-
   const handleCancel = async () => {
     await navigateTo('/mixtapes')
   }
 
-  const handleSubmit = async (values: MixtapeParamsExt) => {
-    const { error } = await updateMixtape(id, values)
+  const handleSubmit = async (values: Record<string, any>) => {
+    try {
+      await editMixtape(id, values as MixtapeEdit)
+      await refresh()
+      toast.success('Mixtape modifiée.')
+    } catch (error) {
+      console.error('Error editing mixtape:', error)
+      toast.error('Erreur lors de la modification de la mixtape.')
+    }
   }
 </script>
 
 <template>
   <PageHeader title="Modifier la mixtape">
     <template #actions>
-      <Transition name="fade">
-        <Button v-if="isFormDirty" size="icon" @click="handleSave">
-          <SaveIcon />
-        </Button>
-      </Transition>
       <Button size="icon" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
@@ -54,10 +51,8 @@
   <MixtapeForm
     v-if="mixtape"
     :mixtape="mixtape"
-    @form:dirty="handleFormDirty"
+    teleport-to="page-header-actions"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />
 </template>
-
-<style scoped></style>

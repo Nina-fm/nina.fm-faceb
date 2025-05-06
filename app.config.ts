@@ -19,16 +19,7 @@ export default defineAppConfig({
       icon: MusicIcon,
       children: [
         {
-          label: "DJ's",
-          icon: HeadphonesIcon,
-          to: '/djs',
-          action: {
-            icon: PlusIcon,
-            to: '/djs/add',
-          },
-        },
-        {
-          label: 'Mixtapes (supabase)',
+          label: 'Mixtapes',
           icon: LibraryIcon,
           to: '/mixtapes',
           action: {
@@ -37,12 +28,12 @@ export default defineAppConfig({
           },
         },
         {
-          label: "DJ's (supabase",
-          icon: UsersIcon,
-          to: '/authors',
+          label: "DJ's",
+          icon: HeadphonesIcon,
+          to: '/djs',
           action: {
             icon: PlusIcon,
-            to: '/authors/add',
+            to: '/djs/add',
           },
         },
       ],

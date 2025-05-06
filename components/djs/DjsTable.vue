@@ -21,6 +21,7 @@
   )
 
   const emit = defineEmits<{
+    rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
   }>()
@@ -94,12 +95,17 @@
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
         return h(DjsTableActions, {
+          onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),
         })
       },
     },
   ]
+
+  const handleRowShow = (id: string) => {
+    emit('rowShow', id)
+  }
 
   const handleRowEdit = (id: string) => {
     emit('rowEdit', id)
@@ -138,7 +144,11 @@
       pagination
       background
     />
-    <EmptyBlock v-else title="Aucun dj actuellement." />
+    <EmptyBlock v-else title="Aucun dj actuellement.">
+      <Button variant="secondary" asChild>
+        <NuxtLink to="/djs/add">Créer un Dj</NuxtLink>
+      </Button>
+    </EmptyBlock>
   </div>
   <ConfirmDialog
     v-model="openConfirm"

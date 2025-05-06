@@ -1,66 +1,52 @@
 <script lang="ts" setup>
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
+  import { toast } from 'vue-sonner'
 
-  // const { smAndUp, mdAndUp, update } = useDisplay()
-  const { loading } = useLoadingStoreRefs()
-  const { fetchMixtapes, deleteMixtape, resetTagFilters } = useMixtapesStore()
-  const { filteredData: filteredMixtapes, tagFilters, search, itemsPerPage, page } = useMixtapesStoreRefs()
-  const { fetchTags } = useTagsStore()
-  const { data: tags } = useTagsStoreRefs()
+  definePageMeta({ roles: ['ADMIN'] })
 
-  const idToDelete = ref<string | number | null>(null)
-  const openConfirm = ref(false)
+  const { user: currentUser } = useAuthApi()
+  const { fetchMixtapes, deleteMixtape } = useMixtapeApi()
+  const { data, error, refresh, status } = await useAsyncData('mixtapes', () => fetchMixtapes())
 
-  // const headers = computed(() => {
-  //   update()
-  //   return headersDefinition.value.filter(
-  //     (h) => !('show' in h) || (h.show === 'mdAndUp' && mdAndUp.value) || (h.show === 'smAndUp' && smAndUp.value),
-  //   )
-  // })
+  const isLoading = ref(false)
+  const openInviteDialog = ref(false)
+  const mixtapes = computed(() => data.value?.results || [])
 
-  const handleRowClick = async (id: string | number) => {
-    await navigateTo(`/mixtapes/${id}`)
-  }
+  watch(status, (newStatus) => {
+    if (newStatus === 'pending') {
+      isLoading.value = true
+    } else {
+      setTimeout(() => (isLoading.value = false), 500)
+    }
+  })
 
-  const handleEdit = async (id: string | number) => {
-    await navigateTo(`/mixtapes/${id}/edit`)
-  }
-
-  const handleDelete = (id: string | number) => {
-    idToDelete.value = id
-    openConfirm.value = true
-  }
-
-  // const handleCloseConfirm = () => {
-  //   openConfirm.value = false
-  // }
-
-  // const handleConfirmDelete = async () => {
-  //   if (idToDelete.value) {
-  //     const { error } = await deleteMixtape(idToDelete.value)
-  //     if (!error) {
-  //       await fetchMixtapes()
-  //     }
-  //   }
-  // }
+  watch(error, (value) => {
+    if (value) {
+      toast.error('Une erreur est survenue lors de la récupération des mixtapes.')
+    }
+  })
 
   const handleRefresh = async () => {
-    await fetchMixtapes()
+    await refresh()
   }
 
-  onMounted(() => {
-    if (!filteredMixtapes.value.length) {
-      fetchMixtapes()
-    }
-    if (!tags.value.length) {
-      fetchTags()
-    }
-    // document.body.addEventListener('resize', () => update())
-  })
+  const handleRowShow = (id: string) => {
+    return navigateTo(`/mixtapes/${id}`)
+  }
 
-  onBeforeUnmount(() => {
-    // document.body.removeEventListener('resize', () => update())
-  })
+  const handleRowEdit = (id: string) => {
+    return navigateTo(`/mixtapes/${id}/edit`)
+  }
+
+  const handleRowDelete = async (id: string) => {
+    try {
+      await deleteMixtape(id)
+      await refresh()
+      toast.success('Mixtape supprimée !')
+    } catch (error) {
+      toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
+    }
+  }
 </script>
 
 <template>
@@ -76,11 +62,5 @@
       </Button>
     </template>
   </PageHeader>
-  <MixtapeTable
-    :data="filteredMixtapes"
-    :loading="loading"
-    @rowClick="handleRowClick"
-    @rowEdit="handleEdit"
-    @rowDelete="handleDelete"
-  />
+  <MixtapeTable :data="mixtapes" @rowShow="handleRowShow" @rowEdit="handleRowEdit" @rowDelete="handleRowDelete" />
 </template>

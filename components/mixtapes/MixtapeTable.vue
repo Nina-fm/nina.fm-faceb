@@ -1,95 +1,160 @@
 <script setup lang="ts">
-  import type { ColumnDef } from '@tanstack/vue-table'
-  import type { MixtapeExt } from '~/types/supatypes'
+  import type { ColumnDef, SortingState } from '@tanstack/vue-table'
+  import { toast } from 'vue-sonner'
+  import type { Mixtape } from '~/types/db'
 
-  const PencilIcon = defineAsyncComponent(() => import('lucide-vue-next').then((m) => m.PencilIcon))
-  const Trash2Icon = defineAsyncComponent(() => import('lucide-vue-next').then((m) => m.Trash2Icon))
+  const ImageIcon = await import('lucide-vue-next').then((module) => module.ImageIcon)
 
-  const Badge = resolveComponent('Badge')
-  const Button = resolveComponent('Button')
+  const Avatar = resolveComponent('Avatar')
+  const AvatarFallback = resolveComponent('AvatarFallback')
+  const AvatarImage = resolveComponent('AvatarImage')
+  const IconBadge = resolveComponent('IconBadge')
+  const MixtapesTableActions = resolveComponent('MixtapesTableActions')
 
-  defineProps<{
-    data: MixtapeExt[]
-    loading?: boolean
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      data: Mixtape[]
+      loading?: boolean
+      currentUserId?: string
+    }>(),
+    {
+      data: () => [],
+      loading: false,
+    },
+  )
 
   const emit = defineEmits<{
-    (e: 'rowClick', id: string | number): void | Promise<void>
-    (e: 'rowEdit', id: string | number): void | Promise<void>
-    (e: 'rowDelete', id: string | number): void | Promise<void>
+    rowShow: [id: string]
+    rowEdit: [id: string]
+    rowDelete: [id: string]
   }>()
 
-  const handleRowEdit = (event: Event, id: string | number) => {
-    emit('rowEdit', id)
-  }
-  const handleRowDelete = (event: Event, id: string | number) => {
-    emit('rowDelete', id)
-  }
+  const openConfirm = ref(false)
+  const idToDelete = ref<string>()
 
-  const columns: ColumnDef<MixtapeExt>[] = [
+  const defaultSorting = ref<SortingState>([
+    {
+      id: 'year',
+      desc: true,
+    },
+  ])
+
+  const columns: ColumnDef<Mixtape>[] = [
     {
       accessorKey: 'name',
       header: 'Mixtape',
-    },
-    {
-      accessorKey: 'tracks',
-      header: 'Pistes',
-      size: 60,
       cell: ({ cell }) => {
-        const tracks = cell.getValue() as MixtapeExt['tracks']
-        return h(Badge, { variant: tracks.length ? 'successMuted' : 'destructiveMuted' }, tracks.length)
+        const name = cell.getValue() as string
+        const cover = cell.row.original.cover
+        return h(
+          'span',
+          { class: 'flex gap-3 items-center' },
+          {
+            default: () => [
+              h(
+                Avatar,
+                { class: 'rounded-sm' },
+                {
+                  default: () => [
+                    ...(cover
+                      ? [
+                          h(AvatarImage, {
+                            src: cover.filename,
+                            alt: cover.alt,
+                          }),
+                        ]
+                      : []),
+                    h(
+                      AvatarFallback,
+                      { class: 'rounded-sm' },
+                      { default: () => [h(ImageIcon, { class: 'size-4 text-muted-foreground' })] },
+                    ),
+                  ],
+                },
+              ),
+              name,
+            ],
+          },
+        )
       },
     },
     {
       accessorKey: 'year',
-      header: 'Année',
-      size: 60,
-    },
-    {
-      accessorKey: 'authors_text',
-      header: 'Par',
-    },
-    {
-      accessorKey: 'tags',
-      header: 'Tags',
-      size: 60,
+      header: 'Création',
+      enableGlobalFilter: false,
       cell: ({ cell }) => {
-        const tags = cell.getValue() as MixtapeExt['tags']
-        return h(Badge, { variant: 'secondary' }, tags.length)
+        const year = cell.getValue() as string
+        return h('span', year)
       },
     },
     {
       accessorKey: 'actions',
-      header: () => h('span', { class: 'flex justify-end' }, 'Actions'),
-      size: 60,
+      header: '',
+      size: 40,
+      enableGlobalFilter: false,
       cell: ({ cell }) => {
-        const id = cell.row.original.id
-        return h('div', { class: 'flex gap-2 justify-end' }, [
-          h(
-            'button',
-            { onClick: (e) => handleRowEdit(e, id) },
-            h(Button, { variant: 'ghost', size: 'icon' }, h(PencilIcon, { class: 'size-4' })),
-          ),
-          h(
-            'button',
-            { onClick: (e) => handleRowDelete(e, id) },
-            h(Button, { variant: 'ghost', size: 'icon' }, h(Trash2Icon, { class: 'size-4' })),
-          ),
-        ])
+        const id = cell.row.original.id.toString()
+        return h(MixtapesTableActions, {
+          onShow: () => handleRowShow(id),
+          onEdit: () => handleRowEdit(id),
+          onDelete: () => handleRowDelete(id),
+        })
       },
     },
   ]
+
+  const handleRowShow = (id: string) => {
+    emit('rowShow', id)
+  }
+
+  const handleRowEdit = (id: string) => {
+    emit('rowEdit', id)
+  }
+
+  const handleRowDelete = (id: string) => {
+    idToDelete.value = id
+    openConfirm.value = true
+  }
+
+  const handleCancelDelete = () => {
+    openConfirm.value = false
+  }
+
+  const handleConfirmDelete = async () => {
+    if (idToDelete.value) {
+      try {
+        emit('rowDelete', idToDelete.value)
+      } catch (error) {
+        toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
+      } finally {
+        openConfirm.value = false
+      }
+    }
+  }
 </script>
 
 <template>
   <div class="py-10">
     <DataTable
-      :columns="columns"
+      v-if="data.length"
       :data="data"
-      :loading
-      background
+      :columns="columns"
+      :sorting="defaultSorting"
+      search
       pagination
-      @rowClick="(id) => $emit('rowClick', id)"
+      background
     />
+    <EmptyBlock v-else title="Aucune mixtape actuellement.">
+      <Button variant="secondary" asChild>
+        <NuxtLink to="/mixtapes/add">Créer une mixtape</NuxtLink>
+      </Button>
+    </EmptyBlock>
   </div>
+  <ConfirmDialog
+    v-model="openConfirm"
+    title="Attention ! Suppression définitive"
+    description="Êtes-vous sûr de vouloir supprimer cette mixtape ?"
+    @confirm="handleConfirmDelete"
+    @cancel="handleCancelDelete"
+  />
 </template>

@@ -36,7 +36,6 @@ export const useInvitationApi = () => {
   }
 
   const resendInvitation = async (id: string | number) => {
-    console.log('resend invitaiton', id)
     const baseUrl = window.origin
     const response = await $fetch('/api/invitation/resend', {
       method: 'POST',

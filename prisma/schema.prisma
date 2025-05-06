@@ -45,8 +45,8 @@ model Image {
   alt       String
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
-  // mixtapeId String   @unique
-  // mixtape   Mixtape  @relation(fields: [mixtapeId], references: [id])
+  mixtapeId String   @unique
+  mixtape   Mixtape  @relation(fields: [mixtapeId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -70,21 +70,21 @@ model Dj {
 //   @@id([djId, mixtapeId])
 // }
 
-// model Mixtape {
-//   id           String         @id @default(cuid())
-//   name         String         @unique
-//   description  String?
-//   year         Int?
-//   comment      String?
-//   djAsText     String?
-//   tracksAsText String?
-//   cover        Image?
-//   tracks       Track[]
-//   djs          DjOnMixtape[]
-//   tags         TagOnMixtape[]
-//   createdAt    DateTime       @default(now())
-//   updatedAt    DateTime       @updatedAt
-// }
+model Mixtape {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  description  String?
+  year         String?
+  comment      String?
+  djsAsText    String?
+  tracksAsText String?
+  cover        Image?
+  // tracks       Track[]
+  // djs          DjOnMixtape[]
+  // tags         TagOnMixtape[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
 
 // model Track {
 //   id        String   @id @default(cuid())

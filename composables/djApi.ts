@@ -4,12 +4,12 @@ export type DjEdit = Omit<Dj, 'id' | 'createdAt' | 'updatedAt'>
 
 export const useDjApi = () => {
   const fetchDjs = async (params?: { page: number; limit: number }) => {
-    const result = await $fetch('/api/djs', {
+    const results = await $fetch('/api/djs', {
       method: 'GET',
       params,
     })
 
-    return result
+    return results
   }
 
   const getDjById = async (id: string) => {

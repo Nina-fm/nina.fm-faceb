@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { Role } from '@prisma/client'
-  import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
+  import { PencilIcon, Trash2Icon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
   definePageMeta({ roles: [Role.ADMIN] })
@@ -22,6 +22,10 @@
       },
     ],
   })
+
+  const handleCancel = async () => {
+    await navigateTo('/djs')
+  }
 
   const handleDelete = () => {
     openConfirm.value = true
@@ -46,6 +50,9 @@
 <template>
   <PageHeader title="Le Dj en détails">
     <template #actions>
+      <Button size="icon" variant="outline" @click="handleCancel">
+        <XIcon />
+      </Button>
       <Button size="icon" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>

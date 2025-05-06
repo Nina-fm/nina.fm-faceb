@@ -82,10 +82,15 @@
       accessorKey: 'year',
       header: 'Création',
       enableGlobalFilter: false,
+      size: 30,
       cell: ({ cell }) => {
         const year = cell.getValue() as string
-        return h('span', year)
+        return h('span', {}, year)
       },
+    },
+    {
+      accessorKey: 'djsAsText',
+      header: 'DJs',
     },
     {
       accessorKey: 'actions',

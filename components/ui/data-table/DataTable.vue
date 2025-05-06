@@ -170,7 +170,12 @@
     <Table>
       <TableHeader>
         <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-          <TableHead v-for="header in headerGroup.headers" :key="header.id">
+          <TableHead
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            :colSpan="header.colSpan"
+            :style="{ width: `${header.getSize()}px` }"
+          >
             <FlexRender
               v-if="!header.isPlaceholder"
               :render="

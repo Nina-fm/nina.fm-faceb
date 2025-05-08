@@ -3,16 +3,27 @@
   import { SaveIcon } from 'lucide-vue-next'
   import * as z from 'zod'
 
+  const currentYear = new Date().getFullYear().toString()
   const years = generateYearsSince(2007)
   const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
+
+  const bucket = 'covers'
 
   const formSchema = z.object({
     name: z.string().min(1, 'Nom requis'),
     year: z.enum(years as [string, ...string[]]),
-    cover: z.object({ filename: z.string().optional(), alt: z.string().optional() }).optional(),
-    djsAsText: z.string().optional(),
-    tracksAsText: z.string().optional(),
-    comment: z.string().optional(),
+    cover: z
+      .object({
+        filename: z.string().optional(),
+        file: z.instanceof(File).optional(),
+        alt: z.string().optional(),
+        bucket: z.string().nullable().optional(),
+        url: z.string().optional(),
+      })
+      .optional(),
+    djsAsText: z.string().min(1, 'Djs requis'),
+    tracksAsText: z.string().nullable().optional(),
+    comment: z.string().nullable().optional(),
   })
 
   type Data = z.infer<typeof formSchema>
@@ -27,15 +38,20 @@
     submit: [data: Data]
   }>()
 
+  const { getImagePublicUrl } = useImage()
+
   const form = useForm({
     validationSchema: toTypedSchema(formSchema),
     initialValues: {
       name: props?.mixtape?.name || '',
-      year: props?.mixtape?.year || '',
-      cover: {
-        filename: props.mixtape?.cover?.filename,
-        alt: props.mixtape?.cover?.alt,
-      },
+      year: props?.mixtape?.year || currentYear,
+      cover: props?.mixtape?.cover
+        ? {
+            filename: props.mixtape?.cover?.filename,
+            url: props.mixtape?.cover?.url,
+            alt: props.mixtape?.cover?.alt,
+          }
+        : undefined,
       djsAsText: props?.mixtape?.djsAsText || '',
       tracksAsText: props?.mixtape?.tracksAsText || '',
       comment: props?.mixtape?.comment || '',
@@ -48,18 +64,20 @@
       form.resetForm({
         values: {
           name: mixtape?.name || '',
-          year: mixtape?.year || '',
-          cover: {
-            filename: mixtape?.cover?.filename,
-            alt: mixtape?.cover?.alt,
-          },
+          year: mixtape?.year || currentYear,
+          cover: mixtape?.cover
+            ? {
+                filename: mixtape?.cover?.filename,
+                url: mixtape?.cover?.url,
+                alt: mixtape?.cover?.alt,
+              }
+            : undefined,
           djsAsText: mixtape?.djsAsText || '',
           tracksAsText: mixtape?.tracksAsText || '',
           comment: mixtape?.comment || '',
         },
       })
     },
-    { immediate: true },
   )
 
   const dirty = computed(() => form.meta.value.dirty)
@@ -69,8 +87,16 @@
     emit('cancel')
   }
 
-  const handleSubmit = form.handleSubmit((values) => {
-    emit('submit', values)
+  const handleSubmit = form.handleSubmit((values: Data) => {
+    emit('submit', {
+      ...values,
+      cover: values?.cover
+        ? {
+            ...values.cover,
+            bucket,
+          }
+        : undefined,
+    })
   })
 
   const hint = 'Attention à bien respecter le format AirTime !'

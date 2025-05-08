@@ -51,6 +51,7 @@ export default defineNuxtConfig({
       siteurl: process.env.SITE_URL,
       streamApiUrl: process.env.STREAM_API_URL,
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
+      filestorageUrl: process.env.FILESTORAGE_URL,
       supabaseFunctionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
     },
   },

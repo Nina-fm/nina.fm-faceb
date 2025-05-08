@@ -1,10 +1,13 @@
-import { Mixtape } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
 
-type Entity = Mixtape
+type Entity = Prisma.MixtapeGetPayload<{ include: { cover: true } }>
 
-type CreateData = Omit<Entity, 'id' | 'createdAt' | 'updatedAt'>
-type EditData = Omit<Entity, 'createdAt' | 'updatedAt'>
+type CoverFile = Prisma.ImageCreateInput
+type WithCoverFile = { cover?: CoverFile & { file?: File } }
+
+type EntityCreate = Prisma.MixtapeCreateInput & WithCoverFile
+type EntityUpdate = Prisma.MixtapeUpdateInput & WithCoverFile
 
 const table = prisma.mixtape
 const entityName = 'Mixtape'
@@ -17,6 +20,7 @@ async function fetchAll(page: number, limit: number) {
       name: true,
       description: true,
       year: true,
+      cover: true,
       comment: true,
       djsAsText: true,
       tracksAsText: true,
@@ -45,32 +49,41 @@ async function getById(id: string) {
 
   const result = await table.findUnique({
     where: { id },
+    include: {
+      cover: true,
+    },
   })
 
   if (!result) {
     throw createError({ message: `${entityName} not found!`, statusCode: 404 })
   }
 
-  return result as Entity
+  return result
 }
 
-async function create(data: CreateData) {
+async function create({ cover, ...data }: EntityCreate) {
   if (!data.name) {
     throw createError({ message: 'Name is required!', statusCode: 400 })
   }
 
   const result = await table.create({
-    data,
+    data: {
+      ...data,
+      cover: cover ? { create: { ...cover } } : undefined,
+    },
+    include: {
+      cover: true,
+    },
   })
 
   if (!result) {
     throw createError({ message: `Failed to create ${entityName}!`, statusCode: 500 })
   }
 
-  return result as Entity
+  return result
 }
 
-async function updateById(id: string, data: EditData) {
+async function update({ id, cover, ...data }: EntityUpdate) {
   if (!id) {
     throw createError({ message: 'Id is required!', statusCode: 400 })
   }
@@ -79,7 +92,10 @@ async function updateById(id: string, data: EditData) {
   }
 
   const exist = await table.findUnique({
-    where: { id },
+    where: { id: id.toString() },
+    include: {
+      cover: true,
+    },
   })
 
   if (!exist) {
@@ -90,7 +106,23 @@ async function updateById(id: string, data: EditData) {
     where: { id: exist.id },
     data: {
       ...data,
+      cover: cover
+        ? {
+            upsert: {
+              where: { id: exist.cover?.id },
+              create: { ...cover },
+              update: { ...cover },
+            },
+          }
+        : exist?.cover?.id && !cover
+          ? {
+              delete: { id: exist.cover.id },
+            }
+          : undefined,
       updatedAt: new Date(),
+    },
+    include: {
+      cover: true,
     },
   })
 
@@ -98,11 +130,7 @@ async function updateById(id: string, data: EditData) {
     throw createError({ message: `Failed to update ${entityName}!`, statusCode: 500 })
   }
 
-  return {
-    ...result,
-    createdAt: new Date(result.createdAt),
-    updatedAt: new Date(result.updatedAt),
-  }
+  return result
 }
 
 async function deleteById(id: string | number) {
@@ -135,7 +163,7 @@ const MixtapeFactory = {
   fetchAll,
   getById,
   table,
-  updateById,
+  update,
 }
 
 export default MixtapeFactory

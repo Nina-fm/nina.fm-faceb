@@ -59,7 +59,7 @@
                     ...(cover
                       ? [
                           h(AvatarImage, {
-                            src: cover.filename,
+                            src: cover.url,
                             alt: cover.alt,
                           }),
                         ]

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { Role } from '@prisma/client'
-  import { XIcon } from 'lucide-vue-next'
-  import { toast } from 'vue-sonner'
+import { XIcon } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 
   definePageMeta({ roles: [Role.ADMIN] })
 
@@ -23,9 +23,9 @@
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await createDj(values as DjEdit)
+      const dj = await createDj(values as DjEdit)
       toast.success('Dj créé.')
-      await navigateTo('/djs')
+      await navigateTo(`/djs/${dj.id}/edit`)
     } catch (error) {
       console.error('Error creating dj:', error)
       toast.error('Erreur lors de la création du dj.')

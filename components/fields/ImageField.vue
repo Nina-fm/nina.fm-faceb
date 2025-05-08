@@ -17,7 +17,7 @@
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <FormControl>
-        <Dropzone v-model="componentField.modelValue" />
+        <Dropzone :modelValue="componentField.modelValue" @update:model-value="componentField['onUpdate:modelValue']" />
       </FormControl>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />

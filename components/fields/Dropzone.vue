@@ -4,41 +4,44 @@
 
   type ImageFile = {
     filename: string
-    alt: string
+    file?: File
+    url?: string
   }
 
   const props = defineProps<{
-    modelValue: ImageFile | null
+    modelValue: ImageFile | undefined
   }>()
 
-  defineEmits<{
-    (e: 'update:modelValue', value: ImageFile | null): void
+  const emit = defineEmits<{
+    (e: 'update:modelValue', value: ImageFile | undefined): void
     (e: 'dragover'): void
     (e: 'dragleave'): void
     (e: 'drop'): void
     (e: 'click'): void
   }>()
 
+  const { generateTmpImageUrl } = useImage()
+
   const { modelValue } = toRefs(props)
 
   const fileRef = ref<HTMLInputElement | null>(null)
   const isDragging = ref(false)
   const isZoomed = ref(false)
-
   const file = ref<File | null>(null)
-  const fileSrc = ref<string | null>(modelValue.value?.filename ? getImagePublicUrl(modelValue.value?.filename) : null)
-
-  const generateFakeUrl = (file: Blob) => {
-    let src = URL.createObjectURL(file)
-    setTimeout(() => {
-      URL.revokeObjectURL(src)
-    }, 1000)
-    fileSrc.value = src
-  }
+  const fileSrc = ref<string | null>(modelValue.value?.url ?? null)
 
   const handleChange = () => {
     file.value = fileRef.value?.files?.[0] || null
-    if (fileRef.value?.files?.[0]) generateFakeUrl(fileRef.value?.files?.[0])
+    if (fileRef.value?.files?.[0]) {
+      fileSrc.value = generateTmpImageUrl(fileRef.value.files[0])
+      emit('update:modelValue', {
+        filename: fileRef.value?.files?.[0]?.name,
+        file: fileRef.value?.files?.[0],
+      })
+    } else {
+      fileSrc.value = null
+      emit('update:modelValue', undefined)
+    }
   }
 
   const handleDragover = (e: DragEvent) => {
@@ -64,6 +67,7 @@
     fileSrc.value = null
     if (fileRef.value) {
       fileRef.value.value = ''
+      handleChange()
     }
   }
 
@@ -78,6 +82,7 @@
 
 <template>
   <div
+    ref="dropzoneRef"
     :class="
       cn('border-border relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border')
     "

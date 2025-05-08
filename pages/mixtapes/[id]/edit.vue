@@ -7,7 +7,7 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getMixtapeById, editMixtape } = useMixtapeApi()
+  const { getMixtapeById, updateMixtape } = useMixtapeApi()
   const { data, refresh } = await useAsyncData('mixtape', () => getMixtapeById(id))
   const mixtape = computed(() => data.value)
 
@@ -30,7 +30,7 @@
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await editMixtape(id, values as MixtapeEdit)
+      await updateMixtape(id, values as MixtapeCreate)
       await refresh()
       toast.success('Mixtape modifiée.')
     } catch (error) {

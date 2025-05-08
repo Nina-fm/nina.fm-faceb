@@ -23,9 +23,11 @@
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await createMixtape(values as MixtapeEdit)
-      toast.success('Mixtape créée.')
-      await navigateTo('/mixtapes')
+      const mixtape = await createMixtape(values as MixtapeCreate)
+      if (mixtape) {
+        toast.success('Mixtape créée.')
+        await navigateTo(`/mixtapes/${mixtape.id}/edit`)
+      }
     } catch (error) {
       console.error('Error creating mixtape:', error)
       toast.error('Erreur lors de la création de la mixtape.')

@@ -42,11 +42,11 @@ model Invitation {
 model Image {
   id        String   @id @default(cuid())
   filename  String
-  alt       String
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  mixtapeId String   @unique
-  mixtape   Mixtape  @relation(fields: [mixtapeId], references: [id])
+  bucket    String?
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mixtapeId String?  @unique
+  mixtape   Mixtape? @relation(fields: [mixtapeId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -73,10 +73,10 @@ model Dj {
 model Mixtape {
   id           String   @id @default(cuid())
   name         String   @unique
+  year         String
+  djsAsText    String
   description  String?
-  year         String?
   comment      String?
-  djsAsText    String?
   tracksAsText String?
   cover        Image?
   // tracks       Track[]

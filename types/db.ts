@@ -22,4 +22,9 @@ export type Dj = Prisma.DjGetPayload<{}>
 
 export type Mixtape = Prisma.MixtapeGetPayload<{
   include: { cover: true }
-}>
+}> & {
+  cover: {
+    url?: string
+    alt?: string
+  }
+}

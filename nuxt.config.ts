@@ -52,6 +52,7 @@ export default defineNuxtConfig({
       streamApiUrl: process.env.STREAM_API_URL,
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       filestorageUrl: process.env.FILESTORAGE_URL,
+      filestoragePublicEndpoint: process.env.FILESTORAGE_PUBLIC_ENDPOINT,
       supabaseFunctionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
     },
   },

@@ -8,11 +8,11 @@ export interface StorageFile {
 }
 
 export const useImage = () => {
-  const { filestorageUrl } = useRuntimeConfig().public
+  const { filestorageUrl, filestoragePublicEndpoint } = useRuntimeConfig().public
 
   const getImagePublicUrl = (filename: string, bucket?: string) => {
     if (!filename) return ''
-    return `${filestorageUrl}/public/${bucket ? `${bucket}/` : ''}${filename}`
+    return `${filestorageUrl}/${filestoragePublicEndpoint}/${bucket ? `${bucket}/` : ''}${filename}`
   }
 
   const generateTmpImageUrl = (file: Blob) => {

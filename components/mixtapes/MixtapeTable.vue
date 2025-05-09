@@ -80,7 +80,6 @@
     {
       accessorKey: 'year',
       header: 'Création',
-      enableGlobalFilter: false,
       size: 30,
       cell: ({ cell }) => {
         const year = cell.getValue() as string

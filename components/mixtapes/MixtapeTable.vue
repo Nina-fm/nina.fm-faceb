@@ -8,7 +8,6 @@
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
-  const IconBadge = resolveComponent('IconBadge')
   const MixtapesTableActions = resolveComponent('MixtapesTableActions')
 
   const props = withDefaults(

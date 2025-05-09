@@ -38,7 +38,7 @@
   const handleConfirmDelete = async () => {
     try {
       await deleteMixtape(id)
-      navigateTo('/mixtapes')
+      await navigateTo('/mixtapes')
     } catch (error) {
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
     } finally {

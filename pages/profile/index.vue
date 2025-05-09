@@ -1,7 +1,12 @@
 <script lang="ts" setup>
-  import { PencilIcon } from 'lucide-vue-next'
+  import { Role } from '@prisma/client'
+  import { PencilIcon, XIcon } from 'lucide-vue-next'
 
-  const { user } = useAuthApi()
+  definePageMeta({ roles: [Role.ADMIN] })
+
+  const { currentUserId } = useAuthApi()
+  const { getUserById } = useUserApi()
+  const { data: user } = await useAsyncData('user', () => getUserById(currentUserId.value ?? ''))
 
   useBreadcrumbItems({
     overrides: [
@@ -11,11 +16,18 @@
       },
     ],
   })
+
+  const handleCancel = async () => {
+    await navigateTo('/')
+  }
 </script>
 
 <template>
   <PageHeader title="Mon profile utilisateur">
     <template #actions>
+      <Button size="icon" variant="outline" @click="handleCancel">
+        <XIcon />
+      </Button>
       <Button size="icon" variant="outline">
         <NuxtLink :to="`/profile/edit`">
           <PencilIcon />

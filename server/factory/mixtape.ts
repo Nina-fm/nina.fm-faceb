@@ -1,10 +1,7 @@
 import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
 
-type Entity = Prisma.MixtapeGetPayload<{ include: { cover: true } }>
-
-type CoverFile = Prisma.ImageCreateInput
-type WithCoverFile = { cover?: CoverFile & { file?: File } }
+type WithCoverFile = { cover?: Prisma.ImageCreateInput & { file?: File } }
 
 type EntityCreate = Prisma.MixtapeCreateInput & WithCoverFile
 type EntityUpdate = Prisma.MixtapeUpdateInput & WithCoverFile

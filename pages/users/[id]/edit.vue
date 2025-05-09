@@ -7,7 +7,7 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUserById, editUser } = useUserApi()
+  const { getUserById, updateUser } = useUserApi()
   const { data, refresh } = await useAsyncData('user', () => getUserById(id))
   const user = computed(() => data.value)
 
@@ -30,7 +30,7 @@
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await editUser(id, values as UserEdit)
+      await updateUser(id, values as UserUpdate)
       await refresh()
       toast.success('Utilisateur modifié.')
     } catch (error) {

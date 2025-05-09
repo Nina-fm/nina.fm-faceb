@@ -1,11 +1,13 @@
 import UserFactory from '~/server/factory/user'
 
 export default eventHandler(async (event) => {
-  const refresh = getQuery(event).refresh as string
+  const refresh = getQuery(event).refresh as boolean
+  const { getByEmail } = UserFactory
+
   const session = await useAuthSession(event)
 
   if (refresh && session.data?.email) {
-    const user = await UserFactory.getByEmail(session.data.email)
+    const user = await getByEmail(session.data.email)
 
     if (!user) {
       throw createError({
@@ -20,9 +22,9 @@ export default eventHandler(async (event) => {
       email: user.email,
       roles: user.roles,
       avatar: user.avatar,
-      emailVerified: user?.emailVerified ? new Date(user.emailVerified) : null,
-      createdAt: new Date(user.createdAt),
-      updatedAt: new Date(user.updatedAt),
+      emailVerified: user.emailVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     })
 
     return formattedResponse(updatedSession.data)

@@ -1,25 +1,22 @@
 <script lang="ts" setup>
+  import { UserRoundIcon } from 'lucide-vue-next'
   import type { User } from '~/types/db'
 
-  const props = defineProps<{
+  defineProps<{
     user: {
       name?: User['name']
       email?: User['email']
       avatar?: User['avatar']
     }
   }>()
-
-  const letter = computed(() => props.user.name?.slice(0, 1) ?? '')
-  const avatarUrl = computed(() =>
-    props.user.avatar?.filename ? getImagePublicUrl(props.user.avatar.filename) : undefined,
-  )
-  const avatarAlt = computed(() => props.user.avatar?.alt ?? props.user.name ?? '')
 </script>
 
 <template>
-  <Avatar class="h-8 w-8 rounded-full">
-    <AvatarImage v-if="avatarUrl" :src="avatarUrl" :alt="avatarAlt" />
-    <AvatarFallback class="bg-primary text-primary-foreground rounded-lg">{{ letter }}</AvatarFallback>
+  <Avatar class="size-8 rounded-full">
+    <AvatarImage v-if="user?.avatar?.url" :src="user?.avatar?.url" :alt="user.avatar.alt" />
+    <AvatarFallback class="bg-primary text-primary-foreground rounded-lg">
+      <UserRoundIcon class="size-4" />
+    </AvatarFallback>
   </Avatar>
   <div class="grid flex-1 text-left text-sm leading-tight">
     <span class="truncate font-semibold">{{ user.name }}</span>

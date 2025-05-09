@@ -4,12 +4,10 @@
 
   definePageMeta({ roles: ['ADMIN'] })
 
-  const { user: currentUser } = useAuthApi()
   const { fetchMixtapes, deleteMixtape } = useMixtapeApi()
   const { data, error, refresh, status } = await useAsyncData('mixtapes', () => fetchMixtapes())
 
   const isLoading = ref(false)
-  const openInviteDialog = ref(false)
   const mixtapes = computed(() => data.value?.results || [])
 
   watch(status, (newStatus) => {

@@ -7,8 +7,6 @@
   const years = generateYearsSince(2007)
   const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
 
-  const bucket = 'covers'
-
   const formSchema = z.object({
     name: z.string().min(1, 'Nom requis'),
     year: z.enum(years as [string, ...string[]]),
@@ -38,8 +36,6 @@
     submit: [data: Data]
   }>()
 
-  const { getImagePublicUrl } = useImage()
-
   const form = useForm({
     validationSchema: toTypedSchema(formSchema),
     initialValues: {
@@ -47,6 +43,7 @@
       year: props?.mixtape?.year || currentYear,
       cover: props?.mixtape?.cover
         ? {
+            bucket: props.mixtape?.cover?.bucket,
             filename: props.mixtape?.cover?.filename,
             url: props.mixtape?.cover?.url,
             alt: props.mixtape?.cover?.alt,
@@ -67,6 +64,7 @@
           year: mixtape?.year || currentYear,
           cover: mixtape?.cover
             ? {
+                bucket: mixtape?.cover?.bucket,
                 filename: mixtape?.cover?.filename,
                 url: mixtape?.cover?.url,
                 alt: mixtape?.cover?.alt,
@@ -88,15 +86,7 @@
   }
 
   const handleSubmit = form.handleSubmit((values: Data) => {
-    emit('submit', {
-      ...values,
-      cover: values?.cover
-        ? {
-            ...values.cover,
-            bucket,
-          }
-        : undefined,
-    })
+    emit('submit', values)
   })
 
   const hint = 'Attention à bien respecter le format AirTime !'
@@ -121,7 +111,7 @@
                 <!-- <BadgesField name="tags" label="Tags" itemLabelKey="name" /> -->
               </div>
               <div class="aspect-square w-full @xl/mixtapeform:w-1/2 @2xl/mixtapeform:w-1/3 @4xl/mixtapeform:w-1/4">
-                <ImageField name="cover" label="Cover" description="Taille recommandée : 1600x1600px" />
+                <ImageField name="cover" bucket="covers" label="Cover" description="Taille recommandée : 1600x1600px" />
               </div>
             </div>
             <TextField name="tracksAsText" label="Pistes" :description="hint" multiline />

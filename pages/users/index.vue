@@ -4,13 +4,15 @@
 
   definePageMeta({ roles: ['ADMIN'] })
 
-  const { user } = useAuthApi()
+  const { currentUserId } = useAuthApi()
   const { fetchUsers, deleteUser } = useUserApi()
   const { data, error, refresh, status } = await useAsyncData('users', () => fetchUsers())
 
   const isLoading = ref(false)
   const openInviteDialog = ref(false)
   const users = computed(() => data.value?.results || [])
+
+  const isMe = (id: string) => currentUserId.value === id
 
   watch(status, (newStatus) => {
     if (newStatus === 'pending') {
@@ -34,7 +36,17 @@
     await navigateTo('/invitations')
   }
 
+  const handleRowShow = (id: string) => {
+    if (isMe(id)) {
+      return navigateTo('/profile')
+    }
+    return navigateTo(`/users/${id}`)
+  }
+
   const handleEditRow = (id: string) => {
+    if (isMe(id)) {
+      return navigateTo('/profile/edit')
+    }
     return navigateTo(`/users/${id}/edit`)
   }
 
@@ -62,10 +74,11 @@
   </PageHeader>
   <UsersTable
     :data="users"
-    :undeletableIds="user?.id ? [user.id] : []"
+    :undeletableIds="currentUserId ? [currentUserId] : []"
     @invite="openInviteDialog = true"
-    @row-edit="handleEditRow"
-    @row-delete="handleDeleteRow"
+    @rowShow="handleRowShow"
+    @rowEdit="handleEditRow"
+    @rowDelete="handleDeleteRow"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
   <LoadingOverlay :active="isLoading" />

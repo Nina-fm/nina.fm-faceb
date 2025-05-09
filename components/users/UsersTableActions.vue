@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { MoreVerticalIcon } from 'lucide-vue-next'
+  import { MoreVerticalIcon } from 'lucide-vue-next';
 
   withDefaults(
     defineProps<{
@@ -13,6 +13,7 @@
   )
 
   defineEmits<{
+    show: []
     edit: []
     delete: []
   }>()
@@ -27,6 +28,7 @@
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem  @click="$emit('show')">Voir</DropdownMenuItem>
         <DropdownMenuItem v-if="editable" @click="$emit('edit')">Modifier</DropdownMenuItem>
         <DropdownMenuItem v-if="deletable" class="text-destructive" @click="$emit('delete')">
           Supprimer

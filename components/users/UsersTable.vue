@@ -5,6 +5,7 @@
   import type { FilterDef } from '~/components/ui/data-table'
   import type { User } from '~/types/db'
 
+  const UserRoundIcon = await import('lucide-vue-next').then((module) => module.UserRoundIcon)
   const ShieldUserIcon = await import('lucide-vue-next').then((module) => module.ShieldUserIcon)
 
   const Avatar = resolveComponent('Avatar')
@@ -16,8 +17,8 @@
   const props = withDefaults(
     defineProps<{
       data: User[]
-      undeletableIds?: string[]
       loading?: boolean
+      undeletableIds?: string[]
     }>(),
     {
       data: () => [],
@@ -27,6 +28,7 @@
 
   const emit = defineEmits<{
     invite: []
+    rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
   }>()
@@ -41,13 +43,6 @@
     ]
   })
 
-  const defaultSorting = ref<SortingState>([
-    {
-      id: 'createdAt',
-      desc: true,
-    },
-  ])
-
   const filters: FilterDef[] = [
     {
       id: 'roles',
@@ -56,6 +51,13 @@
       multiple: true,
     },
   ]
+
+  const defaultSorting = ref<SortingState>([
+    {
+      id: 'createdAt',
+      desc: true,
+    },
+  ])
 
   const columns: ColumnDef<User>[] = [
     {
@@ -77,12 +79,16 @@
                     ...(avatar
                       ? [
                           h(AvatarImage, {
-                            src: avatar.filename,
+                            src: avatar.url,
                             alt: avatar.alt,
                           }),
                         ]
                       : []),
-                    h(AvatarFallback, {}, { default: () => [cell.row.original.name?.slice(0, 1)] }),
+                    h(
+                      AvatarFallback,
+                      { class: 'rounded-sm' },
+                      { default: () => [h(UserRoundIcon, { class: 'size-4 text-muted-foreground' })] },
+                    ),
                   ],
                 },
               ),
@@ -141,12 +147,17 @@
         const id = cell.row.original.id.toString()
         return h(UsersTableActions, {
           deletable: !props.undeletableIds?.includes(id),
+          onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),
         })
       },
     },
   ]
+
+  const handleRowShow = (id: string) => {
+    emit('rowShow', id)
+  }
 
   const handleRowEdit = (id: string) => {
     emit('rowEdit', id)

@@ -44,7 +44,7 @@ export const useImage = () => {
     }
   }
 
-  const deleteImage = async (filename: string, bucket?: string) => {
+  const deleteImage = async (filename: string, bucket: Bucket) => {
     if (!filename) {
       throw createError({ message: 'Filename is required to delete!', statusCode: 400 })
     }
@@ -52,11 +52,11 @@ export const useImage = () => {
     try {
       return await $fetch(`${filestorageUrl}/api/delete`, {
         method: 'POST',
-        body: { filename, bucket },
+        body: { filename, bucket: bucket ?? '' },
       })
     } catch (error) {
       console.error('Error deleting image file:', error)
-      throw createError({ message: 'Failed to delete image file!', statusCode: 500 })
+      // throw createError({ message: 'Failed to delete image file!', statusCode: 500 })
     }
   }
 

@@ -3,26 +3,33 @@
   import { toTypedSchema } from '@vee-validate/zod'
   import { SaveIcon } from 'lucide-vue-next'
   import * as z from 'zod'
-  import type { User } from '~/types/db'
 
   const formSchema = z.object({
-    name: z.string().min(1, 'Nom requis').optional(),
+    name: z.string().nullable().optional(),
     email: z.string().email('Email invalide').min(1, 'Email requis'),
-    avatar: z.object({ filename: z.string().optional(), alt: z.string().optional() }).optional(),
+    avatar: z
+      .object({
+        filename: z.string().optional(),
+        file: z.instanceof(File).optional(),
+        alt: z.string().nullable().optional(),
+        bucket: z.string().nullable().optional(),
+        url: z.string().optional(),
+      })
+      .optional(),
     roles: z.array(z.enum([Role.ADMIN, Role.USER])).optional(),
   })
 
-  type EditData = z.infer<typeof formSchema>
+  type Data = z.infer<typeof formSchema>
 
   const props = defineProps<{
-    user: User
-    canEditRoles: boolean
+    user: Data
     teleportTo?: string
+    canEditRoles: boolean
   }>()
 
   const emit = defineEmits<{
     cancel: []
-    submit: [data: EditData]
+    submit: [data: Data]
   }>()
 
   const form = useForm({
@@ -30,10 +37,14 @@
     initialValues: {
       name: props.user.name || '',
       email: props.user.email,
-      avatar: {
-        filename: props.user.avatar?.filename,
-        alt: props.user.avatar?.alt,
-      },
+      avatar: props.user.avatar
+        ? {
+            bucket: props.user.avatar.bucket,
+            filename: props.user.avatar.filename,
+            url: props.user.avatar.url,
+            alt: props.user.avatar.alt,
+          }
+        : undefined,
       roles: props.user.roles,
     },
   })
@@ -45,15 +56,18 @@
         values: {
           name: user.name || '',
           email: user.email,
-          avatar: {
-            filename: user.avatar?.filename,
-            alt: user.avatar?.alt,
-          },
+          avatar: user.avatar
+            ? {
+                bucket: user.avatar.bucket,
+                filename: user.avatar.filename,
+                url: user.avatar.url,
+                alt: user.avatar.alt,
+              }
+            : undefined,
           roles: user.roles,
         },
       })
     },
-    { immediate: true },
   )
 
   const dirty = computed(() => form.meta.value.dirty)
@@ -63,7 +77,7 @@
     emit('cancel')
   }
 
-  const handleSubmit = form.handleSubmit((values) => {
+  const handleSubmit = form.handleSubmit((values: Data) => {
     emit('submit', values)
   })
 </script>
@@ -74,7 +88,7 @@
       <Card class="bg-foreground/3 @container/mixtapeform border-none">
         <CardContent>
           <div class="flex items-start gap-5">
-            <ImageField name="avatar" label="Avatar" class="w-1/4" />
+            <ImageField name="avatar" bucket="avatars" label="Avatar" class="w-1/4" />
             <div class="flex w-3/4 flex-col gap-5">
               <TextField name="name" label="Nom" />
               <TextField name="email" label="Email" readonly />

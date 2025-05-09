@@ -4,23 +4,9 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const page = parseInt(query.page as string) || 1
   const limit = parseInt(query.limit as string) || 100
+  const { fetchAll } = UserFactory
 
-  const all = await UserFactory.fetchAll(page, limit)
+  const results = await fetchAll(page, limit)
 
-  return formattedResponse({
-    ...all,
-    results: all.results.map((result) => ({
-      ...result,
-      createdAt: new Date(result.createdAt),
-      updatedAt: new Date(result.updatedAt),
-      emailVerified: result.emailVerified ? new Date(result.emailVerified) : null,
-      avatar: result.avatar
-        ? {
-            ...result.avatar,
-            createdAt: new Date(result.avatar.createdAt),
-            updatedAt: new Date(result.avatar.updatedAt),
-          }
-        : null,
-    })),
-  })
+  return formattedResponse(results)
 })

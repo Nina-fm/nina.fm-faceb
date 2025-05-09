@@ -1,5 +1,6 @@
 <script lang="ts" setup>
   import { Role } from '@prisma/client'
+  import { UserRoundIcon } from 'lucide-vue-next'
   import type { User } from '~/types/db'
 
   const props = defineProps<{
@@ -16,6 +17,14 @@
     <Card class="bg-foreground/3 border-none">
       <CardContent>
         <div class="flex gap-5">
+          <div v-if="props.user?.avatar?.url" class="">
+            <Avatar class="size-38 rounded-full">
+              <AvatarImage v-if="props.user?.avatar?.url" :src="props.user.avatar.url" :alt="props.user.avatar.alt" />
+              <AvatarFallback class="bg-muted text-muted-foreground rounded-full">
+                <UserRoundIcon class="size-14" />
+              </AvatarFallback>
+            </Avatar>
+          </div>
           <div class="flex w-full flex-col gap-2">
             <div class="flex w-full items-center justify-between">
               <div :class="cn('text-3xl font-bold', { 'text-muted-foreground': !props.user?.name })">

@@ -1,11 +1,10 @@
-import { User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
 
-type Entity = User
-type EditExcludeFields = 'createdAt' | 'updatedAt'
+type WithAvatarFile = { avatar?: Prisma.ImageCreateInput & { file?: File } }
 
-type CreateData = Omit<Entity, EditExcludeFields | 'id' | 'emailVerified' | 'roles'>
-type EditData = Omit<Entity, EditExcludeFields | 'password'>
+type EntityCreate = Prisma.UserCreateInput & WithAvatarFile
+type EntityUpdate = Prisma.UserUpdateInput & WithAvatarFile
 
 const table = prisma.user
 const entityName = 'User'
@@ -28,7 +27,7 @@ async function fetchAll(page: number, limit: number) {
     orderBy: { createdAt: 'desc' },
   })
 
-  const total = await prisma.user.count()
+  const total = await table.count()
 
   return {
     results,
@@ -76,7 +75,7 @@ async function getByEmail(email: string) {
   return result
 }
 
-async function create(data: CreateData, invitationToken?: string) {
+async function create({ avatar, ...data }: EntityCreate, invitationToken?: string) {
   if (!data.email) {
     throw createError({ message: 'Email is required!', statusCode: 400 })
   }
@@ -86,7 +85,13 @@ async function create(data: CreateData, invitationToken?: string) {
   }
 
   const result = await table.create({
-    data,
+    data: {
+      ...data,
+      avatar: avatar ? { create: { ...avatar } } : undefined,
+    },
+    include: {
+      avatar: true,
+    },
   })
 
   if (!result) {
@@ -107,10 +112,10 @@ async function create(data: CreateData, invitationToken?: string) {
     })
   }
 
-  return result as Entity
+  return result
 }
 
-async function updateById(id: string, data: EditData) {
+async function update({ id, avatar, ...data }: EntityUpdate) {
   if (!id) {
     throw createError({ message: 'Id is required!', statusCode: 400 })
   }
@@ -122,7 +127,10 @@ async function updateById(id: string, data: EditData) {
   }
 
   const exist = await table.findUnique({
-    where: { id },
+    where: { id: id.toString() },
+    include: {
+      avatar: true,
+    },
   })
 
   if (!exist) {
@@ -133,6 +141,19 @@ async function updateById(id: string, data: EditData) {
     where: { id: exist.id },
     data: {
       ...data,
+      avatar: avatar
+        ? {
+            upsert: {
+              where: { id: exist.avatar?.id },
+              create: { ...avatar },
+              update: { ...avatar },
+            },
+          }
+        : exist?.avatar?.id && !avatar
+          ? {
+              delete: { id: exist.avatar.id },
+            }
+          : undefined,
       updatedAt: new Date(),
     },
     include: {
@@ -144,12 +165,7 @@ async function updateById(id: string, data: EditData) {
     throw createError({ message: `Failed to update ${entityName}!`, statusCode: 500 })
   }
 
-  return {
-    ...result,
-    emailVerified: result.emailVerified ? new Date(result.emailVerified) : null,
-    createdAt: new Date(result.createdAt),
-    updatedAt: new Date(result.updatedAt),
-  }
+  return result
 }
 
 async function deleteById(id: string | number) {
@@ -183,7 +199,7 @@ const UserFactory = {
   getById,
   getByEmail,
   table,
-  updateById,
+  update,
 }
 
 export default UserFactory

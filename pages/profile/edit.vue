@@ -1,9 +1,13 @@
 <script lang="ts" setup>
+  import { Role } from '@prisma/client'
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  const { user, refreshSession } = useAuthApi()
-  const { editUser } = useUserApi()
+  definePageMeta({ roles: [Role.ADMIN] })
+
+  const { currentUserId, refreshSession } = useAuthApi()
+  const { getUserById, updateUser } = useUserApi()
+  const { data: user } = await useAsyncData('user', () => getUserById(currentUserId.value ?? ''))
 
   useBreadcrumbItems({
     overrides: [
@@ -27,7 +31,7 @@
       return
     }
     try {
-      await editUser(user.value.id, values as UserEdit)
+      await updateUser(user.value.id, values as UserUpdate)
       await refreshSession()
       toast.success('Utilisateur modifié.')
     } catch (error) {

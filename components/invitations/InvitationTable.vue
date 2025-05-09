@@ -1,7 +1,6 @@
 <script setup lang="ts">
   import type { Invitation, User } from '@prisma/client'
   import type { ColumnDef } from '@tanstack/vue-table'
-  import { defineEmits } from 'vue'
   import { toast } from 'vue-sonner'
 
   const InvitationTableActions = resolveComponent('InvitationTableActions')

@@ -1,13 +1,10 @@
 <script lang="ts" setup>
-  import type { Mixtape } from '~/types/db'
+  import { UserRoundIcon } from 'lucide-vue-next';
+import type { Mixtape } from '~/types/db';
 
   const props = defineProps<{
     mixtape: Mixtape
   }>()
-
-  const coverUrl = computed(() => {
-    return props.mixtape?.cover?.filename ? getImagePublicUrl(props.mixtape.cover.filename) : undefined
-  })
 </script>
 
 <template>
@@ -15,8 +12,17 @@
     <Card class="bg-foreground/3 border-none">
       <CardHeader>
         <div class="flex gap-5">
-          <div v-if="coverUrl" class="aspect-square size-40 overflow-hidden rounded">
-            <img :src="coverUrl" :alt="mixtape.cover?.alt" class="object-contain" />
+          <div v-if="props.mixtape?.cover?.url" class="">
+            <Avatar class="size-38 rounded-lg">
+              <AvatarImage
+                v-if="props.mixtape?.cover?.url"
+                :src="props.mixtape.cover.url"
+                :alt="props.mixtape.cover.alt"
+              />
+              <AvatarFallback class="bg-muted text-muted-foreground rounded-lg">
+                <UserRoundIcon class="size-14" />
+              </AvatarFallback>
+            </Avatar>
           </div>
           <div class="flex flex-col gap-2">
             <div class="text-3xl font-bold">{{ mixtape?.name }}</div>

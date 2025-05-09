@@ -1,11 +1,19 @@
-import type { User } from '~/types/db'
-
-export type UserEdit = Omit<User, 'id' | 'password' | 'createdAt' | 'updatedAt'>
-
 export const useAuthApi = () => {
   const { hasRole, hasAnyRole, isLoggedIn, redirectTo, session, updateSession } = useNuxtApp().$auth
+  const { getImagePublicUrl } = useImage()
 
-  const user = computed(() => session.value)
+  const user = computed(() => ({
+    ...session.value,
+    avatar: session.value?.avatar
+      ? {
+          ...session.value.avatar,
+          url: getImagePublicUrl(session.value.avatar.filename, session.value.avatar.bucket || ''),
+          alt: session.value.name ?? '',
+        }
+      : undefined,
+  }))
+
+  const currentUserId = computed(() => session.value?.id)
 
   const register = async ({
     email,
@@ -50,17 +58,8 @@ export const useAuthApi = () => {
     await updateSession()
   }
 
-  const refreshSession = async () => {
-    await $fetch('/api/auth/session', {
-      method: 'GET',
-      params: {
-        refresh: true,
-      },
-    })
-    await updateSession()
-  }
-
   return {
+    currentUserId,
     user,
     isLoggedIn,
     // Methods
@@ -68,7 +67,7 @@ export const useAuthApi = () => {
     hasAnyRole,
     login,
     logout,
-    refreshSession,
+    refreshSession: updateSession,
     register,
   }
 }

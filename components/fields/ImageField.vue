@@ -5,6 +5,7 @@
       label?: string
       description?: string
       placeholder?: string
+      bucket?: string
     }>(),
     {
       placeholder: '',
@@ -17,7 +18,15 @@
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <FormControl>
-        <Dropzone :modelValue="componentField.modelValue" @update:model-value="componentField['onUpdate:modelValue']" />
+        <Dropzone
+          :modelValue="componentField.modelValue"
+          @update:model-value="
+            (value) => {
+              const newValue = value ? { ...value, bucket } : undefined
+              componentField['onUpdate:modelValue']?.(newValue)
+            }
+          "
+        />
       </FormControl>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />

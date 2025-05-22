@@ -11,6 +11,6 @@ COPY . .
 
 RUN yarn install --immutable --immutable-cache --check-cache
 
-EXPOSE 3000
+EXPOSE $FRONT_OUTPUT_PORT
 
 CMD ["sh", "-c", "yarn db:deploy && yarn dev"]

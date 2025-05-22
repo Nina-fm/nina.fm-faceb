@@ -1,6 +1,6 @@
 export const useAuthApi = () => {
   const { hasRole, hasAnyRole, isLoggedIn, redirectTo, session, updateSession } = useNuxtApp().$auth
-  const { getImagePublicUrl } = useImage()
+  const { getImagePublicUrl } = useImageApi()
 
   const user = computed(() => ({
     ...session.value,
@@ -59,10 +59,11 @@ export const useAuthApi = () => {
   }
 
   return {
+    // State
     currentUserId,
     user,
     isLoggedIn,
-    // Methods
+    // Actions
     hasRole,
     hasAnyRole,
     login,

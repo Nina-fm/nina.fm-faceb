@@ -8,7 +8,7 @@
   const { params } = useRoute()
   const id = params.id as string
   const { user: currentUser } = useAuthApi()
-  const { getDjById, editDj } = useDjApi()
+  const { getDjById, updateDj, pending } = useDjApi()
   const { data, refresh } = await useAsyncData('dj', () => getDjById(id))
   const dj = computed(() => data.value)
 
@@ -31,7 +31,7 @@
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      await editDj(id, values as DjEdit)
+      await updateDj(id, values as DjEdit)
       await refresh()
       toast.success('Dj modifié.')
     } catch (error) {
@@ -44,7 +44,7 @@
 <template>
   <PageHeader title="Modifier le dj">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
@@ -54,6 +54,7 @@
     :dj="dj"
     teleport-to="page-header-actions"
     :currentUserId="currentUser?.id"
+    :pending="pending"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />

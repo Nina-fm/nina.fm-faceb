@@ -7,8 +7,9 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getMixtapeById, updateMixtape } = useMixtapeApi()
+  const { pending, getMixtapeById, updateMixtape } = useMixtapeApi()
   const { data, refresh } = await useAsyncData('mixtape', () => getMixtapeById(id))
+
   const mixtape = computed(() => data.value)
 
   useBreadcrumbItems({
@@ -43,7 +44,7 @@
 <template>
   <PageHeader title="Modifier la mixtape">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
@@ -51,6 +52,7 @@
   <MixtapeForm
     v-if="mixtape"
     :mixtape="mixtape"
+    :pending="pending"
     teleport-to="page-header-actions"
     @cancel="handleCancel"
     @submit="handleSubmit"

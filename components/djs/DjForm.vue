@@ -14,6 +14,7 @@
     dj?: Data
     teleportTo?: string
     currentUserId?: string
+    pending?: boolean
   }>()
 
   const emit = defineEmits<{
@@ -61,7 +62,7 @@
 
 <template>
   <div class="py-10">
-    <form @submit="handleSubmit">
+    <SafeForm :form="form" @submit="handleSubmit">
       <Card class="bg-foreground/3 @container/mixtapeform border-none">
         <CardContent>
           <div class="flex items-start gap-5">
@@ -79,14 +80,7 @@
         </CardContent>
         <ClientOnly v-if="props.teleportTo">
           <Teleport :to="`#${props.teleportTo}`">
-            <Button
-              size="icon"
-              :variant="dirty ? 'default' : 'primaryOutline'"
-              :disabled="!dirty"
-              @click="handleSubmit"
-            >
-              <SaveIcon />
-            </Button>
+            <SaveButton :pending="pending" :dirty="dirty" :success="form.meta.value.valid" @submit="handleSubmit" />
           </Teleport>
         </ClientOnly>
         <CardFooter v-else class="flex justify-end gap-2">
@@ -97,7 +91,7 @@
           </Button>
         </CardFooter>
       </Card>
-    </form>
+    </SafeForm>
   </div>
 </template>
 

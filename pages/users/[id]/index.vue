@@ -52,20 +52,20 @@
 <template>
   <PageHeader title="L'utilisateur en détails">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
-      <Button v-if="!isMe" size="icon" variant="destructiveOutline" @click="handleDelete">
+      <Button v-if="!isMe" size="fab" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>
-      <Button size="icon" variant="outline">
+      <Button size="fab" variant="outline">
         <NuxtLink :to="`/users/${id}/edit`">
           <PencilIcon />
         </NuxtLink>
       </Button>
     </template>
   </PageHeader>
-  <ConfirmDialog
+  <ConfirmDeleteDialog
     v-model="openConfirm"
     title="Attention ! Suppression définitive"
     description="Êtes-vous sûr de vouloir supprimer l'utilisateur ?"

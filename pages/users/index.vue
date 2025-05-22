@@ -62,12 +62,12 @@
 </script>
 
 <template>
-  <PageHeader title="Utilisateurs">
+  <PageHeader title="Les utilisateurs">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleRefresh">
+      <Button size="fab" variant="outline" @click="handleRefresh">
         <RefreshCwIcon />
       </Button>
-      <Button size="icon" variant="outline" @click="openInviteDialog = true">
+      <Button size="fab" variant="outline" @click="openInviteDialog = true">
         <PlusIcon />
       </Button>
     </template>

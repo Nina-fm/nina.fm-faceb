@@ -5,7 +5,7 @@
 
   definePageMeta({ roles: [Role.ADMIN] })
 
-  const { createMixtape } = useMixtapeApi()
+  const { createMixtape, pending } = useMixtapeApi()
 
   useBreadcrumbItems({
     overrides: [
@@ -38,10 +38,10 @@
 <template>
   <PageHeader title="Nouvelle mixtape">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
   </PageHeader>
-  <MixtapeForm teleport-to="page-header-actions" @cancel="handleCancel" @submit="handleSubmit" />
+  <MixtapeForm teleport-to="page-header-actions" :pending="pending" @cancel="handleCancel" @submit="handleSubmit" />
 </template>

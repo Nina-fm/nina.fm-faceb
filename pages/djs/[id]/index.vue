@@ -50,20 +50,20 @@
 <template>
   <PageHeader title="Le Dj en détails">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
-      <Button size="icon" variant="destructiveOutline" @click="handleDelete">
+      <Button size="fab" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>
-      <Button size="icon" variant="outline">
+      <Button size="fab" variant="outline">
         <NuxtLink :to="`/djs/${id}/edit`">
           <PencilIcon />
         </NuxtLink>
       </Button>
     </template>
   </PageHeader>
-  <ConfirmDialog
+  <ConfirmDeleteDialog
     v-model="openConfirm"
     title="Attention ! Suppression définitive"
     description="Êtes-vous sûr de vouloir supprimer le dj ?"

@@ -1,11 +1,12 @@
 <script lang="ts" setup>
   import { Role } from '@prisma/client'
-import { XIcon } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+  import { XIcon } from 'lucide-vue-next'
+  import { toast } from 'vue-sonner'
 
   definePageMeta({ roles: [Role.ADMIN] })
 
-  const { createDj } = useDjApi()
+  const { createDj, pending } = useDjApi()
+  const { user: currentUser } = useAuthApi()
 
   useBreadcrumbItems({
     overrides: [
@@ -36,10 +37,16 @@ import { toast } from 'vue-sonner'
 <template>
   <PageHeader title="Nouveau dj">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
   </PageHeader>
-  <DjForm teleport-to="page-header-actions" @cancel="handleCancel" @submit="handleSubmit" />
+  <DjForm
+    teleport-to="page-header-actions"
+    :currentUserId="currentUser?.id"
+    :pending="pending"
+    @cancel="handleCancel"
+    @submit="handleSubmit"
+  />
 </template>

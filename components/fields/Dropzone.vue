@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { useImageApi } from '#imports'
   import { Trash2Icon, ZoomInIcon } from 'lucide-vue-next'
   import VueEasyLightbox from 'vue-easy-lightbox'
 
@@ -20,7 +21,7 @@
     (e: 'click'): void
   }>()
 
-  const { generateTmpImageUrl } = useImage()
+  const { generateTmpImageUrl } = useImageApi()
 
   const { modelValue } = toRefs(props)
 

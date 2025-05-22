@@ -201,7 +201,7 @@
       <Button variant="secondary" class="w-fit" @click="$emit('invite')">Inviter un utilisateur</Button>
     </EmptyBlock>
   </div>
-  <ConfirmDialog
+  <ConfirmDeleteDialog
     v-model="openConfirm"
     title="Attention ! Suppression définitive"
     description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"

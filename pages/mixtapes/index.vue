@@ -1,21 +1,17 @@
 <script lang="ts" setup>
-  import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
+  import { LoaderCircleIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
   definePageMeta({ roles: ['ADMIN'] })
 
-  const { fetchMixtapes, deleteMixtape } = useMixtapeApi()
-  const { data, error, refresh, status } = await useAsyncData('mixtapes', () => fetchMixtapes())
+  const { pending, fetchMixtapes, deleteMixtape } = useMixtapeApi()
+  const { data, error, refresh } = await useAsyncData('mixtapes', () => fetchMixtapes())
 
-  const isLoading = ref(false)
   const mixtapes = computed(() => data.value?.results || [])
 
-  watch(status, (newStatus) => {
-    if (newStatus === 'pending') {
-      isLoading.value = true
-    } else {
-      setTimeout(() => (isLoading.value = false), 500)
-    }
+  const variant = computed(() => {
+    if (pending.value) return 'primaryMuted'
+    return 'outline'
   })
 
   watch(error, (value) => {
@@ -50,10 +46,11 @@
 <template>
   <PageHeader title="Les mixtapes">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleRefresh">
-        <RefreshCwIcon />
+      <Button size="fab" :variant="variant" @click="handleRefresh">
+        <LoaderCircleIcon v-if="pending" class="animate-spin" />
+        <RefreshCwIcon v-else />
       </Button>
-      <Button asChild size="icon" variant="outline">
+      <Button asChild size="fab" variant="outline">
         <NuxtLink to="/mixtapes/add">
           <PlusIcon />
         </NuxtLink>

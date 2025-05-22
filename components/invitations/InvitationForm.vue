@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-  import { toast } from 'vue-sonner';
-import * as z from 'zod';
+  import { toast } from 'vue-sonner'
+  import * as z from 'zod'
 
   const emit = defineEmits<{
     (e: 'submit', email: string): void | Promise<void>

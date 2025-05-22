@@ -110,7 +110,7 @@
       <Button variant="secondary" @click="$emit('invite')">Inviter un utilisateur</Button>
     </EmptyBlock>
   </div>
-  <ConfirmDialog
+  <ConfirmDeleteDialog
     v-model="openConfirm"
     title="Attention ! Suppression définitive"
     description="Êtes-vous sûr de vouloir supprimer cette invitation ?"

@@ -7,7 +7,7 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUserById, updateUser } = useUserApi()
+  const { getUserById, updateUser, pending } = useUserApi()
   const { data, refresh } = await useAsyncData('user', () => getUserById(id))
   const user = computed(() => data.value)
 
@@ -43,7 +43,7 @@
 <template>
   <PageHeader title="Modifier l'utilisateur">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleCancel">
+      <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
     </template>
@@ -51,6 +51,7 @@
   <UserForm
     v-if="user"
     :user="user"
+    :pending="pending"
     canEditRoles
     teleport-to="page-header-actions"
     @cancel="handleCancel"

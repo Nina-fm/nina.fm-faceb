@@ -51,12 +51,12 @@
 </script>
 
 <template>
-  <PageHeader title="Les Djs">
+  <PageHeader title="Les DJ's">
     <template #actions>
-      <Button size="icon" variant="outline" @click="handleRefresh">
+      <Button size="fab" variant="outline" @click="handleRefresh">
         <RefreshCwIcon />
       </Button>
-      <Button size="icon" variant="outline" asChild>
+      <Button size="fab" variant="outline" asChild>
         <NuxtLink to="/djs/add"><PlusIcon /></NuxtLink>
       </Button>
     </template>

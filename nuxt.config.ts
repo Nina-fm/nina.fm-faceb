@@ -70,6 +70,10 @@ export default defineNuxtConfig({
     },
   },
 
+  devServer: {
+    port: Number(process.env.FRONT_OUTPUT_PORT) || 3000,
+  },
+
   nitro: {
     rollupConfig: {
       //@ts-ignore

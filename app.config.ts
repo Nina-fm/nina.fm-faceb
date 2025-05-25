@@ -6,6 +6,7 @@ import {
   PlusIcon,
   ScrollTextIcon,
   SendIcon,
+  TagIcon,
   UsersIcon,
 } from 'lucide-vue-next'
 
@@ -31,6 +32,15 @@ export default defineAppConfig({
           label: "DJ's",
           icon: HeadphonesIcon,
           to: '/djs',
+        },
+        {
+          label: 'Tags',
+          icon: TagIcon,
+          to: '/tags',
+          action: {
+            icon: PlusIcon,
+            to: '/tags/add',
+          },
         },
       ],
     },

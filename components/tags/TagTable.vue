@@ -1,0 +1,148 @@
+<script setup lang="ts">
+  import type { ColumnDef, SortingState } from '@tanstack/vue-table'
+  import { toast } from 'vue-sonner'
+  import type { Mixtape, Tag } from '~/types/db'
+
+  const TagBadge = resolveComponent('TagBadge')
+  const TagTableActions = resolveComponent('TagTableActions')
+
+  const props = withDefaults(
+    defineProps<{
+      data: Tag[]
+      searchValue?: string | number
+      loading?: boolean
+    }>(),
+    {
+      data: () => [],
+      loading: false,
+    },
+  )
+
+  const emit = defineEmits<{
+    clearSearch: []
+    rowShow: [id: string]
+    rowEdit: [id: string]
+    rowDelete: [id: string]
+  }>()
+
+  const openConfirm = ref(false)
+  const idToDelete = ref<string>()
+
+  const defaultSorting = ref<SortingState>([
+    {
+      id: 'createdAt',
+      desc: true,
+    },
+  ])
+
+  const columns: ColumnDef<Tag>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Tag',
+      cell: ({ cell }) => {
+        const name = cell.getValue() as string
+        const color = cell.row.original.color || 'white' // Default to black if no color is set
+        return h(
+          'span',
+          { class: 'flex gap-3 items-center' },
+          {
+            default: () => [h(TagBadge, { color }, { default: () => [name] })],
+          },
+        )
+      },
+    },
+    {
+      accessorKey: 'mixtapes',
+      header: 'Mixtapes',
+      size: 30,
+      cell: ({ cell }) => {
+        const mixtapesCount = (cell.getValue() as Mixtape[]).length
+        return h('span', {}, mixtapesCount)
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Création',
+      size: 30,
+      cell: ({ cell }) => {
+        const createdAt = new Date(cell.getValue() as string)
+        return h('span', {}, createdAt.toLocaleDateString('fr-FR', { dateStyle: 'short' }))
+      },
+    },
+    {
+      accessorKey: 'actions',
+      header: '',
+      size: 40,
+      enableGlobalFilter: false,
+      cell: ({ cell }) => {
+        const id = cell.row.original.id.toString()
+        return h(TagTableActions, {
+          onShow: () => handleRowShow(id),
+          onEdit: () => handleRowEdit(id),
+          onDelete: () => handleRowDelete(id),
+        })
+      },
+    },
+  ]
+
+  const handleRowShow = (id: string) => {
+    emit('rowShow', id)
+  }
+
+  const handleRowEdit = (id: string) => {
+    emit('rowEdit', id)
+  }
+
+  const handleClearSearch = () => {
+    emit('clearSearch')
+  }
+
+  const handleRowDelete = (id: string) => {
+    idToDelete.value = id
+    openConfirm.value = true
+  }
+
+  const handleCancelDelete = () => {
+    openConfirm.value = false
+  }
+
+  const handleConfirmDelete = async () => {
+    if (idToDelete.value) {
+      try {
+        emit('rowDelete', idToDelete.value)
+      } catch (error) {
+        toast.error('Une erreur est survenue lors de la suppression du Tag.')
+      } finally {
+        openConfirm.value = false
+      }
+    }
+  }
+</script>
+
+<template>
+  <div class="py-10">
+    <DataTable
+      v-if="data.length"
+      :data="data"
+      :columns="columns"
+      :sorting="defaultSorting"
+      :searchValue="searchValue"
+      search
+      pagination
+      background
+      @clearSearch="handleClearSearch"
+    />
+    <EmptyBlock v-else title="Aucun tag actuellement.">
+      <Button variant="secondary" asChild>
+        <NuxtLink to="/tags/add">Créer un tag</NuxtLink>
+      </Button>
+    </EmptyBlock>
+  </div>
+  <ConfirmDeleteDialog
+    v-model="openConfirm"
+    title="Attention ! Suppression définitive"
+    description="Êtes-vous sûr de vouloir supprimer ce tag ?"
+    @confirm="handleConfirmDelete"
+    @cancel="handleCancelDelete"
+  />
+</template>

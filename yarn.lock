@@ -8099,6 +8099,7 @@ __metadata:
     luxon: "npm:^3.5.0"
     next-auth: "npm:4.21.1"
     nuxt: "npm:^3.16.1"
+    nuxt-color-picker: "npm:^1.2.8"
     nuxt-resend: "npm:^0.0.2"
     nuxt-seo-utils: "npm:7.0.7"
     pinia: "npm:^3.0.1"
@@ -8455,6 +8456,15 @@ __metadata:
   dependencies:
     boolbase: "npm:^1.0.0"
   checksum: 10c0/5fee7ff309727763689cfad844d979aedd2204a817fbaaf0e1603794a7c20db28548d7b024692f953557df6ce4a0ee4ae46cd8ebd9b36cfb300b9226b567c479
+  languageName: node
+  linkType: hard
+
+"nuxt-color-picker@npm:^1.2.8":
+  version: 1.2.8
+  resolution: "nuxt-color-picker@npm:1.2.8"
+  dependencies:
+    "@nuxt/kit": "npm:^3.14.1592"
+  checksum: 10c0/057a8a171d9d25df1b4049c922c203e74e72972c4e180157cdcf0f7edbdf0908bff585cea4d46ce4a2636c3126ba28d66b8c302c463a52d9b93d37236c666111
   languageName: node
   linkType: hard
 

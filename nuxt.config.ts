@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     'nuxt-seo-utils',
     '@prisma/nuxt',
     '@vee-validate/nuxt',
+    'nuxt-color-picker',
   ],
 
   css: ['~/assets/css/tailwind.css', '~/assets/css/main.css'],

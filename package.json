@@ -50,6 +50,7 @@
     "luxon": "^3.5.0",
     "next-auth": "4.21.1",
     "nuxt": "^3.16.1",
+    "nuxt-color-picker": "^1.2.8",
     "nuxt-seo-utils": "7.0.7",
     "pinia": "^3.0.1",
     "reka-ui": "^2.2.0",

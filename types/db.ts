@@ -15,3 +15,5 @@ export type Mixtape = Prisma.MixtapeGetPayload<{}> & {
     alt?: string
   }
 }
+
+export type Tag = Prisma.TagGetPayload<{}>

@@ -93,7 +93,7 @@
             <div class="flex w-3/4 flex-col gap-5">
               <TextField name="name" label="Nom" />
               <TextField name="email" label="Email" readonly />
-              <BadgedOptionsField v-if="canEditRoles" name="roles" label="Rôles" :options="[Role.ADMIN, Role.USER]" />
+              <BadgesField v-if="canEditRoles" name="roles" label="Rôles" :options="[Role.ADMIN, Role.USER]" />
             </div>
           </div>
         </CardContent>

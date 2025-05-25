@@ -1,11 +1,41 @@
 <script lang="ts" setup>
+  type Options =
+    | {
+        label?: string
+        value: any
+        [key: string]: any
+      }[]
+    | string[]
+
   const props = defineProps<{
     name: string
     label: string
     description?: string
     placeholder?: string
-    itemLabelKey?: string
+    optionLabelKey?: string
+    options: Options
+    createOptionLabel?: string
   }>()
+  const emit = defineEmits<{
+    (e: 'create', value: string): void
+  }>()
+
+  const canCreate = computed(() => getCurrentInstance()?.vnode.props?.['create'] ?? false)
+  const options = computed(() =>
+    canCreate.value
+      ? ([
+          ...props.options,
+          // ...(canCreate.value
+          //   ? [
+          //       {
+          //         label: props.createOptionLabel ?? 'Créer…',
+          //         value: '__create__',
+          //       },
+          //     ]
+          //   : []),
+        ] as Options)
+      : props.options,
+  )
 </script>
 
 <template>
@@ -13,19 +43,12 @@
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <FormControl>
-        <TagsInput
-          :model-value="componentField.modelValue"
-          :displayValue="
-            (value) => (typeof value === 'object' && props.itemLabelKey ? value?.[props.itemLabelKey] : value)
-          "
+        <TagCombobox
+          v-bind="props"
+          :options="options"
+          :modelValue="componentField.modelValue"
           @update:model-value="componentField['onUpdate:modelValue']"
-        >
-          <TagsInputItem v-for="item in componentField.modelValue" :key="item" :value="item">
-            <TagsInputItemText />
-            <TagsInputItemDelete />
-          </TagsInputItem>
-          <TagsInputInput :placeholder="placeholder" />
-        </TagsInput>
+        />
       </FormControl>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />

@@ -57,20 +57,29 @@
 
   const handleSelect = (event: any) => {
     if (typeof event.detail.value === 'string') {
-      searchTerm.value = ''
       updateModelValue([...props.modelValue, event.detail.value])
+      searchTerm.value = ''
     }
 
     if (filteredOptions.value.length === 0) {
       open.value = false
     }
   }
+
+  const delimiter = /[\t\n\r]+/
 </script>
 
 <template>
   <Combobox :modelValue="modelValue" v-model:open="open" :ignore-filter="true" @update:modelValue="updateModelValue">
     <ComboboxAnchor as-child class="p-0">
-      <TagsInput :modelValue="modelValue" class="flex w-full gap-2 px-2" @update:modelValue="updateModelValue">
+      <TagsInput
+        :modelValue="modelValue"
+        :delimiter="delimiter"
+        add-on-paste
+        add-on-tab
+        class="flex w-full gap-2 px-2"
+        @update:modelValue="updateModelValue"
+      >
         <div class="flex flex-wrap items-center gap-2">
           <TagsInputItem v-for="item in modelValue" :key="item" :value="item">
             <TagsInputItemText />
@@ -88,7 +97,7 @@
         </ComboboxInput>
       </TagsInput>
 
-      <ComboboxList class="w-[--reka-popper-anchor-width]" position="popper" side="bottom">
+      <ComboboxList position="popper" side="bottom" align="start">
         <ComboboxEmpty class="h-auto px-3 pt-2 pb-1">Aucun résultat</ComboboxEmpty>
         <ComboboxGroup>
           <ComboboxItem

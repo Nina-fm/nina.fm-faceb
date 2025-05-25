@@ -7,7 +7,7 @@ export const useDjApi = () => {
 
   const fetchDjs = async (params?: { page: number; limit: number }) =>
     defineDelayedAction(async () => {
-      const results = await $fetch('/api/djs', {
+      const results = await useFetch<Dj[]>('/api/djs', {
         method: 'GET',
         params,
       })
@@ -17,7 +17,7 @@ export const useDjApi = () => {
 
   const getDjById = async (id: string) =>
     defineAction(async () => {
-      const result = await $fetch('/api/dj', {
+      const result = await useFetch<Dj>('/api/dj', {
         method: 'GET',
         params: { id },
       })
@@ -29,7 +29,7 @@ export const useDjApi = () => {
 
   const createDj = async (data: DjEdit) =>
     defineDelayedAction(async () => {
-      const result = await $fetch('/api/dj', {
+      const result = await useFetch<Dj>('/api/dj', {
         method: 'POST',
         body: data,
       })
@@ -41,7 +41,7 @@ export const useDjApi = () => {
 
   const updateDj = async (id: string, data: DjEdit) =>
     defineDelayedAction(async () => {
-      const result = await $fetch('/api/dj', {
+      const result = await useFetch<Dj>('/api/dj', {
         method: 'PUT',
         body: { id, ...data },
       })
@@ -53,7 +53,7 @@ export const useDjApi = () => {
 
   const deleteDj = async (id: string | number) =>
     defineDelayedAction(async () => {
-      await $fetch('/api/dj', {
+      await useFetch('/api/dj', {
         method: 'DELETE',
         params: {
           id,

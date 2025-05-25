@@ -1,9 +1,11 @@
-import { AuthError, PostgrestError } from "@supabase/supabase-js"
+import { AuthError, PostgrestError } from '@supabase/supabase-js'
 
 // API
 
 declare global {
-  type AuthReturn<T, U = "data"> = Promise<
+  type AsyncFunc<T extends any[], U> = (...args: T) => Promise<U>
+
+  type AuthReturn<T, U = 'data'> = Promise<
     Rename<
       { data: U },
       {
@@ -13,7 +15,7 @@ declare global {
     >
   >
 
-  type ApiReturn<T, U = "data"> = Promise<
+  type ApiReturn<T, U = 'data'> = Promise<
     Rename<
       { data: U },
       {
@@ -34,4 +36,4 @@ declare global {
   }
 }
 
-export { }
+export {}

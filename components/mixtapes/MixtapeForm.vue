@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import type { Dj } from '@prisma/client'
   import { toTypedSchema } from '@vee-validate/zod'
   import { SaveIcon } from 'lucide-vue-next'
   import * as z from 'zod'
@@ -8,13 +7,6 @@
   const currentYear = new Date().getFullYear().toString()
   const years = generateYearsSince(2007)
   const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
-
-  const { fetchDjs } = useDjApi()
-  const response = await fetchDjs()
-  const djs = response?.data.value.results as Dj[]
-  console.log('djs', djs)
-  const djsAsOptions = computed(() => djs?.map((dj) => ({ value: dj.id, label: dj.name })) ?? [])
-  console.log('djsAsOptions', djsAsOptions.value)
 
   const formSchema = z.object({
     name: z.string().min(1, 'Nom requis'),
@@ -29,7 +21,6 @@
       })
       .optional(),
     djsAsText: z.string().min(1, 'Djs requis'),
-    djs: z.array(z.string()).optional(),
     tracksAsText: z.string().nullable().optional(),
     comment: z.string().nullable().optional(),
   })
@@ -99,10 +90,6 @@
   const handleSubmit = form.handleSubmit((values: Data) => {
     emit('submit', values)
   })
-
-  const handleCreate = (value: string) => {
-    console.log('handleCreate', value)
-  }
 
   const hint = 'Attention à bien respecter le format AirTime !'
 </script>

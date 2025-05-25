@@ -4,6 +4,7 @@
 
   definePageMeta({ roles: ['ADMIN'] })
 
+  const route = useRoute()
   const { pending, fetchMixtapes, deleteMixtape } = useMixtapeApi()
   const { data, error, refresh } = await useAsyncData('mixtapes', () => fetchMixtapes())
 
@@ -32,6 +33,10 @@
     return navigateTo(`/mixtapes/${id}/edit`)
   }
 
+  const handleClearSearch = () => {
+    return navigateTo('/mixtapes')
+  }
+
   const handleRowDelete = async (id: string) => {
     try {
       await deleteMixtape(id)
@@ -57,5 +62,12 @@
       </Button>
     </template>
   </PageHeader>
-  <MixtapeTable :data="mixtapes" @rowShow="handleRowShow" @rowEdit="handleRowEdit" @rowDelete="handleRowDelete" />
+  <MixtapeTable
+    :data="mixtapes"
+    :searchValue="route.query.name?.toString()"
+    @clearSearch="handleClearSearch"
+    @rowShow="handleRowShow"
+    @rowEdit="handleRowEdit"
+    @rowDelete="handleRowDelete"
+  />
 </template>

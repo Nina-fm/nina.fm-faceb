@@ -10,7 +10,7 @@
     type ColumnFiltersState,
     type SortingState,
   } from '@tanstack/vue-table'
-  import { XIcon } from 'lucide-vue-next'
+  import { DeleteIcon, XIcon } from 'lucide-vue-next'
   import type { FilterDef } from '~/components/ui/data-table'
 
   const DataTableHeader = resolveComponent('DataTableHeader')
@@ -25,9 +25,11 @@
     sorting?: SortingState
     filters?: FilterDef[]
     search?: boolean
+    searchValue?: string | number
   }>()
 
   const emits = defineEmits<{
+    (e: 'clearSearch'): void
     (e: 'rowClick', id: string | number): void
   }>()
 
@@ -117,6 +119,12 @@
     table.setGlobalFilter(value)
   }
 
+  const handleSearchClear = () => {
+    searchText.value = ''
+    table.setGlobalFilter('')
+    emits('clearSearch')
+  }
+
   const handleRemoveFilter = (id: string, value: unknown) => {
     const column = table.getColumn(id)
     if (!column) return
@@ -130,18 +138,32 @@
       column.setFilterValue(undefined)
     }
   }
+
+  onBeforeMount(() => {
+    if (props.searchValue) {
+      handleSearchUpdateModelValue(props.searchValue)
+    }
+  })
 </script>
 
 <template>
   <div v-if="props.search || props.filters?.length" class="flex flex-col gap-4 pb-4">
     <div class="flex justify-between gap-4">
-      <Input
-        v-if="props.search"
-        class="h-8 max-w-sm"
-        placeholder="Rechercher..."
-        :model-value="searchText"
-        @update:model-value="handleSearchUpdateModelValue"
-      />
+      <div class="relative w-full max-w-sm items-center">
+        <Input
+          v-if="props.search"
+          class="h-8 max-w-sm"
+          placeholder="Rechercher..."
+          :model-value="searchText"
+          @update:model-value="handleSearchUpdateModelValue"
+        />
+        <span
+          class="absolute inset-y-0 end-0 flex cursor-pointer items-center justify-center px-2"
+          @click="handleSearchClear"
+        >
+          <DeleteIcon class="text-muted-foreground size-4" />
+        </span>
+      </div>
       <div class="flex items-center justify-end gap-2">
         <template v-if="props.filters?.length">
           <template v-for="filter in props.filters">

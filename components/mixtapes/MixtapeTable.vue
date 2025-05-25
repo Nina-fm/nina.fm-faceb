@@ -13,6 +13,7 @@
   const props = withDefaults(
     defineProps<{
       data: Mixtape[]
+      searchValue?: string | number
       loading?: boolean
       currentUserId?: string
     }>(),
@@ -23,6 +24,7 @@
   )
 
   const emit = defineEmits<{
+    clearSearch: []
     rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
@@ -114,6 +116,10 @@
     emit('rowEdit', id)
   }
 
+  const handleClearSearch = () => {
+    emit('clearSearch')
+  }
+
   const handleRowDelete = (id: string) => {
     idToDelete.value = id
     openConfirm.value = true
@@ -143,9 +149,11 @@
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
+      :searchValue="searchValue"
       search
       pagination
       background
+      @clearSearch="handleClearSearch"
     />
     <EmptyBlock v-else title="Aucune mixtape actuellement.">
       <Button variant="secondary" asChild>

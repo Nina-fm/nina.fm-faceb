@@ -1,30 +1,45 @@
-import { Dj } from '@prisma/client'
 import prisma from '~/lib/prisma'
 
-type Entity = Dj
-
-type CreateData = Omit<Entity, 'id' | 'createdAt' | 'updatedAt'>
-type EditData = Omit<Entity, 'createdAt' | 'updatedAt'>
-
-const table = prisma.dj
-const entityName = 'Dj'
-const entityNamePlural = 'Djs'
+interface Dj {
+  id: string
+  name: string
+  createdAt: Date
+}
 
 async function fetchAll(page: number, limit: number) {
-  const results = await table.findMany({
+  const mixtapes = await prisma.mixtape.findMany({
     select: {
       id: true,
-      name: true,
-      userId: true,
+      djsAsText: true,
       createdAt: true,
-      updatedAt: true,
     },
-    skip: (page - 1) * limit,
-    take: limit,
-    orderBy: { createdAt: 'desc' },
+    orderBy: {
+      createdAt: 'asc',
+    },
   })
 
-  const total = await table.count()
+  const djsArray = mixtapes.reduce((acc, mixtape) => {
+    const djs = mixtape.djsAsText
+      .split(/[,&]/g)
+      .map((dj) => dj.trim())
+      .filter((dj) => dj !== '')
+      .map((dj) => ({
+        name: dj,
+        createdAt: mixtape.createdAt,
+      }))
+
+    const djsToAdd = djs.filter((dj) => acc.every((existingDj) => existingDj.name !== dj.name))
+
+    return [...acc, ...djsToAdd].map((dj, index) => ({
+      id: (index + 1).toString(), // Using index as a temporary ID
+      name: dj.name,
+      createdAt: dj.createdAt,
+    }))
+  }, [] as Dj[])
+
+  const results = djsArray.slice((page - 1) * limit, page * limit)
+
+  const total = djsArray.length
 
   return {
     results,
@@ -34,104 +49,8 @@ async function fetchAll(page: number, limit: number) {
   }
 }
 
-async function getById(id: string) {
-  if (!id) {
-    throw createError({ message: 'Id is required!', statusCode: 400 })
-  }
-
-  const result = await table.findUnique({
-    where: { id },
-  })
-
-  if (!result) {
-    throw createError({ message: `${entityName} not found!`, statusCode: 404 })
-  }
-
-  return result as Entity
-}
-
-async function create(data: CreateData) {
-  if (!data.name) {
-    throw createError({ message: 'Name is required!', statusCode: 400 })
-  }
-
-  const result = await table.create({
-    data,
-  })
-
-  if (!result) {
-    throw createError({ message: `Failed to create ${entityName}!`, statusCode: 500 })
-  }
-
-  return result as Entity
-}
-
-async function updateById(id: string, data: EditData) {
-  if (!id) {
-    throw createError({ message: 'Id is required!', statusCode: 400 })
-  }
-  if (!data.name) {
-    throw createError({ message: 'Name is required!', statusCode: 400 })
-  }
-
-  const exist = await table.findUnique({
-    where: { id },
-  })
-
-  if (!exist) {
-    throw createError({ message: `${entityName} not found!`, statusCode: 404 })
-  }
-
-  const result = await table.update({
-    where: { id: exist.id },
-    data: {
-      ...data,
-      updatedAt: new Date(),
-    },
-  })
-
-  if (!result) {
-    throw createError({ message: `Failed to update ${entityName}!`, statusCode: 500 })
-  }
-
-  return {
-    ...result,
-    createdAt: new Date(result.createdAt),
-    updatedAt: new Date(result.updatedAt),
-  }
-}
-
-async function deleteById(id: string | number) {
-  if (!id) {
-    throw createError({ message: 'Id is required!', statusCode: 400 })
-  }
-
-  const result = await table.findUnique({
-    where: { id: id.toString() },
-  })
-
-  if (!result) {
-    throw createError({ message: `${entityName} not found!`, statusCode: 404 })
-  }
-
-  await table.delete({
-    where: { id: result.id },
-  })
-
-  return {
-    message: `${entityName} successfully deleted!`,
-  }
-}
-
 const DjFactory = {
-  create,
-  deleteById,
-  entityName,
-  entityNamePlural,
   fetchAll,
-  getById,
-  table,
-  updateById,
 }
 
 export default DjFactory

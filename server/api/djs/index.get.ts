@@ -8,12 +8,5 @@ export default defineEventHandler(async (event) => {
 
   const all = await fetchAll(page, limit)
 
-  return formattedResponse({
-    ...all,
-    results: all.results.map((result) => ({
-      ...result,
-      createdAt: new Date(result.createdAt),
-      updatedAt: new Date(result.updatedAt),
-    })),
-  })
+  return formattedResponse(all)
 })

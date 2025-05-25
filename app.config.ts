@@ -31,10 +31,6 @@ export default defineAppConfig({
           label: "DJ's",
           icon: HeadphonesIcon,
           to: '/djs',
-          action: {
-            icon: PlusIcon,
-            to: '/djs/add',
-          },
         },
       ],
     },

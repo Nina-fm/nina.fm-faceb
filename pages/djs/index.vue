@@ -11,6 +11,10 @@
   const handleShowMixtapes = (name: string) => {
     return navigateTo({ path: '/mixtapes', query: { name } })
   }
+
+  onBeforeMount(async () => {
+    await refresh()
+  })
 </script>
 
 <template>

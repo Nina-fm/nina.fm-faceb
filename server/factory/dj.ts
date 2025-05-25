@@ -28,7 +28,9 @@ async function fetchAll(page: number, limit: number) {
         createdAt: mixtape.createdAt,
       }))
 
-    const djsToAdd = djs.filter((dj) => acc.every((existingDj) => existingDj.name !== dj.name))
+    const djsToAdd = djs.filter((dj) =>
+      acc.every((existingDj) => existingDj.name.toLowerCase() !== dj.name.toLowerCase()),
+    )
 
     return [...acc, ...djsToAdd].map((dj, index) => ({
       id: (index + 1).toString(), // Using index as a temporary ID

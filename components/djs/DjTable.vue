@@ -2,7 +2,7 @@
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import type { Dj } from '~/stores/djs'
 
-  const DjsTableActions = resolveComponent('DjsTableActions')
+  const DjTableActions = resolveComponent('DjTableActions')
 
   const props = withDefaults(
     defineProps<{
@@ -62,7 +62,7 @@
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const name = cell.row.original.name
-        return h(DjsTableActions, {
+        return h(DjTableActions, {
           onShowMixtapes: () => handleRowShowMixtape(name),
         })
       },

@@ -8,7 +8,7 @@
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
-  const MixtapesTableActions = resolveComponent('MixtapesTableActions')
+  const MixtapeTableActions = resolveComponent('MixtapeTableActions')
 
   const props = withDefaults(
     defineProps<{
@@ -99,7 +99,7 @@
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
-        return h(MixtapesTableActions, {
+        return h(MixtapeTableActions, {
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),

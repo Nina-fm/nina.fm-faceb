@@ -25,5 +25,5 @@
       </Button>
     </template>
   </PageHeader>
-  <DjsTable :data="data" :loading="loading" @rowShowMixtapes="handleShowMixtapes" />
+  <DjTable :data="data" :loading="loading" @rowShowMixtapes="handleShowMixtapes" />
 </template>

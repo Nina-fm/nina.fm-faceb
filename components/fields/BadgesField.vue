@@ -21,21 +21,7 @@
   }>()
 
   const canCreate = computed(() => getCurrentInstance()?.vnode.props?.['create'] ?? false)
-  const options = computed(() =>
-    canCreate.value
-      ? ([
-          ...props.options,
-          // ...(canCreate.value
-          //   ? [
-          //       {
-          //         label: props.createOptionLabel ?? 'Créer…',
-          //         value: '__create__',
-          //       },
-          //     ]
-          //   : []),
-        ] as Options)
-      : props.options,
-  )
+  const options = computed(() => (canCreate.value ? ([...props.options] as Options) : props.options))
 </script>
 
 <template>

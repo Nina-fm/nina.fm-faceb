@@ -3,10 +3,22 @@
   import { SaveIcon } from 'lucide-vue-next'
   import * as z from 'zod'
   import SaveButton from '~/components/common/SaveButton.vue'
+  import type { Tag } from '~/types/db'
 
   const currentYear = new Date().getFullYear().toString()
   const years = generateYearsSince(2007)
   const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
+
+  const { fetchTags } = useTagApi()
+  const { data } = await useAsyncData('tags', () => fetchTags())
+  const tags = computed(() => data.value.results || [])
+  const tagsOptions = computed(() =>
+    tags.value.map((tag: Tag) => ({
+      id: tag.id,
+      name: tag.name,
+      color: tag.color,
+    })),
+  )
 
   const formSchema = z.object({
     name: z.string().min(1, 'Nom requis'),
@@ -22,6 +34,15 @@
       .optional(),
     djsAsText: z.string().min(1, 'Djs requis'),
     tracksAsText: z.string().nullable().optional(),
+    tags: z
+      .array(
+        z.object({
+          id: z.string().optional(),
+          name: z.string(),
+          color: z.string().optional(),
+        }),
+      )
+      .optional(),
     comment: z.string().nullable().optional(),
   })
 
@@ -53,6 +74,7 @@
         : undefined,
       djsAsText: props?.mixtape?.djsAsText || '',
       tracksAsText: props?.mixtape?.tracksAsText || '',
+      tags: props?.mixtape?.tags || [],
       comment: props?.mixtape?.comment || '',
     },
   })
@@ -74,6 +96,7 @@
             : undefined,
           djsAsText: mixtape?.djsAsText || '',
           tracksAsText: mixtape?.tracksAsText || '',
+          tags: mixtape?.tags || [],
           comment: mixtape?.comment || '',
         },
       })
@@ -109,7 +132,7 @@
                   <TextField name="djsAsText" label="Djs" :description="hint" class="w-full" />
                   <SelectField name="year" label="Année" :options="yearsOptions" class="w-1/4 min-w-24" />
                 </div>
-                <!-- <BadgesField name="tags" label="Tags" itemLabelKey="name" /> -->
+                <TagsField name="tags" label="Tags" optionLabelKey="name" :options="tagsOptions" tagAs="TagBadge" />
               </div>
               <div class="aspect-square w-full @xl/mixtapeform:w-1/2 @2xl/mixtapeform:w-1/3 @4xl/mixtapeform:w-1/4">
                 <ImageField name="cover" bucket="covers" label="Cover" description="Taille recommandée : 1600x1600px" />

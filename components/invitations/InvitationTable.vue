@@ -68,7 +68,11 @@
       header: "Date d'invitation",
       cell: ({ cell }) => {
         const createdAt = cell.getValue() as Date
-        return h('span', new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' }))
+        return h(
+          'span',
+          {},
+          { default: () => [new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] },
+        )
       },
     },
     {
@@ -76,7 +80,7 @@
       header: 'Invité par',
       cell: ({ cell }) => {
         const invitedBy = cell.getValue() as User
-        return h('span', invitedBy.name || invitedBy.email)
+        return h('span', {}, { default: () => [invitedBy.name || invitedBy.email] })
       },
     },
     {

@@ -25,8 +25,8 @@
     ],
   })
 
-  const handleCancel = async () => {
-    await navigateTo('/mixtapes')
+  const handleCancel = () => {
+    return navigateTo('/mixtapes')
   }
 
   const handleSubmit = async (values: Record<string, any>) => {

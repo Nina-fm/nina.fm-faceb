@@ -1,20 +1,21 @@
 <script lang="ts" setup>
   import { useFilter } from 'reka-ui'
+  import type { Tag } from '~/types/db'
+
+  type Option = {
+    label?: string
+    value: Tag
+    [key: string]: any
+  }
 
   const props = withDefaults(
     defineProps<{
-      modelValue: string[]
+      modelValue: Option[]
       name: string
       placeholder?: string
       readonly?: boolean
       optionLabelKey?: string
-      options:
-        | string[]
-        | {
-            label?: string
-            value: any
-            [key: string]: any
-          }[]
+      options: Option[]
     }>(),
     {
       modelValue: () => [],
@@ -24,7 +25,7 @@
   )
 
   const emit = defineEmits<{
-    (e: 'update:modelValue', value: string[]): void
+    (e: 'update:modelValue', value: Option[]): void
   }>()
 
   const open = ref(false)
@@ -38,14 +39,20 @@
   const getOptionLabel = (option: string | Record<string, any>) =>
     typeof option === 'object' && props.optionLabelKey ? option?.[props.optionLabelKey] : option
 
-  const filteredOptions = computed(() => {
-    const options = props.options.filter((option) => !props.modelValue.includes(getOptionLabel(option)))
-    return searchTerm.value ? options.filter((option) => contains(getOptionLabel(option), searchTerm.value)) : options
-  })
+  const isInModelValue = (option: Option) => {
+    return props.modelValue.some((item) => getOptionLabel(item) === getOptionLabel(option))
+  }
+
+  const filteredOptions = computed(() =>
+    props.options.filter(
+      (option) =>
+        !isInModelValue(option) && (searchTerm.value ? contains(getOptionValue(option).name, searchTerm.value) : true),
+    ),
+  )
 
   const updateModelValue = (value: unknown) => {
-    if (Array.isArray(value) && value.every((item) => typeof item === 'string')) {
-      emit('update:modelValue', value as string[])
+    if (Array.isArray(value)) {
+      emit('update:modelValue', value)
     }
   }
 
@@ -56,14 +63,36 @@
   }
 
   const handleSelect = (event: any) => {
-    if (typeof event.detail.value === 'string') {
-      updateModelValue([...props.modelValue, event.detail.value])
-      searchTerm.value = ''
-    }
+    updateModelValue([...props.modelValue, event.detail.value])
+    searchTerm.value = ''
 
     if (filteredOptions.value.length === 0) {
       open.value = false
     }
+  }
+
+  const handleEnterKey = (event: KeyboardEvent) => {
+    console.log('handleEnterKey', searchTerm.value, event)
+    const search = searchTerm.value.trim()
+    if (search) {
+      if (filteredOptions.value.length > 0) {
+        handleSelect({ detail: { value: filteredOptions.value[0] } })
+      } else {
+        const newValue = { name: search }
+        if (!props.modelValue.find((item) => getOptionValue(item) === search)) {
+          updateModelValue([...props.modelValue, newValue])
+        }
+      }
+    }
+  }
+
+  const convertOptionValue = (value: any, key?: string) => {
+    if (typeof value === 'object' && value?.value && key && value[key]) {
+      return value[key]
+    } else if (typeof value === 'object' && value?.value) {
+      return value.value
+    }
+    return value
   }
 
   const delimiter = /[\t\n\r]+/
@@ -75,13 +104,20 @@
       <TagsInput
         :modelValue="modelValue"
         :delimiter="delimiter"
+        :display-value="getOptionLabel"
+        :convert-value="convertOptionValue"
         add-on-paste
         add-on-tab
         class="flex w-full gap-2 px-2"
         @update:modelValue="updateModelValue"
       >
         <div class="flex flex-wrap items-center gap-2">
-          <TagsInputItem v-for="item in modelValue" :key="item" :value="item">
+          <TagsInputItem
+            v-for="item in modelValue"
+            :key="getOptionValue(item).name"
+            :value="item"
+            :style="{ backgroundColor: item.color }"
+          >
             <TagsInputItemText />
             <TagsInputItemDelete />
           </TagsInputItem>
@@ -91,7 +127,7 @@
           <TagsInputInput
             :placeholder="placeholder"
             class="h-auto w-full min-w-[200px] border-none p-0 focus-visible:ring-0"
-            @keydown.enter.prevent
+            @keydown.enter.prevent="handleEnterKey"
             @focus="handleFocus"
           />
         </ComboboxInput>
@@ -101,9 +137,9 @@
         <ComboboxEmpty class="h-auto px-3 pt-2 pb-1">Aucun résultat</ComboboxEmpty>
         <ComboboxGroup>
           <ComboboxItem
-            v-for="option in filteredOptions"
-            :key="getOptionValue(option)"
-            :value="getOptionLabel(option)"
+            v-for="(option, i) in filteredOptions"
+            :key="`option-${i}`"
+            :value="getOptionValue(option)"
             @select.prevent="handleSelect"
           >
             {{ getOptionLabel(option) }}

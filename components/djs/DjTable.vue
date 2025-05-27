@@ -51,7 +51,7 @@
       size: 150,
       cell: ({ cell }) => {
         const date = new Date(cell.getValue() as string)
-        return h('span', {}, date.toLocaleDateString('fr-FR', { dateStyle: 'short' }))
+        return h('span', {}, { default: () => [date.toLocaleDateString('fr-FR', { dateStyle: 'short' })] })
       },
     },
 

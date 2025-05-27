@@ -21,6 +21,7 @@ async function fetchAll(page: number, limit: number) {
       comment: true,
       djsAsText: true,
       tracksAsText: true,
+      tags: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -48,6 +49,7 @@ async function getById(id: string) {
     where: { id },
     include: {
       cover: true,
+      tags: true,
     },
   })
 
@@ -70,6 +72,7 @@ async function create({ cover, ...data }: EntityCreate) {
     },
     include: {
       cover: true,
+      tags: true,
     },
   })
 
@@ -80,7 +83,7 @@ async function create({ cover, ...data }: EntityCreate) {
   return result
 }
 
-async function update({ id, cover, ...data }: EntityUpdate) {
+async function update({ id, cover, tags, ...data }: EntityUpdate) {
   if (!id) {
     throw createError({ message: 'Id is required!', statusCode: 400 })
   }
@@ -92,8 +95,14 @@ async function update({ id, cover, ...data }: EntityUpdate) {
     where: { id: id.toString() },
     include: {
       cover: true,
+      tags: true,
     },
   })
+
+  console.log('Updating mixtape:', exist)
+  console.log('With data:', data)
+  console.log('With cover:', cover)
+  console.log('With tags:', tags)
 
   if (!exist) {
     throw createError({ message: `${entityName} not found!`, statusCode: 404 })
@@ -116,10 +125,24 @@ async function update({ id, cover, ...data }: EntityUpdate) {
               delete: { id: exist.cover.id },
             }
           : undefined,
+      tags: tags
+        ? {
+            connectOrCreate: Array.isArray(tags)
+              ? tags.map((tag) => ({
+                  where: { id: tag.id },
+                  create: { ...tag },
+                }))
+              : [],
+            disconnect: exist.tags
+              ?.filter((tag) => !Array.isArray(tags) || !tags.some((t) => t.id === tag.id))
+              .map((tag) => ({ id: tag.id })),
+          }
+        : undefined,
       updatedAt: new Date(),
     },
     include: {
       cover: true,
+      tags: true,
     },
   })
 

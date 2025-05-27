@@ -101,9 +101,16 @@ export const useMixtapeApi = () => {
       let cover: CoverFile | undefined = undefined
 
       const currentImage = await getMixtapeImage(id)
-      if (currentImage?.id) {
-        if (currentImage?.filename) {
+      const isCurrentImage = currentImage?.filename === data?.cover?.filename
+
+      if (currentImage?.filename) {
+        if (!isCurrentImage) {
           await deleteImage(currentImage.filename, currentImage.bucket)
+        } else {
+          cover = {
+            filename: currentImage.filename,
+            bucket: currentImage.bucket,
+          }
         }
       }
 
@@ -132,10 +139,8 @@ export const useMixtapeApi = () => {
   const deleteMixtape = async (id: string) =>
     defineDelayedAction(async () => {
       const currentImage = await getMixtapeImage(id)
-      if (currentImage?.id) {
-        if (currentImage?.filename) {
-          await deleteImage(currentImage.filename, currentImage.bucket)
-        }
+      if (currentImage?.filename) {
+        await deleteImage(currentImage.filename, currentImage.bucket)
       }
 
       await $fetch('/api/mixtape', {

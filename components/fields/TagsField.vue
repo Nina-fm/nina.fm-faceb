@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-  type Options =
-    | {
-        label?: string
-        value: any
-        [key: string]: any
-      }[]
-    | string[]
+  import type { Tag } from '~/types/db'
+
+  type Option = {
+    label?: string
+    value: Tag
+    [key: string]: any
+  }
 
   const props = defineProps<{
     name: string
@@ -13,15 +13,15 @@
     description?: string
     placeholder?: string
     optionLabelKey?: string
-    options: Options
+    options: Option[]
     createOptionLabel?: string
   }>()
   const emit = defineEmits<{
-    (e: 'create', value: string): void
+    (e: 'create', value: Tag): void
   }>()
 
   const canCreate = computed(() => getCurrentInstance()?.vnode.props?.['create'] ?? false)
-  const options = computed(() => (canCreate.value ? ([...props.options] as Options) : props.options))
+  const options = computed(() => (canCreate.value ? ([...props.options] as Option[]) : props.options))
 </script>
 
 <template>

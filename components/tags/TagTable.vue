@@ -3,6 +3,7 @@
   import { toast } from 'vue-sonner'
   import type { Mixtape, Tag } from '~/types/db'
 
+  const Badge = resolveComponent('Badge')
   const TagBadge = resolveComponent('TagBadge')
   const TagTableActions = resolveComponent('TagTableActions')
 
@@ -57,7 +58,7 @@
       size: 30,
       cell: ({ cell }) => {
         const mixtapesCount = (cell.getValue() as Mixtape[]).length
-        return h('span', {}, mixtapesCount)
+        return h(Badge, { variant: mixtapesCount ? 'infoMuted' : 'outline' }, { default: () => [mixtapesCount] })
       },
     },
     {
@@ -66,7 +67,7 @@
       size: 30,
       cell: ({ cell }) => {
         const createdAt = new Date(cell.getValue() as string)
-        return h('span', {}, createdAt.toLocaleDateString('fr-FR', { dateStyle: 'short' }))
+        return h('span', {}, { default: () => [createdAt.toLocaleDateString('fr-FR', { dateStyle: 'short' })] })
       },
     },
     {

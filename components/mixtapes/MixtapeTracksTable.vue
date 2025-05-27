@@ -21,10 +21,10 @@
     },
     {
       accessorKey: 'start_at',
-      header: () => h('div', { class: 'text-right' }, 'Début'),
+      header: () => h('div', { class: 'text-right' }, { default: () => ['Début'] }),
       cell: ({ cell }) => {
         const startAt = cell.getValue() as string
-        return h('div', { class: 'text-right' }, startAt ? startAt : '—')
+        return h('div', { class: 'text-right' }, { default: () => [startAt ? startAt : '—'] })
       },
     },
   ]

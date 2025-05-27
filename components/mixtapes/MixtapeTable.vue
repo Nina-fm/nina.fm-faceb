@@ -1,13 +1,14 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
-  import type { Mixtape } from '~/types/db'
+  import type { Mixtape, Tag } from '~/types/db'
 
   const ImageIcon = await import('lucide-vue-next').then((module) => module.ImageIcon)
 
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
+  const Badge = resolveComponent('Badge')
   const MixtapeTableActions = resolveComponent('MixtapeTableActions')
 
   const props = withDefaults(
@@ -85,12 +86,21 @@
       size: 30,
       cell: ({ cell }) => {
         const year = cell.getValue() as string
-        return h('span', {}, year)
+        return h('span', {}, { default: () => [year] })
       },
     },
     {
       accessorKey: 'djsAsText',
       header: 'DJs',
+    },
+    {
+      accessorKey: 'tags',
+      header: 'Tags',
+      size: 30,
+      cell: ({ cell }) => {
+        const tagsCount = (cell.getValue() as Tag[])?.length ?? 0
+        return h(Badge, { variant: tagsCount ? 'infoMuted' : 'outline' }, { default: () => [tagsCount] })
+      },
     },
     {
       accessorKey: 'actions',

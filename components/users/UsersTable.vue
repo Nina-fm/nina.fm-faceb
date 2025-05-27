@@ -126,7 +126,7 @@
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const createdAt = cell.getValue() as Date
-        return h('span', new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' }))
+        return h('span', { default: () => [new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] })
       },
     },
     {
@@ -135,7 +135,7 @@
       enableGlobalFilter: false,
       cell: ({ cell }) => {
         const updateddAt = cell.getValue() as Date
-        return h('span', new Date(updateddAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' }))
+        return h('span', { default: () => [new Date(updateddAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] })
       },
     },
     {

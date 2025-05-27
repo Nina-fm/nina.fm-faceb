@@ -52,17 +52,17 @@ model Image {
 }
 
 model Mixtape {
-  id           String         @id @default(cuid())
-  name         String         @unique
+  id           String   @id @default(cuid())
+  name         String   @unique
   year         String
   cover        Image?
   djsAsText    String
   tracksAsText String?
-  tags         TagOnMixtape[]
+  tags         Tag[]
   description  String?
   comment      String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 // model Track {
@@ -77,20 +77,11 @@ model Mixtape {
 //   updatedAt DateTime @updatedAt
 // }
 
-model TagOnMixtape {
-  tagId     String
-  tag       Tag     @relation(fields: [tagId], references: [id])
-  mixtapeId String
-  mixtape   Mixtape @relation(fields: [mixtapeId], references: [id])
-
-  @@id([tagId, mixtapeId])
-}
-
 model Tag {
-  id        String         @id @default(cuid())
-  name      String         @unique
+  id        String    @id @default(cuid())
+  name      String    @unique
   color     String?
-  mixtapes  TagOnMixtape[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  mixtapes  Mixtape[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

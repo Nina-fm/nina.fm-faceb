@@ -42,7 +42,7 @@
       header: 'Tag',
       cell: ({ cell }) => {
         const name = cell.getValue() as string
-        const color = cell.row.original.color || 'white' // Default to black if no color is set
+        const color = cell.row.original.color || undefined // Default to black if no color is set
         return h(
           'span',
           { class: 'flex gap-3 items-center' },

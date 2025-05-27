@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { getContrastYIQ } from '#imports'
   import { useFilter } from 'reka-ui'
   import type { Tag } from '~/types/db'
 
@@ -108,15 +109,15 @@
         :convert-value="convertOptionValue"
         add-on-paste
         add-on-tab
-        class="flex w-full gap-2 px-2"
+        class="flex w-full px-2"
         @update:modelValue="updateModelValue"
       >
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 py-2">
           <TagsInputItem
             v-for="item in modelValue"
             :key="getOptionValue(item).name"
             :value="item"
-            :style="{ backgroundColor: item.color }"
+            :style="{ ...(item.color ? { backgroundColor: item.color, color: getContrastYIQ(item.color) } : {}) }"
           >
             <TagsInputItemText />
             <TagsInputItemDelete />
@@ -126,7 +127,7 @@
         <ComboboxInput v-model="searchTerm" as-child disable-search-icon>
           <TagsInputInput
             :placeholder="placeholder"
-            class="h-auto w-full min-w-[200px] border-none p-0 focus-visible:ring-0"
+            class="flex-1 border-none p-1 focus-visible:ring-0"
             @keydown.enter.prevent="handleEnterKey"
             @focus="handleFocus"
           />
@@ -134,7 +135,14 @@
       </TagsInput>
 
       <ComboboxList position="popper" side="bottom" align="start">
-        <ComboboxEmpty class="h-auto px-3 pt-2 pb-1">Aucun résultat</ComboboxEmpty>
+        <ComboboxItem
+          v-if="searchTerm && !filteredOptions.length"
+          :value="{ name: searchTerm }"
+          class="h-auto px-3 pt-2 pb-1"
+          @select.prevent="handleSelect"
+        >
+          Créer {{ searchTerm }}
+        </ComboboxItem>
         <ComboboxGroup>
           <ComboboxItem
             v-for="(option, i) in filteredOptions"

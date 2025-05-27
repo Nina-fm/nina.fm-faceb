@@ -1,10 +1,10 @@
 import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
+import { oneToOneCreate, oneToOneSync } from '~/server/utils/prismaOneToOne'
 
 type WithAvatarFile = { avatar?: Prisma.ImageCreateInput & { file?: File } }
-
-type EntityCreate = Prisma.UserCreateInput & WithAvatarFile
-type EntityUpdate = Prisma.UserUpdateInput & WithAvatarFile
+type EntityUpdate = Prisma.UserCreateManyInput & WithAvatarFile
+type EntityCreate = Omit<EntityUpdate, 'id' | 'createdAt' | 'updatedAt'>
 
 const table = prisma.user
 const entityName = 'User'
@@ -87,7 +87,7 @@ async function create({ avatar, ...data }: EntityCreate, invitationToken?: strin
   const result = await table.create({
     data: {
       ...data,
-      avatar: avatar ? { create: { ...avatar } } : undefined,
+      ...oneToOneCreate('avatar', avatar),
     },
     include: {
       avatar: true,
@@ -141,19 +141,7 @@ async function update({ id, avatar, ...data }: EntityUpdate) {
     where: { id: exist.id },
     data: {
       ...data,
-      avatar: avatar
-        ? {
-            upsert: {
-              where: { id: exist.avatar?.id },
-              create: { ...avatar },
-              update: { ...avatar },
-            },
-          }
-        : exist?.avatar?.id && !avatar
-          ? {
-              delete: { id: exist.avatar.id },
-            }
-          : undefined,
+      ...oneToOneSync('avatar', avatar, exist?.avatar?.id),
       updatedAt: new Date(),
     },
     include: {

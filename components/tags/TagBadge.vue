@@ -4,7 +4,7 @@
       color: string
     }>(),
     {
-      color: '#FFFFFF',
+      color: 'var(--secondary)',
     },
   )
 

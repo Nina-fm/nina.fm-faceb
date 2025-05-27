@@ -1,10 +1,12 @@
 import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
+import { manyToManySync } from '~/server/utils/prismaManyToMany'
+import { oneToOneCreate, oneToOneSync } from '~/server/utils/prismaOneToOne'
 
 type WithCoverFile = { cover?: Prisma.ImageCreateInput & { file?: File } }
-
-type EntityCreate = Prisma.MixtapeCreateInput & WithCoverFile
-type EntityUpdate = Prisma.MixtapeUpdateInput & WithCoverFile
+type WithTags = { tags?: Prisma.TagUpdateManyMutationInput[] }
+type EntityUpdate = Prisma.MixtapeCreateManyInput & WithCoverFile & WithTags
+type EntityCreate = Omit<EntityUpdate, 'id' | 'createdAt' | 'updatedAt'>
 
 const table = prisma.mixtape
 const entityName = 'Mixtape'
@@ -60,7 +62,7 @@ async function getById(id: string) {
   return result
 }
 
-async function create({ cover, ...data }: EntityCreate) {
+async function create({ cover, tags, ...data }: EntityCreate) {
   if (!data.name) {
     throw createError({ message: 'Name is required!', statusCode: 400 })
   }
@@ -68,7 +70,8 @@ async function create({ cover, ...data }: EntityCreate) {
   const result = await table.create({
     data: {
       ...data,
-      cover: cover ? { create: { ...cover } } : undefined,
+      ...oneToOneCreate('cover', cover),
+      ...manyToManySync('tags', tags),
     },
     include: {
       cover: true,
@@ -99,11 +102,6 @@ async function update({ id, cover, tags, ...data }: EntityUpdate) {
     },
   })
 
-  console.log('Updating mixtape:', exist)
-  console.log('With data:', data)
-  console.log('With cover:', cover)
-  console.log('With tags:', tags)
-
   if (!exist) {
     throw createError({ message: `${entityName} not found!`, statusCode: 404 })
   }
@@ -112,32 +110,8 @@ async function update({ id, cover, tags, ...data }: EntityUpdate) {
     where: { id: exist.id },
     data: {
       ...data,
-      cover: cover
-        ? {
-            upsert: {
-              where: { id: exist.cover?.id },
-              create: { ...cover },
-              update: { ...cover },
-            },
-          }
-        : exist?.cover?.id && !cover
-          ? {
-              delete: { id: exist.cover.id },
-            }
-          : undefined,
-      tags: tags
-        ? {
-            connectOrCreate: Array.isArray(tags)
-              ? tags.map((tag) => ({
-                  where: { id: tag.id },
-                  create: { ...tag },
-                }))
-              : [],
-            disconnect: exist.tags
-              ?.filter((tag) => !Array.isArray(tags) || !tags.some((t) => t.id === tag.id))
-              .map((tag) => ({ id: tag.id })),
-          }
-        : undefined,
+      ...oneToOneSync('cover', cover, exist?.cover?.id),
+      ...manyToManySync('tags', tags, exist?.tags),
       updatedAt: new Date(),
     },
     include: {

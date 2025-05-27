@@ -2,8 +2,8 @@ import { Prisma } from '@prisma/client'
 import { createError } from 'h3'
 import prisma from '~/lib/prisma'
 
-type EntityCreate = Prisma.TagCreateInput
-type EntityUpdate = Prisma.TagUpdateInput
+type EntityUpdate = Prisma.TagCreateManyInput
+type EntityCreate = Omit<EntityUpdate, 'id' | 'createdAt' | 'updatedAt'>
 
 const table = prisma.tag
 const entityName = 'Tag'

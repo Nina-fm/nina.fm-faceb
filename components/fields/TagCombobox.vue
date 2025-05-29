@@ -73,7 +73,6 @@
   }
 
   const handleEnterKey = (event: KeyboardEvent) => {
-    console.log('handleEnterKey', searchTerm.value, event)
     const search = searchTerm.value.trim()
     if (search) {
       if (filteredOptions.value.length > 0) {

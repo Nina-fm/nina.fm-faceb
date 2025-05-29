@@ -1,4 +1,6 @@
-export const parseDjs = (djsString: string): { name: string; createdAt: Date }[] => {
+import { kebabCase } from 'lodash-es'
+
+export const parseDjs = (djsString: string): { name: string; slug: string }[] => {
   if (!djsString) return []
 
   return djsString
@@ -7,6 +9,6 @@ export const parseDjs = (djsString: string): { name: string; createdAt: Date }[]
     .filter((dj) => dj !== '')
     .map((dj) => ({
       name: dj,
-      createdAt: new Date(), // Assuming current date for createdAt, adjust as needed
+      slug: kebabCase(dj),
     }))
 }

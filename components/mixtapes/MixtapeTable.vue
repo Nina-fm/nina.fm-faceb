@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
+  import { kebabCase } from 'lodash-es'
+  import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
+  import type { FilterDef } from '~/components/ui/data-table'
   import type { Mixtape, Tag } from '~/types/db'
 
   const ImageIcon = await import('lucide-vue-next').then((module) => module.ImageIcon)
@@ -8,8 +11,8 @@
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
-  const Badge = resolveComponent('Badge')
   const MixtapeTableActions = resolveComponent('MixtapeTableActions')
+  const TagBadge = resolveComponent('TagBadge')
   const TooltipedBadge = resolveComponent('TooltipedBadge')
 
   const props = withDefaults(
@@ -34,6 +37,64 @@
 
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
+  const { parseMixtapesDjs } = useMixtapesDjs()
+  const { parseMixtapesTags } = useMixtapesTags()
+
+  const djsFilterOptions = computed(() => {
+    return parseMixtapesDjs(props.data).reduce(
+      (acc, dj) => {
+        return acc.concat({
+          label: dj,
+          value: dj,
+        })
+      },
+      [] as FilterDef['options'],
+    )
+  })
+
+  const yearsFilterOptions = computed(() => {
+    const years = props.data.map((m) => m.year).filter((y) => y)
+    const uniqueYears = Array.from(new Set(years)).sort((a, b) => b.localeCompare(a))
+    return uniqueYears.map((year) => ({
+      label: year,
+      value: year,
+    }))
+  })
+
+  const tagsFilterOptions = computed(() => {
+    return parseMixtapesTags(props.data).reduce(
+      (acc, tag) => {
+        return acc.concat({
+          label: tag.name,
+          renderLabel: h(TagBadge, { color: tag?.color ?? '' }),
+          value: tag.id,
+        })
+      },
+      [] as FilterDef['options'],
+    )
+  })
+
+  const filters: FilterDef[] = [
+    {
+      id: 'djsAsText',
+      label: "Dj's",
+      options: djsFilterOptions.value,
+      multiple: true,
+    },
+    {
+      id: 'year',
+      label: 'Année',
+      options: yearsFilterOptions.value,
+      multiple: true,
+    },
+    {
+      id: 'tags',
+      label: 'Tags',
+      selectedLabel: 'Tag',
+      options: tagsFilterOptions.value,
+      multiple: true,
+    },
+  ]
 
   const defaultSorting = ref<SortingState>([
     {
@@ -84,6 +145,12 @@
     {
       accessorKey: 'djsAsText',
       header: 'Par',
+      filterFn: (row, columnId, filterValue) => {
+        const djs = row.getValue<string>(columnId)
+        if (!djs || !filterValue || filterValue.length === 0) return true
+        const slugifiedDjs = parseDjs(djs).map(({ slug }) => slug)
+        return filterValue.every((dj: string) => slugifiedDjs.some((slug) => slug === kebabCase(dj)))
+      },
     },
     {
       accessorKey: 'year',
@@ -98,6 +165,11 @@
       accessorKey: 'tags',
       header: 'Tags',
       size: 30,
+      filterFn: (row, columnId, filterValue) => {
+        const tags = row.getValue<Tag[]>(columnId)
+        if (!tags || !filterValue || filterValue.length === 0) return true
+        return filterValue.every((tagId: string) => tags.some((tag) => tag.id === tagId))
+      },
       cell: ({ cell }) => {
         const tags = cell.getValue() as Tag[] | undefined
         const tagsCount = tags?.length ?? 0
@@ -171,6 +243,7 @@
       :columns="columns"
       :sorting="defaultSorting"
       :searchValue="searchValue"
+      :filters="filters"
       search
       pagination
       background

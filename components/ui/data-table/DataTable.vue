@@ -11,7 +11,8 @@
     type SortingState,
   } from '@tanstack/vue-table'
   import { DeleteIcon, XIcon } from 'lucide-vue-next'
-  import type { FilterDef } from '~/components/ui/data-table'
+  import Badge from '~/components/ui/badge/Badge.vue'
+  import { type FilterBadgeValues, type FilterDef } from '~/components/ui/data-table'
 
   const DataTableHeader = resolveComponent('DataTableHeader')
 
@@ -98,17 +99,22 @@
   )
 
   const filterValuesForBadges = computed(() =>
-    filterValues.value.reduce<{ id: string; value: unknown; label?: string; optionLabel?: string }[]>((res, filter) => {
+    filterValues.value.reduce<FilterBadgeValues[]>((res, filter) => {
       return [
         ...res,
         ...(Array.isArray(filter.value)
-          ? filter.value?.map((value) => ({
-              id: filter.id,
-              value,
-              label: filter.label,
-              optionLabel: props.filters?.find((f) => f.id === filter.id)?.options.find((o) => o.value === value)
-                ?.label,
-            }))
+          ? filter.value?.map((value) => {
+              const filterDef = props.filters?.find((f) => f.id === filter.id)
+              const filterOptionDef = filterDef?.options.find((o) => o.value === value)
+              return {
+                id: filter.id,
+                value,
+                label: filter.label,
+                selectedLabel: filterDef?.selectedLabel,
+                optionLabel: filterOptionDef?.label,
+                optionRenderLabel: filterOptionDef?.renderLabel,
+              }
+            })
           : [filter]),
       ]
     }, []),
@@ -180,12 +186,14 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <Badge v-for="filter in filterValuesForBadges" :key="filter.id" variant="secondary" class="font-normal">
-        <p>{{ filter.label }} : {{ filter.optionLabel }}</p>
-        <div class="cursor-pointer text-xs" @click="() => handleRemoveFilter(filter.id, filter.value)">
-          <XIcon class="size-4" />
-        </div>
-      </Badge>
+      <div v-for="filter in filterValuesForBadges" :key="filter.id">
+        <component :is="filter.optionRenderLabel ?? Badge" variant="secondary" class="font-normal">
+          <p>{{ filter?.selectedLabel ?? filter.label }} : {{ filter.optionLabel }}</p>
+          <div class="cursor-pointer text-xs" @click="() => handleRemoveFilter(filter.id, filter.value)">
+            <XIcon class="size-4" />
+          </div>
+        </component>
+      </div>
     </div>
   </div>
   <div :class="cn('rounded-md', { 'bg-foreground/3 px-4 py-2': props.background })">

@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import type { AnyFn, Obj } from '~/types/supatypes'
 
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj))
@@ -20,18 +19,23 @@ export const isEmpty = (obj: Obj | null) => {
 
 export const formatDate = (date: string) => useDateFormat(date, 'DD/MM/YYYY', { locales: 'fr-FR' }).value
 
-export const generateYearsSince = (sinceYear = 1950) => {
-  const years = []
-  let dateStart = DateTime.now()
-  const dateEnd = DateTime.fromObject({
-    ...dateStart.toObject(),
-    year: sinceYear,
-  })
-  while (dateEnd.diff(dateStart, 'years').years <= 0) {
-    years.push(dateStart.toFormat('yyyy'))
-    dateStart = dateStart.minus({ years: 1 })
-  }
-  return years
+// export const generateYearsSince = (sinceYear = 1950) => {
+//   const years = []
+//   let dateStart = DateTime.now()
+//   const dateEnd = DateTime.fromObject({
+//     ...dateStart.toObject(),
+//     year: sinceYear,
+//   })
+//   while (dateEnd.diff(dateStart, 'years').years <= 0) {
+//     years.push(dateStart.toFormat('yyyy'))
+//     dateStart = dateStart.minus({ years: 1 })
+//   }
+//   return years
+// }
+
+export const generateYearsSince = (startYear: number): string[] => {
+  const currentYear = new Date().getFullYear()
+  return Array.from({ length: currentYear - startYear + 1 }, (_, i) => (startYear + i).toString()).reverse()
 }
 
 export const findAuthorNames = (str: string) =>

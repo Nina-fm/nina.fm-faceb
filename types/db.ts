@@ -9,7 +9,11 @@ export type User = Prisma.UserGetPayload<{}> & {
   }
 }
 
-export type Mixtape = Prisma.MixtapeGetPayload<{}> & {
+export type Mixtape = Prisma.MixtapeGetPayload<{
+  include: {
+    tags: true
+  }
+}> & {
   cover?: Image & {
     url?: string
     alt?: string

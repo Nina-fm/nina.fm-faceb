@@ -2,18 +2,14 @@
   import type { Table } from '@tanstack/vue-table'
   import { FunnelIcon } from 'lucide-vue-next'
   import type { DropdownMenuCheckboxItemProps } from 'reka-ui'
+  import type { FilterDef } from '~/components/ui/data-table'
 
   type Checked = DropdownMenuCheckboxItemProps['modelValue']
 
-  interface DataTableFilterProps {
+  interface DataTableFilterProps extends FilterDef {
     table: Table<TData & { id: string | number }>
-    id: string
-    label: string
-    options: {
-      label: string
-      value: string | number
-    }[]
   }
+
   const props = defineProps<DataTableFilterProps>()
 
   const filterValue = computed(() => props.table.getColumn(props.id)?.getFilterValue() as unknown[])
@@ -59,9 +55,10 @@
         v-for="option in options"
         :key="option.value"
         :model-value="getModelValue(option.value)"
-        @update:model-value="(value) => handleUpdateModelValue(option.value, value)"
+        @update:model-value="(value: any) => handleUpdateModelValue(option.value, value)"
       >
-        {{ option.label }}
+        <component v-if="option.renderLabel" :is="option.renderLabel">{{ option.label }}</component>
+        <span v-else>{{ option.label }}</span>
       </DropdownMenuCheckboxItem>
     </DropdownMenuContent>
   </DropdownMenu>

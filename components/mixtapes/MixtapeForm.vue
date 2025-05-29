@@ -7,10 +7,11 @@
 
   const currentYear = new Date().getFullYear().toString()
   const years = generateYearsSince(2007)
-  const yearsOptions = computed(() => years.map((year) => ({ value: year, label: year })))
+  const yearsOptions = years.map((year) => ({ value: year, label: year }))
 
   const { fetchTags } = useTagApi()
   const { data } = await useAsyncData('tags', () => fetchTags())
+
   const tags = computed(() => data.value.results || [])
   const tagsOptions = computed(() =>
     tags.value.map((tag: Tag) => ({
@@ -22,7 +23,7 @@
 
   const formSchema = z.object({
     name: z.string().min(1, 'Nom requis'),
-    year: z.enum(years as [string, ...string[]]),
+    year: z.string().regex(/^\d+$/, 'Année invalide'),
     cover: z
       .object({
         filename: z.string().optional(),
@@ -37,9 +38,11 @@
     tags: z
       .array(
         z.object({
-          id: z.string().optional(),
-          name: z.string(),
-          color: z.string().optional(),
+          id: z.string().nullable().optional(),
+          name: z.string().min(1, 'Nom requis'),
+          color: z.string().nullable().optional(),
+          createdAt: z.string().nullable().optional(),
+          updatedAt: z.string().nullable().optional(),
         }),
       )
       .optional(),
@@ -104,6 +107,7 @@
   )
 
   const dirty = computed(() => form.meta.value.dirty)
+  const valid = computed(() => form.meta.value.valid)
 
   const handleCancel = () => {
     form.resetForm()
@@ -154,7 +158,7 @@
         </CardContent>
         <ClientOnly v-if="props.teleportTo">
           <Teleport :to="`#${props.teleportTo}`">
-            <SaveButton :pending="pending" :dirty="dirty" :success="form.meta.value.valid" @submit="handleSubmit" />
+            <SaveButton :pending="pending" :dirty="dirty" :success="valid" @submit="handleSubmit" />
           </Teleport>
         </ClientOnly>
         <CardFooter v-else class="flex justify-end gap-2">

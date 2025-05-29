@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client'
-import { kebabCase } from 'lodash-es'
 import prisma from '~/lib/prisma'
-import { parseDjs } from '~/server/utils/parseDjs'
+import { parseDjs } from '~/utils/parseDjs'
 
 interface MixtapesByDj {
   [slug: string]: {
@@ -32,12 +31,11 @@ async function fetchAll(page: number, limit: number) {
 
   const mixtapesByDj = mixtapes.reduce(
     (acc, mixtape) =>
-      parseDjs(mixtape.djsAsText).reduce((acc2, dj) => {
-        const slug = kebabCase(dj.name)
+      parseDjs(mixtape.djsAsText).reduce((acc2, { slug, name }) => {
         return {
           ...acc2,
           [slug]: {
-            name: acc2[slug]?.name ?? dj.name,
+            name: acc2[slug]?.name ?? name,
             mixtapes: [...(acc2[slug]?.mixtapes ?? []), mixtape],
           },
         }

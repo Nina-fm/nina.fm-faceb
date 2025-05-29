@@ -10,6 +10,7 @@
   const AvatarImage = resolveComponent('AvatarImage')
   const Badge = resolveComponent('Badge')
   const MixtapeTableActions = resolveComponent('MixtapeTableActions')
+  const TooltipedBadge = resolveComponent('TooltipedBadge')
 
   const props = withDefaults(
     defineProps<{
@@ -81,6 +82,10 @@
       },
     },
     {
+      accessorKey: 'djsAsText',
+      header: 'Par',
+    },
+    {
       accessorKey: 'year',
       header: 'Création',
       size: 30,
@@ -90,16 +95,22 @@
       },
     },
     {
-      accessorKey: 'djsAsText',
-      header: 'DJs',
-    },
-    {
       accessorKey: 'tags',
       header: 'Tags',
       size: 30,
       cell: ({ cell }) => {
-        const tagsCount = (cell.getValue() as Tag[])?.length ?? 0
-        return h(Badge, { variant: tagsCount ? 'infoMuted' : 'outline' }, { default: () => [tagsCount] })
+        const tags = cell.getValue() as Tag[] | undefined
+        const tagsCount = tags?.length ?? 0
+        return h(
+          TooltipedBadge,
+          {
+            variant: tagsCount ? 'primaryMuted' : 'outline',
+            tooltip: tags?.map((t) => t.name).join(', ') || 'Aucun tag',
+          },
+          {
+            default: () => [tagsCount],
+          },
+        )
       },
     },
     {

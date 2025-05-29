@@ -111,7 +111,7 @@ async function update({ id, cover, tags, ...data }: EntityUpdate) {
     data: {
       ...data,
       ...oneToOneSync('cover', cover, exist?.cover?.id),
-      ...manyToManySync('tags', tags, exist?.tags),
+      ...manyToManySync('tags', tags, exist?.tags, "name"),
       updatedAt: new Date(),
     },
     include: {

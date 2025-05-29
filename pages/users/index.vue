@@ -14,6 +14,15 @@
 
   const isMe = (id: string) => currentUserId.value === id
 
+  useBreadcrumbItems({
+    overrides: [
+      undefined,
+      {
+        label: 'Utilisateurs',
+      },
+    ],
+  })
+
   watch(status, (newStatus) => {
     if (newStatus === 'pending') {
       isLoading.value = true

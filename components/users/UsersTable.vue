@@ -11,7 +11,7 @@
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
-  const IconBadge = resolveComponent('IconBadge')
+  const TooltipedBadge = resolveComponent('TooltipedBadge')
   const UsersTableActions = resolveComponent('UsersTableActions')
 
   const props = withDefaults(
@@ -108,8 +108,8 @@
         return isAdmin
           ? [
               h(
-                IconBadge,
-                { variant: 'successMuted', label: `${name} est Administrateur` },
+                TooltipedBadge,
+                { variant: 'successMuted', tooltip: `${name} est Administrateur` },
                 { default: () => [h(ShieldUserIcon)] },
               ),
             ]

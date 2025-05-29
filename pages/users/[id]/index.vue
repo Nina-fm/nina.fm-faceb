@@ -18,7 +18,9 @@
   useBreadcrumbItems({
     overrides: [
       undefined,
-      undefined,
+      {
+        label: 'Utilisateurs',
+      },
       {
         label: user.value?.name ?? "Détails de l'utilisateur",
       },

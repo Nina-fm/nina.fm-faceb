@@ -58,7 +58,7 @@
       size: 30,
       cell: ({ cell }) => {
         const mixtapesCount = (cell.getValue() as Mixtape[]).length
-        return h(Badge, { variant: mixtapesCount ? 'infoMuted' : 'outline' }, { default: () => [mixtapesCount] })
+        return h(Badge, { variant: mixtapesCount ? 'primaryMuted' : 'outline' }, { default: () => [mixtapesCount] })
       },
     },
     {

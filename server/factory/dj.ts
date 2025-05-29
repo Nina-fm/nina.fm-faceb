@@ -1,43 +1,58 @@
+import { Prisma } from '@prisma/client'
+import { kebabCase } from 'lodash-es'
 import prisma from '~/lib/prisma'
+import { parseDjs } from '~/server/utils/parseDjs'
 
-interface Dj {
-  id: string
-  name: string
-  createdAt: Date
+interface MixtapesByDj {
+  [slug: string]: {
+    name: string
+    mixtapes: Prisma.MixtapeGetPayload<{
+      select: {
+        id: true
+        name: true
+        djsAsText: true
+        year: true
+      }
+    }>[]
+  }
 }
 
 async function fetchAll(page: number, limit: number) {
   const mixtapes = await prisma.mixtape.findMany({
     select: {
       id: true,
+      name: true,
       djsAsText: true,
-      createdAt: true,
+      year: true,
     },
     orderBy: {
       createdAt: 'asc',
     },
   })
 
-  const djsArray = mixtapes.reduce((acc, mixtape) => {
-    const djs = mixtape.djsAsText
-      .split(/[,&]/g)
-      .map((dj) => dj.trim())
-      .filter((dj) => dj !== '')
-      .map((dj) => ({
-        name: dj,
-        createdAt: mixtape.createdAt,
-      }))
+  const mixtapesByDj = mixtapes.reduce(
+    (acc, mixtape) =>
+      parseDjs(mixtape.djsAsText).reduce((acc2, dj) => {
+        const slug = kebabCase(dj.name)
+        return {
+          ...acc2,
+          [slug]: {
+            name: acc2[slug]?.name ?? dj.name,
+            mixtapes: [...(acc2[slug]?.mixtapes ?? []), mixtape],
+          },
+        }
+      }, acc),
+    {} as MixtapesByDj,
+  )
 
-    const djsToAdd = djs.filter((dj) =>
-      acc.every((existingDj) => existingDj.name.toLowerCase() !== dj.name.toLowerCase()),
-    )
-
-    return [...acc, ...djsToAdd].map((dj, index) => ({
-      id: (index + 1).toString(), // Using index as a temporary ID
-      name: dj.name,
-      createdAt: dj.createdAt,
-    }))
-  }, [] as Dj[])
+  const djsArray = Object.entries(mixtapesByDj).map(([slug, { name, mixtapes }]) => {
+    return {
+      slug,
+      name,
+      mixtapesCount: mixtapes.length,
+      since: mixtapes.length > 0 ? mixtapes[0].year : new Date().getFullYear(),
+    }
+  })
 
   const results = djsArray.slice((page - 1) * limit, page * limit)
 

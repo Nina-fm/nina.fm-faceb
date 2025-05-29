@@ -46,6 +46,7 @@
     "clsx": "^2.1.1",
     "eslint": "^9.0.0",
     "h3": "^1.15.1",
+    "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.487.0",
     "luxon": "^3.5.0",
     "next-auth": "4.21.1",
@@ -67,6 +68,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4",
     "@types/luxon": "^3",
     "@types/node": "^22.13.13",
     "eslint-plugin-prettier": "^5.2.4",

@@ -1,4 +1,4 @@
-export const manyToManySync = (key: string, siblings?: any[], existingSiblings?: any[]) => {
+export const manyToManySync = (key: string, siblings?: any[], existingSiblings?: any[], matchingKey?: string) => {
   const disconnectedSiblings = existingSiblings?.filter(
     (existingSibling) => !siblings?.some((sibling) => sibling.id === existingSibling.id),
   )
@@ -8,13 +8,13 @@ export const manyToManySync = (key: string, siblings?: any[], existingSiblings?:
       ...(siblings?.length
         ? {
             connectOrCreate: siblings.map((sibling) => ({
-              where: { id: sibling?.id ?? '' },
+              where: { [matchingKey ?? 'id']: sibling?.[matchingKey ?? 'id'] ?? '' },
               create: { ...sibling },
             })),
           }
         : {}),
       disconnect: disconnectedSiblings?.length
-        ? disconnectedSiblings.map((sibling) => ({ id: sibling.id }))
+        ? disconnectedSiblings.map((sibling) => ({ [matchingKey ?? 'id']: sibling[matchingKey ?? 'id'] }))
         : undefined,
     },
   }

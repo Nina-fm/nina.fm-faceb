@@ -14,7 +14,9 @@
   useBreadcrumbItems({
     overrides: [
       undefined,
-      undefined,
+      {
+        label: 'Utilisateurs',
+      },
       {
         label: user.value?.name ?? "Modification de l'utilisateur",
       },

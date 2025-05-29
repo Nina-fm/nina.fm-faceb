@@ -86,8 +86,8 @@
     },
   ]
 
-  const handleRowShow = (id: string) => {
-    emit('rowShow', id)
+  const handleRowShow = (id: string | number) => {
+    emit('rowShow', id.toString())
   }
 
   const handleRowEdit = (id: string) => {
@@ -131,6 +131,7 @@
       search
       pagination
       background
+      @rowClick="handleRowShow"
       @clearSearch="handleClearSearch"
     />
     <EmptyBlock v-else title="Aucun tag actuellement.">

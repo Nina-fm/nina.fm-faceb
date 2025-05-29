@@ -155,8 +155,8 @@
     },
   ]
 
-  const handleRowShow = (id: string) => {
-    emit('rowShow', id)
+  const handleRowShow = (id: string | number) => {
+    emit('rowShow', id.toString())
   }
 
   const handleRowEdit = (id: string) => {
@@ -196,6 +196,7 @@
       search
       pagination
       background
+      @rowClick="handleRowShow"
     />
     <EmptyBlock v-else title="Aucun utilisateur actuellement.">
       <Button variant="secondary" class="w-fit" @click="$emit('invite')">Inviter un utilisateur</Button>

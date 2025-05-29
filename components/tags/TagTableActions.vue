@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { MoreVerticalIcon } from 'lucide-vue-next'
+  import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
 
   withDefaults(
     defineProps<{
@@ -21,19 +21,15 @@
 
 <template>
   <DataTableRowActions v-if="editable || deletable">
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost" class="text-muted-foreground">
-          <MoreVerticalIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem @click="$emit('show')">Voir</DropdownMenuItem>
-        <DropdownMenuItem v-if="editable" @click="$emit('edit')">Modifier</DropdownMenuItem>
-        <DropdownMenuItem v-if="deletable" class="text-destructive" @click="$emit('delete')">
-          Supprimer
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Tooltiped text="Modifier">
+      <Button v-if="editable" size="icon" variant="ghost" class="text-muted-foreground" @click.stop="$emit('edit')">
+        <PencilIcon />
+      </Button>
+    </Tooltiped>
+    <Tooltiped text="Supprimer">
+      <Button v-if="deletable" size="icon" variant="ghost" class="text-muted-foreground" @click.stop="$emit('delete')">
+        <Trash2Icon />
+      </Button>
+    </Tooltiped>
   </DataTableRowActions>
 </template>

@@ -117,7 +117,7 @@
             default: () => [
               h(
                 Avatar,
-                { class: 'rounded-sm' },
+                { class: 'rounded size-10' },
                 {
                   default: () => [
                     ...(cover
@@ -201,8 +201,8 @@
     },
   ]
 
-  const handleRowShow = (id: string) => {
-    emit('rowShow', id)
+  const handleRowShow = (id: string | number) => {
+    emit('rowShow', id.toString())
   }
 
   const handleRowEdit = (id: string) => {
@@ -247,6 +247,7 @@
       search
       pagination
       background
+      @rowClick="handleRowShow"
       @clearSearch="handleClearSearch"
     />
     <EmptyBlock v-else title="Aucune mixtape actuellement.">

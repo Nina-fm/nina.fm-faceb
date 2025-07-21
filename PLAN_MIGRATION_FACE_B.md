@@ -8,10 +8,27 @@
 - **Environnements :** Local + Production (staging ultérieurement si besoin)
 - **Cache Strategy :** TanStack Query (Vue Query) pour optimiser les performances
 - **Migration des données :** Phase séparée après la migration technique
+- **Package Manager :** pnpm (homogénéisation avec l'API)
+- **Versioning :** Changesets pour changelog automatique
+- **Git Strategy :** Commits logiques et réguliers + changelog à chaque étape importante
 
 ---
 
 ## 🔧 **Phase 1 : Setup et Configuration de Base** _(2-3 jours)_
+
+### 1.0 Préparation de l'Environnement
+
+- [ ] **Migration vers pnpm**
+  - Supprimer `yarn.lock` et `node_modules/`
+  - Créer `pnpm-workspace.yaml` si nécessaire
+  - Installer les dépendances avec `pnpm install`
+  - Mettre à jour les scripts dans `package.json`
+- [ ] **Configuration Changesets**
+  - Installer `@changesets/cli`
+  - Initialiser avec `pnpm changeset init`
+  - Configurer les paramètres dans `.changeset/config.json`
+- [ ] **Commit initial :** Setup pnpm + changesets
+- [ ] **Changelog :** v1.0.0 - Préparation migration
 
 ### 1.1 Nettoyage des Dépendances
 
@@ -332,7 +349,28 @@
 
 ---
 
-## 📈 **Critères de Succès**
+## � **Bonnes Pratiques et Méthodologie**
+
+### Git & Versioning
+
+- **Package Manager :** pnpm exclusivement (alignement avec l'API)
+- **Commits :** Réguliers et logiques, messages explicites en français
+- **Changesets :** Génération automatique du changelog à chaque étape importante
+- **Branches :** Travail sur `main` avec commits atomiques
+- **Validation :** Attendre validation avant choix techniques importants
+
+### Points de Changelog
+
+- ✅ **Fin de Phase 1 :** Setup technique et nettoyage
+- ✅ **Fin de Phase 2 :** Migration authentification
+- ✅ **Fin de Phase 3 :** Migration composables et stores
+- ✅ **Fin de Phase 4 :** Migration pages et composants
+- ✅ **Fin de Phase 6 :** Dockerisation et déploiement
+- ✅ **Fin de Phase 7 :** Validation complète
+
+---
+
+## �📈 **Critères de Succès**
 
 ### Techniques
 

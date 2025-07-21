@@ -62,7 +62,7 @@ export const useApi = () => {
         timeout,
         onRequest({ request, options }) {
           // Log des requêtes en développement
-          if (process.dev) {
+          if (import.meta.dev) {
             console.log(`[API] ${method} ${request}`)
           }
         },

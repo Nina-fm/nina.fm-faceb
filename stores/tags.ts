@@ -1,8 +1,8 @@
-import type { ObjectOf, Tag, TagParams } from "~/types/supatypes"
+import type { ObjectOf, Tag, TagParams } from '~/types/supatypes'
 
-export const useTagsStore = defineStore("tags", () => {
+export const useTagsStore = defineStore('tags', () => {
   const api = useApi()
-  const { process } = useProcess({ loadingKey: "tags" })
+  const { process } = useProcess({ loadingKey: 'tags' })
   const data = ref<Tag[]>([])
   const index = ref<ObjectOf<Tag>>()
 
@@ -15,7 +15,7 @@ export const useTagsStore = defineStore("tags", () => {
 
   const loadTagById = async (tagId: string | number) =>
     await process(async () => {
-      const id = typeof tagId === "number" ? tagId : Number(tagId)
+      const id = typeof tagId === 'number' ? tagId : Number(tagId)
       const result = await api.get(`/tags`, {
         query: {
           id,
@@ -25,7 +25,7 @@ export const useTagsStore = defineStore("tags", () => {
     })
 
   const getById = async (tagId: string | number) => {
-    const id = typeof tagId === "number" ? tagId : Number(tagId)
+    const id = typeof tagId === 'number' ? tagId : Number(tagId)
     if (!index.value?.[id]) {
       await loadTagById(id)
     }
@@ -43,7 +43,7 @@ export const useTagsStore = defineStore("tags", () => {
         index.value = { ...index.value, [result.id]: result }
         return data
       },
-      { successMsg: "Tag créé avec succès !" }
+      { successMsg: 'Tag créé avec succès !' },
     )
 
   const updateTag = async (tagId: string | number, tagData: TagParams) =>
@@ -57,7 +57,7 @@ export const useTagsStore = defineStore("tags", () => {
         index.value = { ...index.value, [tagId]: result }
         return data
       },
-      { successMsg: "Tag mis à jour avec succès !" }
+      { successMsg: 'Tag mis à jour avec succès !' },
     )
 
   const deleteTag = async (tagId: string | number) =>
@@ -69,8 +69,8 @@ export const useTagsStore = defineStore("tags", () => {
         return result
       },
       {
-        successMsg: "Tag supprimé avec succès !",
-      }
+        successMsg: 'Tag supprimé avec succès !',
+      },
     )
 
   return {

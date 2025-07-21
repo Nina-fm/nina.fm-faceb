@@ -1,4 +1,4 @@
-export const useLoadingStore = defineStore("loading", () => {
+export const useLoadingStore = defineStore('loading', () => {
   const loadingPercent = ref<number | null>(null)
   const loadingPercentInc = ref<number | null>(null)
   const loadingPercentTotal = ref<number | null>(null)
@@ -7,7 +7,7 @@ export const useLoadingStore = defineStore("loading", () => {
   const loading = computed<boolean>(() => !!loadingStack.value.length)
 
   watch(loadingPercentInc, (value: number | null) => {
-    if (typeof value === "number" && typeof loadingPercentTotal.value === "number") {
+    if (typeof value === 'number' && typeof loadingPercentTotal.value === 'number') {
       loadingPercent.value = getPercent(value, loadingPercentTotal.value)
     }
   })
@@ -23,7 +23,7 @@ export const useLoadingStore = defineStore("loading", () => {
   const loadingOn = (key: string, total?: number | null) => {
     loadingStack.value.push(key)
 
-    if (typeof total === "number") {
+    if (typeof total === 'number') {
       loadingPercentTotal.value = total
       loadingPercentInc.value = 0
     }

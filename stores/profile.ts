@@ -1,10 +1,10 @@
-import type { Role } from "~/supabase/functions/_types/database"
-import type { Profile } from "~/types/supatypes"
+import type { Role } from '~/supabase/functions/_types/database'
+import type { Profile } from '~/types/supatypes'
 
-export const useProfileStore = defineStore("profile", () => {
+export const useProfileStore = defineStore('profile', () => {
   const api = useApi()
   const { isLoggedIn, user } = useAuthStoreRefs()
-  const { process } = useProcess({ loadingKey: "profile" })
+  const { process } = useProcess({ loadingKey: 'profile' })
   const data = ref<Profile | null>(null)
 
   const loadProfile = async (userId: string) =>

@@ -17,7 +17,7 @@ export const useImageApi = () => {
   }
 
   const generateTmpImageUrl = (file: Blob) => {
-    let src = URL.createObjectURL(file)
+    const src = URL.createObjectURL(file)
     setTimeout(() => {
       URL.revokeObjectURL(src)
     }, 1000)

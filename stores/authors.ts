@@ -1,8 +1,8 @@
-import type { AuthorExt, AuthorParams, ObjectOf } from "~/types/supatypes"
+import type { AuthorExt, AuthorParams, ObjectOf } from '~/types/supatypes'
 
-export const useAuthorsStore = defineStore("authors", () => {
+export const useAuthorsStore = defineStore('authors', () => {
   const api = useApi()
-  const { process } = useProcess({ loadingKey: "authors" })
+  const { process } = useProcess({ loadingKey: 'authors' })
   const data = ref<AuthorExt[]>([])
   const index = ref<ObjectOf<AuthorExt>>()
 
@@ -15,7 +15,7 @@ export const useAuthorsStore = defineStore("authors", () => {
 
   const loadAuthorById = async (authorId: string | number) =>
     await process(async () => {
-      const id = typeof authorId === "number" ? authorId : Number(authorId)
+      const id = typeof authorId === 'number' ? authorId : Number(authorId)
       const result = await api.get(`/authors`, {
         query: {
           id,
@@ -25,7 +25,7 @@ export const useAuthorsStore = defineStore("authors", () => {
     })
 
   const getById = async (authorId: string | number) => {
-    const id = typeof authorId === "number" ? authorId : Number(authorId)
+    const id = typeof authorId === 'number' ? authorId : Number(authorId)
     if (!index.value?.[id]) {
       await loadAuthorById(id)
     }
@@ -43,7 +43,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         index.value = { ...index.value, [result.id]: result }
         return data
       },
-      { successMsg: `Merci d'avoir ajouté ${authorData.name} !` }
+      { successMsg: `Merci d'avoir ajouté ${authorData.name} !` },
     )
 
   const updateAuthor = async (authorId: string | number, authorData: AuthorParams) =>
@@ -57,7 +57,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         index.value = { ...index.value, [authorId]: result }
         return data
       },
-      { successMsg: `Merci d'avoir mis ${authorData.name} à jour !` }
+      { successMsg: `Merci d'avoir mis ${authorData.name} à jour !` },
     )
 
   const deleteAuthor = async (authorId: string | number) =>
@@ -68,7 +68,7 @@ export const useAuthorsStore = defineStore("authors", () => {
         })
         return result
       },
-      { successMsg: "Merci d'avoir fait du ménage !" }
+      { successMsg: "Merci d'avoir fait du ménage !" },
     )
 
   return {

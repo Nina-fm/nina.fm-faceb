@@ -4,7 +4,7 @@
   import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
-  import type { Mixtape, Tag } from '~/types/db'
+  import type { Mixtape, Tag, Track } from '~/types/db'
 
   const ImageIcon = await import('lucide-vue-next').then((module) => module.ImageIcon)
 
@@ -162,6 +162,25 @@
       },
     },
     {
+      accessorKey: 'tracks',
+      header: 'Pistes',
+      size: 30,
+      cell: ({ cell }) => {
+        const tracks = cell.getValue() as Track[] | undefined
+        const tracksCount = tracks?.length ?? 0
+        return h(
+          TooltipedBadge,
+          {
+            variant: tracksCount ? 'successMuted' : 'destructiveMuted',
+            tooltip: `${tracksCount} piste${tracksCount > 1 ? 's' : ''}` || 'Aucune piste',
+          },
+          {
+            default: () => [tracksCount],
+          },
+        )
+      },
+    },
+    {
       accessorKey: 'tags',
       header: 'Tags',
       size: 30,
@@ -176,7 +195,7 @@
         return h(
           TooltipedBadge,
           {
-            variant: tagsCount ? 'primaryMuted' : 'outline',
+            variant: tagsCount ? 'infoMuted' : 'outline',
             tooltip: tags?.map((t) => t.name).join(', ') || 'Aucun tag',
           },
           {

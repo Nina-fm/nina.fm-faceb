@@ -35,7 +35,7 @@
         </FormControl>
         <slot name="suffix" />
       </div>
-      <FormDescription v-if="description">{{ description }}</FormDescription>
+      <FormDescription v-if="description" class="text-muted-foreground/60">{{ description }}</FormDescription>
       <FormMessage />
     </FormItem>
   </FormField>

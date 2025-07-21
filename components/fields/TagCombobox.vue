@@ -108,7 +108,7 @@
         :convert-value="convertOptionValue"
         add-on-paste
         add-on-tab
-        class="flex w-full px-2"
+        class="bg-input/30 flex w-full px-2"
         @update:modelValue="updateModelValue"
       >
         <div class="flex flex-wrap items-center gap-2 py-2">

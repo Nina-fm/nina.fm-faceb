@@ -19,12 +19,12 @@
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <div class="flex gap-2">
         <FormControl>
-          <Textarea v-if="multiline" v-bind="componentField" class="h-80" />
+          <Textarea v-if="multiline" v-bind="componentField" class="h-60" />
           <Input v-else v-bind="componentField" :placeholder="placeholder" />
         </FormControl>
         <slot name="suffix" />
       </div>
-      <FormDescription v-if="description">{{ description }}</FormDescription>
+      <FormDescription v-if="description" class="text-muted-foreground/60">{{ description }}</FormDescription>
       <FormMessage />
     </FormItem>
   </FormField>

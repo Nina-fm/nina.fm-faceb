@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 import prisma from '~/lib/prisma'
+import { jsonArraySync } from '~/server/utils/prismaJsonSync'
 import { manyToManySync } from '~/server/utils/prismaManyToMany'
 import { oneToOneCreate, oneToOneSync } from '~/server/utils/prismaOneToOne'
 
@@ -23,6 +24,7 @@ async function fetchAll(page: number, limit: number) {
       comment: true,
       djsAsText: true,
       tracksAsText: true,
+      tracks: true,
       tags: true,
       createdAt: true,
       updatedAt: true,
@@ -111,7 +113,8 @@ async function update({ id, cover, tags, ...data }: EntityUpdate) {
     data: {
       ...data,
       ...oneToOneSync('cover', cover, exist?.cover?.id),
-      ...manyToManySync('tags', tags, exist?.tags, "name"),
+      ...manyToManySync('tags', tags, exist?.tags, 'name'),
+      tracks: jsonArraySync(data?.tracks, exist?.tracks),
       updatedAt: new Date(),
     },
     include: {

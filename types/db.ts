@@ -21,3 +21,11 @@ export type Mixtape = Prisma.MixtapeGetPayload<{
 }
 
 export type Tag = Prisma.TagGetPayload<{}>
+
+export interface Track {
+  position: number
+  title: string
+  artist: string
+  startAt: string
+  [key: string]: any
+}

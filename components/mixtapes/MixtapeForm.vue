@@ -1,17 +1,35 @@
 <script lang="ts" setup>
   import { toTypedSchema } from '@vee-validate/zod'
   import { SaveIcon } from 'lucide-vue-next'
-  import * as z from 'zod'
+  import { computed } from 'vue'
   import SaveButton from '~/components/common/SaveButton.vue'
+  import { mixtapeFormSchema, mixtapeFormSetValues } from '~/components/mixtapes/mixtape.schema'
   import type { Tag } from '~/types/db'
+  import type { MixtapeFormData } from './mixtape.schema'
 
-  const currentYear = new Date().getFullYear().toString()
-  const years = generateYearsSince(2007)
-  const yearsOptions = years.map((year) => ({ value: year, label: year }))
+  const props = defineProps<{
+    mixtape?: MixtapeFormData
+    teleportTo?: string
+    pending?: boolean
+  }>()
+
+  const emit = defineEmits<{
+    cancel: []
+    submit: [data: MixtapeFormData]
+  }>()
 
   const { fetchTags } = useTagApi()
   const { data } = await useAsyncData('tags', () => fetchTags())
 
+  const form = useForm({
+    validationSchema: toTypedSchema(mixtapeFormSchema),
+    initialValues: mixtapeFormSetValues(props?.mixtape),
+  })
+
+  const yearsOptions = generateYearsSince(2007).map((year) => ({ value: year, label: year }))
+
+  const dirty = computed(() => form.meta.value.dirty)
+  const valid = computed(() => form.meta.value.valid)
   const tags = computed(() => data.value.results || [])
   const tagsOptions = computed(() =>
     tags.value.map((tag: Tag) => ({
@@ -21,100 +39,31 @@
     })),
   )
 
-  const formSchema = z.object({
-    name: z.string().min(1, 'Nom requis'),
-    year: z.string().regex(/^\d+$/, 'Année invalide'),
-    cover: z
-      .object({
-        filename: z.string().optional(),
-        file: z.instanceof(File).optional(),
-        alt: z.string().optional(),
-        bucket: z.string().nullable().optional(),
-        url: z.string().optional(),
-      })
-      .optional(),
-    djsAsText: z.string().min(1, 'Djs requis'),
-    tracksAsText: z.string().nullable().optional(),
-    tags: z
-      .array(
-        z.object({
-          id: z.string().nullable().optional(),
-          name: z.string().min(1, 'Nom requis'),
-          color: z.string().nullable().optional(),
-          createdAt: z.string().nullable().optional(),
-          updatedAt: z.string().nullable().optional(),
-        }),
-      )
-      .optional(),
-    comment: z.string().nullable().optional(),
-  })
-
-  type Data = z.infer<typeof formSchema>
-
-  const props = defineProps<{
-    mixtape?: Data
-    teleportTo?: string
-    pending?: boolean
-  }>()
-
-  const emit = defineEmits<{
-    cancel: []
-    submit: [data: Data]
-  }>()
-
-  const form = useForm({
-    validationSchema: toTypedSchema(formSchema),
-    initialValues: {
-      name: props?.mixtape?.name || '',
-      year: props?.mixtape?.year || currentYear,
-      cover: props?.mixtape?.cover
-        ? {
-            bucket: props.mixtape?.cover?.bucket,
-            filename: props.mixtape?.cover?.filename,
-            url: props.mixtape?.cover?.url,
-            alt: props.mixtape?.cover?.alt,
-          }
-        : undefined,
-      djsAsText: props?.mixtape?.djsAsText || '',
-      tracksAsText: props?.mixtape?.tracksAsText || '',
-      tags: props?.mixtape?.tags || [],
-      comment: props?.mixtape?.comment || '',
-    },
-  })
-
   watch(
     () => props.mixtape,
     (mixtape) => {
       form.resetForm({
-        values: {
-          name: mixtape?.name || '',
-          year: mixtape?.year || currentYear,
-          cover: mixtape?.cover
-            ? {
-                bucket: mixtape?.cover?.bucket,
-                filename: mixtape?.cover?.filename,
-                url: mixtape?.cover?.url,
-                alt: mixtape?.cover?.alt,
-              }
-            : undefined,
-          djsAsText: mixtape?.djsAsText || '',
-          tracksAsText: mixtape?.tracksAsText || '',
-          tags: mixtape?.tags || [],
-          comment: mixtape?.comment || '',
-        },
+        values: mixtapeFormSetValues(mixtape),
       })
     },
   )
 
-  const dirty = computed(() => form.meta.value.dirty)
-  const valid = computed(() => form.meta.value.valid)
+  watch(
+    () => form,
+    (values) => {
+      console.log('Form changed')
+      console.log('values', values.values.tracks)
+      console.log('meta', values.meta)
+    },
+    { deep: true },
+  )
 
   const handleCancel = () => {
     form.resetForm()
     emit('cancel')
   }
 
-  const handleSubmit = form.handleSubmit((values: Data) => {
+  const handleSubmit = form.handleSubmit((values: MixtapeFormData) => {
     emit('submit', values)
   })
 
@@ -142,17 +91,16 @@
                 <ImageField name="cover" bucket="covers" label="Cover" description="Taille recommandée : 1600x1600px" />
               </div>
             </div>
-            <TextField name="tracksAsText" label="Pistes" :description="hint" multiline />
-            <!-- <ObjectsField
+            <!-- <TracksField name="tracks" label="Pistes" /> -->
+            <ObjectsField
               name="tracks"
               label="Pistes"
-              placeholder="Aucune piste"
               :objectFields="[
-                { type: 'text', label: 'Artiste', name: 'artist' },
-                { type: 'text', label: 'Titre', name: 'title' },
-                { type: 'text', label: 'Début', name: 'start_at' },
+                { name: 'artist', type: 'text', label: 'Artiste' },
+                { name: 'title', type: 'text', label: 'Titre' },
+                { name: 'start_at', type: 'time', label: 'Début', class: 'w-32' },
               ]"
-            /> -->
+            />
             <TextField name="comment" label="Commentaire" multiline />
           </div>
         </CardContent>

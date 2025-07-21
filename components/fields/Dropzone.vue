@@ -98,10 +98,10 @@
     <div
       :class="
         cn(
-          'text-muted-foreground bg-background/90 hover:bg-background/60 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center border-4 border-dashed border-transparent text-center text-xs transition-all duration-300 ease-in-out',
+          'text-muted-foreground bg-input/30 hover:bg-input/40 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center border-4 border-dashed border-transparent text-center text-xs transition-all duration-300 ease-in-out',
           {
             'border-primary/60': isDragging,
-            'opacity-0 backdrop-blur-xs hover:opacity-100': fileSrc,
+            'hover:bg-background/60 opacity-0 backdrop-blur-xs hover:opacity-100': fileSrc,
             'opacity-100': isDragging,
           },
         )

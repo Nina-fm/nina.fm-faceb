@@ -1,6 +1,6 @@
 {
-  "name": "nina.fm-admin",
-  "version": "1.0.0",
+  "name": "nina.fm-faceb",
+  "version": "0.0.0",
   "description": "The official Nina.fm admin",
   "private": true,
   "type": "module",
@@ -10,6 +10,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "version:check": "changeset status",
     "supa:gen:types": "supabase gen types typescript --local > supabase/functions/_types/supabase.ts",
     "supa:reset:db": "supabase db reset",
     "supa:push:db": "supabase db push",
@@ -68,6 +72,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@types/lodash-es": "^4",
     "@types/luxon": "^3",
     "@types/node": "^22.13.13",
@@ -84,5 +89,5 @@
     "typescript": "^5.8.2",
     "typescript-deno-plugin": "^1.31.0"
   },
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "pnpm@10.13.1"
 }

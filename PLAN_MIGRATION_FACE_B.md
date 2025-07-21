@@ -64,12 +64,16 @@
 - [x] Création des Query Keys standardisées dans `composables/query-keys.ts`
 - [x] Suppression complète des APIs serveur obsolètes
 
-### 1.4 Types TypeScript depuis l'API 🔄 **EN COURS**
+### 1.4 Types TypeScript depuis l'API ✅ **TERMINÉ**
 
-- [ ] Générer les types depuis Swagger de l'API
-- [x] Créer `types/api.d.ts` avec toutes les interfaces principales
+- [x] Générer les types depuis Swagger de l'API (3379 lignes auto-générées)
+- [x] Architecture 3-fichiers pour types optimisée :
+  - `api-generated.d.ts` : Types auto-générés depuis Swagger (NE PAS MODIFIER)
+  - `api.d.ts` : Passerelle pour exposition globale des types
+  - `api-helpers.d.ts` : Types utilitaires et personnalisés
 - [x] Créer `types/api-config.ts` avec endpoints et constantes
-- [ ] DTOs pour les requêtes/réponses
+- [x] Script `pnpm generate:types` pour synchronisation automatique
+- [x] DTOs complets pour toutes les entités (User, Profile, Dj, Mixtape, Tag, Image)
 
 ---
 
@@ -415,7 +419,7 @@
 
 ## 📈 **État d'Avancement Actuel**
 
-**Date de dernière mise à jour :** 21 juillet 2025
+**Date de dernière mise à jour :** 22 juillet 2025
 
 ### ✅ **Phases Terminées**
 
@@ -423,39 +427,66 @@
 - **Phase 1.1** : Nettoyage des dépendances Supabase/Prisma
 - **Phase 1.2** : Installation nouvelles dépendances (TanStack Query, VueUse)
 - **Phase 1.3** : Configuration API centralisée complète
+- **Phase 1.4** : Types TypeScript depuis l'API (génération automatisée complète)
 
 ### 🔄 **Phase en Cours**
 
-- **Phase 1.4** : Types TypeScript depuis l'API (partiellement complété)
+- **Phase 2 : Migration de l'Authentification** (prête à commencer)
 
 ### 📋 **Prochaines Étapes**
 
-1. Finaliser les types depuis Swagger
-2. Commencer Phase 2 : Migration authentification
+1. ✅ ~~Finaliser les types depuis Swagger~~
+2. **Commencer Phase 2 : Migration authentification**
+   - Refactor store auth avec nouveaux endpoints
+   - Composables authApi
+   - Middleware et guards
 3. Tests et validation de l'architecture API
 
 ### 🎯 **Progression Globale**
 
-- **Phase 1 Setup :** 75% complété
-- **Migration globale :** ~25% complété
-- **Commit History :** 4 phases majeures committées
+- **Phase 1 Setup :** ✅ 100% complété
+- **Migration globale :** ~35% complété
+- **Commit History :** 5 commits organisés + changesets documentés
 
 ### 🏗️ **Architecture Actuelle**
 
 - ✅ Service API centralisé (`useApi()`)
 - ✅ TanStack Query configuré
-- ✅ Types TypeScript principaux
+- ✅ Types TypeScript complets (3379 lignes auto-générées)
+- ✅ Architecture 3-fichiers optimisée (généré + global + utilitaires)
+- ✅ Script de synchronisation automatique
 - ✅ Query Keys standardisées
 - ✅ Configuration environnement
 - ✅ Build fonctionnel et testé
+- ✅ Changesets documentés sur les 2 repos
 
 ### 📝 **Notes de Développement**
 
-- Pas de breaking changes majeures détectées
-- Build réussi après chaque phase
-- Nettoyage complet des dépendances obsolètes
-- Ready pour phase authentification
+- ✅ Commits organisés en 5 étapes logiques (types, config, logique, pages, composants)
+- ✅ Changesets créés pour API v1.4.0 (minor) et Face B v1.0.0 (major)
+- ✅ Architecture automatisée : `pnpm generate:types` synchronise avec l'API
+- ✅ Nettoyage complet des dépendances obsolètes
+- ✅ Build réussi après chaque phase
+- ✅ **Phase 1 complètement terminée** - Ready pour authentification
+
+### 📊 **Commits & Releases Actuels**
+
+**Face B (nina.fm-faceb-v2) :**
+
+- `fe80130` - style: formatage et optimisation des composants
+- `2a526bd` - feat: migration des pages vers l'API Nina.fm
+- `ee75f91` - refactor: adaptation à la nouvelle architecture API
+- `48ba485` - chore: mise à jour des configurations projet
+- `484a364` - feat(types): optimise l'architecture des types API
+- `28239f8` - chore: ajout changeset Phase 1 (v1.0.0 major)
+
+**API (nina.fm-api) :**
+
+- `9d8190d` - feat: amélioration documentation Swagger des contrôleurs
+- `2f2eb94` - feat: enrichissement Swagger des entités
+- `f8db659` - feat: ajout des DTOs de réponse manquants
+- `248547c` - chore: ajout changeset Phase 1 (v1.4.0 minor)
 
 ---
 
-_Dernière mise à jour : 21 juillet 2025_
+_Dernière mise à jour : 22 juillet 2025_

@@ -1,9 +1,0 @@
-import InvitationFactory from '~/server/factory/invitation'
-
-export default defineEventHandler(async (event) => {
-  const id = getQuery(event).id as string
-
-  const result = await InvitationFactory.deleteById(id)
-
-  return result
-})

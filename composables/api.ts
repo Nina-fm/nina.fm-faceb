@@ -1,63 +1,135 @@
-import queryString, { type StringifiableRecord } from 'query-string'
-import type { Obj } from '~/types/supatypes'
+import type { FetchOptions } from 'ofetch'
+import { API_CONFIG, API_ENDPOINTS } from '~/types/api-config'
 
-export enum Methods {
-  DELETE = 'DELETE',
+export enum HttpMethod {
   GET = 'GET',
-  HEAD = 'HEAD',
-  PATCH = 'PATCH',
   POST = 'POST',
   PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
 }
 
-export interface ApiOptions {
-  query?: StringifiableRecord | undefined
-  body?: Obj
+export interface ApiRequestOptions extends Omit<FetchOptions, 'method' | 'baseURL'> {
+  method?: HttpMethod
+  requireAuth?: boolean
+  timeout?: number
 }
 
+export interface ApiError extends Error {
+  statusCode?: number
+  data?: any
+}
+
+/**
+ * Composable pour gérer les appels API vers Nina.fm API
+ */
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const { token } = useAuthStoreRefs()
-  const apikey = config.public.supabase.key
-  const baseURL = config.public.supabaseFunctionsUrl
 
-  const call = async (path: string, method?: Methods, options?: ApiOptions) => {
-    if (!token.value) {
-      // return navigateTo('/login')
+  // Récupération du token depuis le store auth
+  const authStore = useAuthStore()
+  const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+  /**
+   * Fonction générique pour effectuer des appels API
+   */
+  const call = async <T = any>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
+    const {
+      method = HttpMethod.GET,
+      requireAuth = true,
+      timeout = API_CONFIG.REQUEST_TIMEOUT,
+      headers = {},
+      ...fetchOptions
+    } = options
+
+    // Préparation des headers
+    const requestHeaders: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...headers,
     }
 
-    return await $fetch(
-      queryString.stringifyUrl({
-        url: path,
-        query: options?.query,
-      }),
-      {
-        method: method ?? Methods.GET,
+    // Ajout du token d'authentification si requis
+    if (requireAuth && authStore.accessToken) {
+      ;(requestHeaders as Record<string, string>).Authorization = `Bearer ${authStore.accessToken}`
+    }
+
+    try {
+      const response = (await $fetch(endpoint, {
+        ...fetchOptions,
+        method,
         baseURL,
-        headers: {
-          apikey,
-          ...(!!token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+        headers: requestHeaders,
+        timeout,
+        onRequest({ request, options }) {
+          // Log des requêtes en développement
+          if (process.dev) {
+            console.log(`[API] ${method} ${request}`)
+          }
         },
-        body: options?.body ?? null,
-      },
-    )
+        onRequestError({ error }) {
+          console.error('[API] Request Error:', error)
+        },
+        onResponseError({ response }) {
+          console.error('[API] Response Error:', response.status, response._data)
+
+          // Gestion des erreurs d'authentification
+          if (response.status === 401) {
+            // Token expiré, tentative de refresh
+            return authStore.handleTokenExpired()
+          }
+        },
+      })) as T
+
+      return response
+    } catch (error: any) {
+      // Transformation de l'erreur pour l'interface utilisateur
+      const apiError: ApiError = new Error(error?.data?.message || error?.message || 'Une erreur est survenue')
+      apiError.statusCode = error?.status || error?.statusCode
+      apiError.data = error?.data
+
+      throw apiError
+    }
   }
 
-  const callGet = async (path: string, options?: ApiOptions) => await call(path, Methods.GET, options)
+  // Méthodes de convenance pour les différents types de requêtes
+  const get = <T = any>(endpoint: string, options?: ApiRequestOptions) =>
+    call<T>(endpoint, { ...options, method: HttpMethod.GET })
 
-  const callPost = async (path: string, options?: ApiOptions) => await call(path, Methods.POST, options)
+  const post = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
+    call<T>(endpoint, { ...options, method: HttpMethod.POST, body })
 
-  const callPut = async (path: string, options?: ApiOptions) => await call(path, Methods.PUT, options)
+  const put = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
+    call<T>(endpoint, { ...options, method: HttpMethod.PUT, body })
 
-  const callPatch = async (path: string, options?: ApiOptions) => await call(path, Methods.PATCH, options)
+  const patch = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
+    call<T>(endpoint, { ...options, method: HttpMethod.PATCH, body })
 
-  const callDelete = async (path: string, options?: ApiOptions) => await call(path, Methods.DELETE, options)
+  const del = <T = any>(endpoint: string, options?: ApiRequestOptions) =>
+    call<T>(endpoint, { ...options, method: HttpMethod.DELETE })
+
+  // Upload de fichiers
+  const upload = async (file: File, endpoint: string = API_ENDPOINTS.IMAGES.UPLOAD) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return await call<FileUploadResponse>(endpoint, {
+      method: HttpMethod.POST,
+      body: formData,
+      headers: {}, // Ne pas définir Content-Type pour FormData
+    })
+  }
 
   return {
-    post: callPost,
-    get: callGet,
-    put: callPut,
-    patch: callPatch,
-    delete: callDelete,
+    call,
+    get,
+    post,
+    put,
+    patch,
+    delete: del,
+    upload,
+
+    // Endpoints pré-configurés
+    endpoints: API_ENDPOINTS,
+    config: API_CONFIG,
   }
 }

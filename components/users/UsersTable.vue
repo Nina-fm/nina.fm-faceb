@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Role } from '@prisma/client'
+  // Types globaux depuis api.d.ts - Role est disponible
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'

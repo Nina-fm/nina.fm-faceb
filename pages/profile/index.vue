@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { Role } from '@prisma/client'
+  // Types globaux depuis api.d.ts - Role est disponible
   import { PencilIcon, XIcon } from 'lucide-vue-next'
 
   definePageMeta({ roles: [Role.USER, Role.ADMIN] })

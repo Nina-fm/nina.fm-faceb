@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { Role } from '@prisma/client'
+  // Types globaux depuis api.d.ts - Role est disponible
   import { UserRoundIcon } from 'lucide-vue-next'
   import type { User } from '~/types/db'
 

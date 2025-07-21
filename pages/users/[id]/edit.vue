@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { Role } from '@prisma/client'
+  // Types globaux depuis api.d.ts - Role est disponible
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 

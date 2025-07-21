@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Invitation, User } from '@prisma/client'
+  // Types globaux depuis api.d.ts
   import type { ColumnDef } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
 

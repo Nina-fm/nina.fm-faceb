@@ -1,4 +1,5 @@
-import type { Role } from '@prisma/client'
+// Les types sont maintenant globaux grâce à api.d.ts
+// import type { Role } from '@prisma/client'
 import type { User } from '~/types/db'
 
 export default defineNuxtPlugin(async (nuxtApp) => {

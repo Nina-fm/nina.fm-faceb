@@ -48,6 +48,7 @@ export default defineNuxtConfig({
     public: {
       sitename,
       siteurl: process.env.SITE_URL,
+      apiUrl: process.env.API_URL || 'http://localhost:4000',
       streamApiUrl: process.env.STREAM_API_URL,
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       filestorageUrl: process.env.FILESTORAGE_URL,

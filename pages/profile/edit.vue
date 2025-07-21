@@ -59,7 +59,7 @@
     v-if="user"
     :user="user"
     teleport-to="page-header-actions"
-    :canEditRoles="false"
+    :can-edit-roles="false"
     :pending="pending"
     @cancel="handleCancel"
     @submit="handleSubmit"

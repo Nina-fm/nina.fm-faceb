@@ -54,7 +54,7 @@
     v-if="user"
     :user="user"
     :pending="pending"
-    canEditRoles
+    can-edit-roles
     teleport-to="page-header-actions"
     @cancel="handleCancel"
     @submit="handleSubmit"

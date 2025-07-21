@@ -55,7 +55,7 @@
         <LoaderCircleIcon v-if="pending" class="animate-spin" />
         <RefreshCwIcon v-else />
       </Button>
-      <Button asChild size="fab" variant="outline">
+      <Button as-child size="fab" variant="outline">
         <NuxtLink to="/tags/add">
           <PlusIcon />
         </NuxtLink>
@@ -65,10 +65,10 @@
   <TagTable
     :data="tags"
     :loading="pending"
-    :searchValue="route.query.name?.toString()"
-    @clearSearch="handleClearSearch"
-    @rowShow="handleRowShow"
-    @rowEdit="handleRowEdit"
-    @rowDelete="handleRowDelete"
+    :search-value="route.query.name?.toString()"
+    @clear-search="handleClearSearch"
+    @row-show="handleRowShow"
+    @row-edit="handleRowEdit"
+    @row-delete="handleRowDelete"
   />
 </template>

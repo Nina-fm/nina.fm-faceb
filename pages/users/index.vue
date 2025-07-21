@@ -83,11 +83,11 @@
   </PageHeader>
   <UsersTable
     :data="users"
-    :undeletableIds="currentUserId ? [currentUserId] : []"
+    :undeletable-ids="currentUserId ? [currentUserId] : []"
     @invite="openInviteDialog = true"
-    @rowShow="handleRowShow"
-    @rowEdit="handleEditRow"
-    @rowDelete="handleDeleteRow"
+    @row-show="handleRowShow"
+    @row-edit="handleEditRow"
+    @row-delete="handleDeleteRow"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
   <LoadingOverlay :active="isLoading" />

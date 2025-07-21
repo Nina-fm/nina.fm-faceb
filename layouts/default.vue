@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <SidebarProvider :defaultOpen="defaultOpen">
+  <SidebarProvider :default-open="defaultOpen">
     <AppSidebar />
     <main class="background-image w-full px-10 py-8">
       <div class="h-full w-full">

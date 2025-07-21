@@ -2,13 +2,6 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["@vueuse/nuxt"],
-    "plugins": [
-      {
-        "name": "typescript-deno-plugin",
-        "include": ["supabase/functions/**/*"],
-        "exclude": ["node_modules", "**/*.spec.ts"]
-      }
-    ]
+    "types": ["@vueuse/nuxt"]
   }
 }

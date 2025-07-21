@@ -3,11 +3,11 @@
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
-    SIGN_UP: '/auth/signup',
-    SIGN_IN: '/auth/signin',
+    SIGN_UP: '/auth/register',
+    SIGN_IN: '/auth/login',
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
-    ME: '/auth/me',
+    PROFILE: '/auth/profile',
   },
 
   // Users
@@ -21,13 +21,14 @@ export const API_ENDPOINTS = {
   DJS: {
     BASE: '/djs',
     BY_ID: (id: string) => `/djs/${id}`,
-    AVATAR: (id: string) => `/djs/${id}/avatar`,
+    MIXTAPES: (id: string) => `/djs/${id}/mixtapes`,
   },
 
   // Tags
   TAGS: {
     BASE: '/tags',
     BY_ID: (id: string) => `/tags/${id}`,
+    MIXTAPES: (id: string) => `/tags/${id}/mixtapes`,
   },
 
   // Mixtapes
@@ -35,12 +36,35 @@ export const API_ENDPOINTS = {
     BASE: '/mixtapes',
     BY_ID: (id: string) => `/mixtapes/${id}`,
     COVER: (id: string) => `/mixtapes/${id}/cover`,
+    COVER_WITH_IMAGE: (id: string, imageId: string) => `/mixtapes/${id}/cover/${imageId}`,
+    TAGS: (id: string) => `/mixtapes/${id}/tags`,
+    TAG: (id: string, tagId: string) => `/mixtapes/${id}/tags/${tagId}`,
+    DJS: (id: string) => `/mixtapes/${id}/djs`,
+    DJ: (id: string, djId: string) => `/mixtapes/${id}/djs/${djId}`,
   },
 
   // Images
   IMAGES: {
+    BASE: '/images',
     UPLOAD: '/images/upload',
     BY_ID: (id: string) => `/images/${id}`,
+    METADATA: (id: string) => `/images/metadata/${id}`,
+    THUMBNAIL: (id: string) => `/images/${id}/thumbnail`,
+    PUBLIC: (bucket: string, filename: string) => `/images/${bucket}/${filename}`,
+    THUMB: (bucket: string, filename: string) => `/images/${bucket}/thumb/${filename}`,
+  },
+
+  // Stream
+  STREAM: {
+    EVENTS: '/stream/events',
+    LISTENERS: '/stream/listeners',
+    PROGRESS: '/stream/progress',
+    DEBUG: {
+      ALL: '/stream/debug/all',
+      EVENTS: '/stream/debug/events',
+      LISTENERS: '/stream/debug/listeners',
+      PROGRESS: '/stream/debug/progress',
+    },
   },
 
   // Health

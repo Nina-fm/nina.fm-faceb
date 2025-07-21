@@ -1,260 +1,201 @@
-// API Types for Nina.fm API Integration
+// Passerelle pour exposer globalement les types générés de l'API Nina.fm
+// Ce fichier importe les types du fichier généré et les rend disponibles globalement
+
+import type { 
+  components,
+  operations,
+  paths
+} from './api-generated'
 
 declare global {
-  type AsyncFunc<T extends any[], U> = (...args: T) => Promise<U>
+  // ===== TYPES PRINCIPAUX DE L'API =====
+  
+  // Types des composants (schemas)
+  type ApiComponents = components
+  type ApiSchemas = components['schemas']
+  
+  // Types des opérations
+  type ApiOperations = operations
+  
+  // Types des chemins
+  type ApiPaths = paths
 
-  // Generic API Response Types
-  interface ApiError {
-    message: string
-    error?: string
-    statusCode?: number
-  }
+  // ===== ENTITÉS PRINCIPALES =====
+  
+  /**
+   * Utilisateur avec profil
+   */
+  type User = ApiSchemas['User']
+  
+  /**
+   * Profil utilisateur
+   */
+  type Profile = ApiSchemas['Profile']
+  
+  /**
+   * Image avec métadonnées
+   */
+  type Image = ApiSchemas['Image']
+  
+  /**
+   * DJ
+   */
+  type Dj = ApiSchemas['Dj']
+  
+  /**
+   * Tag avec couleur
+   */
+  type Tag = ApiSchemas['Tag']
+  
+  /**
+   * Mixtape avec relations
+   */
+  type Mixtape = ApiSchemas['Mixtape']
 
-  interface ApiSuccessResponse<T = any> {
-    data: T
-    message?: string
-  }
+  // ===== DTOs DE CRÉATION/MISE À JOUR =====
+  
+  /**
+   * DTO pour créer un utilisateur
+   */
+  type CreateUserDto = ApiSchemas['CreateUserDto']
+  
+  /**
+   * DTO pour mettre à jour un utilisateur
+   */
+  type UpdateUserDto = ApiSchemas['UpdateUserDto']
+  
+  /**
+   * DTO pour mettre à jour un profil utilisateur
+   */
+  type UpdateUserProfileDto = ApiSchemas['UpdateUserProfileDto']
+  
+  /**
+   * DTO pour créer un DJ
+   */
+  type CreateDjDto = ApiSchemas['CreateDjDto']
+  
+  /**
+   * DTO pour mettre à jour un DJ
+   */
+  type UpdateDjDto = ApiSchemas['UpdateDjDto']
+  
+  /**
+   * DTO pour créer un tag
+   */
+  type CreateTagDto = ApiSchemas['CreateTagDto']
+  
+  /**
+   * DTO pour mettre à jour un tag
+   */
+  type UpdateTagDto = ApiSchemas['UpdateTagDto']
+  
+  /**
+   * DTO pour créer une mixtape
+   */
+  type CreateMixtapeDto = ApiSchemas['CreateMixtapeDto']
+  
+  /**
+   * DTO pour mettre à jour une mixtape
+   */
+  type UpdateMixtapeDto = ApiSchemas['UpdateMixtapeDto']
+  
+  /**
+   * DTO pour ajouter des tags à une mixtape
+   */
+  type AddTagsToMixtapeDto = ApiSchemas['AddTagsToMixtapeDto']
+  
+  /**
+   * DTO pour ajouter des DJs à une mixtape
+   */
+  type AddDjsToMixtapeDto = ApiSchemas['AddDjsToMixtapeDto']
 
-  interface ApiErrorResponse {
-    error: ApiError
-    data: null
-  }
+  // ===== DTOs D'AUTHENTIFICATION =====
+  
+  /**
+   * DTO pour la connexion
+   */
+  type SignInDto = ApiSchemas['SignInDto']
+  
+  /**
+   * DTO pour l'inscription
+   */
+  type SignUpDto = ApiSchemas['SignUpDto']
+  
+  /**
+   * DTO pour le refresh token
+   */
+  type RefreshTokenDto = ApiSchemas['RefreshTokenDto']
 
-  type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse
+  // ===== RÉPONSES DE LISTE =====
+  
+  /**
+   * Réponse de liste d'utilisateurs
+   */
+  type UsersListResponseDto = ApiSchemas['UsersListResponseDto']
+  
+  /**
+   * Réponse de liste de DJs
+   */
+  type DjsListResponseDto = ApiSchemas['DjsListResponseDto']
+  
+  /**
+   * Réponse de liste de tags
+   */
+  type TagsListResponseDto = ApiSchemas['TagsListResponseDto']
+  
+  /**
+   * Réponse de liste de mixtapes
+   */
+  type MixtapesListResponseDto = ApiSchemas['MixtapesListResponseDto']
 
-  // Pagination
-  interface PaginationMeta {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
+  // ===== RÉPONSES INDIVIDUELLES =====
+  
+  /**
+   * Réponse d'un DJ
+   */
+  type DjResponseDto = ApiSchemas['DjResponseDto']
+  
+  /**
+   * Réponse d'un tag
+   */
+  type TagResponseDto = ApiSchemas['TagResponseDto']
+  
+  /**
+   * Réponse d'une mixtape
+   */
+  type MixtapeResponseDto = ApiSchemas['MixtapeResponseDto']
 
-  interface PaginatedResponse<T = any> {
-    data: T[]
-    meta: PaginationMeta
-  }
-
-  // Authentication Types
-  interface SignUpParams {
-    email: string
-    password: string
-  }
-
-  interface SignInParams {
-    email: string
-    password: string
-  }
-
-  interface AuthTokens {
-    accessToken: string
-    refreshToken: string
-  }
-
-  interface RefreshTokenParams {
-    refreshToken: string
-  }
-
-  // User & Profile Types
-  enum Role {
-    ADMIN = 'ADMIN',
-    MANAGER = 'MANAGER',
-    CONTRIBUTOR = 'CONTRIBUTOR',
-    VIEWER = 'VIEWER',
-  }
-
-  interface Image {
-    id: string
-    originalName: string
-    filename: string
-    mimeType: string
-    size: number
-    path: string
-    url: string
-    createdAt: string
-    updatedAt: string
-  }
-
-  interface Profile {
-    id: string
-    nickname: string
-    description?: string
-    avatar?: Image
-    createdAt: string
-    updatedAt: string
-  }
-
-  interface User {
-    id: string
-    email: string
-    role: Role
-    profile: Profile
-    createdAt: string
-    updatedAt: string
-  }
-
-  interface CurrentUser extends User {
-    permissions?: string[]
-  }
-
-  // DJ Types
-  interface Dj {
-    id: string
-    name: string
-    description?: string
-    website?: string
-    facebook?: string
-    instagram?: string
-    soundcloud?: string
-    avatar?: Image
-    createdAt: string
-    updatedAt: string
-    createdBy?: User
-  }
-
-  // Tag Types
-  interface Tag {
-    id: string
-    name: string
-    description?: string
-    createdAt: string
-    updatedAt: string
-    createdBy?: User
-  }
-
-  // Mixtape Types
-  interface Track {
-    title: string
-    artist?: string
-    duration?: string
-    [key: string]: any
-  }
-
-  interface Mixtape {
-    id: string
-    name: string
-    year: number
-    tracksAsText?: string
-    tracks?: Track[]
-    description?: string
-    comment?: string
-    cover?: Image
-    djs: Dj[]
-    tags: Tag[]
-    createdAt: string
-    updatedAt: string
-    createdBy?: User
-  }
-
-  // DTOs for Create/Update operations
-  interface CreateUserDto {
-    email: string
-    password: string
-    role?: Role
-  }
-
-  interface UpdateUserDto {
-    email?: string
-    role?: Role
-  }
-
-  interface CreateProfileDto {
-    nickname: string
-    description?: string
-  }
-
-  interface UpdateProfileDto {
-    nickname?: string
-    description?: string
-  }
-
-  interface CreateDjDto {
-    name: string
-    description?: string
-    website?: string
-    facebook?: string
-    instagram?: string
-    soundcloud?: string
-  }
-
-  interface UpdateDjDto {
-    name?: string
-    description?: string
-    website?: string
-    facebook?: string
-    instagram?: string
-    soundcloud?: string
-  }
-
-  interface CreateTagDto {
-    name: string
-    description?: string
-  }
-
-  interface UpdateTagDto {
-    name?: string
-    description?: string
-  }
-
-  interface CreateMixtapeDto {
-    name: string
-    year: number
-    tracksAsText?: string
-    tracks?: Track[]
-    description?: string
-    comment?: string
-    djIds: string[]
-    tagIds: string[]
-  }
-
-  interface UpdateMixtapeDto {
-    name?: string
-    year?: number
-    tracksAsText?: string
-    tracks?: Track[]
-    description?: string
-    comment?: string
-    djIds?: string[]
-    tagIds?: string[]
-  }
-
-  // Query Parameters for API endpoints
-  interface UserQueryParams {
-    page?: number
-    limit?: number
-    search?: string
-    role?: Role
-  }
-
-  interface DjQueryParams {
-    page?: number
-    limit?: number
-    search?: string
-  }
-
-  interface TagQueryParams {
-    page?: number
-    limit?: number
-    search?: string
-  }
-
-  interface MixtapeQueryParams {
-    page?: number
-    limit?: number
-    search?: string
-    year?: number
-    djId?: string
-    tagId?: string
-  }
-
-  // File Upload Types
-  interface FileUploadResponse {
-    filename: string
-    originalName: string
-    mimeType: string
-    size: number
-    url: string
-  }
+  // ===== TYPES DE STREAMING =====
+  
+  /**
+   * Données IceCast
+   */
+  type IceCastDataDto = ApiSchemas['IceCastDataDto']
+  
+  /**
+   * Données AirTime
+   */
+  type AirTimeDataDto = ApiSchemas['AirTimeDataDto']
+  
+  /**
+   * Données d'événements combinés
+   */
+  type EventsDataDto = ApiSchemas['EventsDataDto']
+  
+  /**
+   * Réponse d'événements
+   */
+  type EventsResponseDto = ApiSchemas['EventsResponseDto']
+  
+  /**
+   * Réponse de listeners
+   */
+  type ListenersResponseDto = ApiSchemas['ListenersResponseDto']
+  
+  /**
+   * Réponse de progression
+   */
+  type ProgressResponseDto = ApiSchemas['ProgressResponseDto']
 }
 
 export {}

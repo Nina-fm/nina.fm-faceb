@@ -196,7 +196,7 @@
       search
       pagination
       background
-      @rowClick="handleRowShow"
+      @row-click="handleRowShow"
     />
     <EmptyBlock v-else title="Aucun utilisateur actuellement.">
       <Button variant="secondary" class="w-fit" @click="$emit('invite')">Inviter un utilisateur</Button>

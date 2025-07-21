@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import type { RadioGroupItemProps } from 'reka-ui'
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { CircleIcon } from 'lucide-vue-next'
-import {
-  RadioGroupIndicator,
-  RadioGroupItem,
+  import { cn } from '@/lib/utils'
+  import { CircleIcon } from 'lucide-vue-next'
+  import type { RadioGroupItemProps } from 'reka-ui'
+  import { RadioGroupIndicator, RadioGroupItem, useForwardProps } from 'reka-ui'
+  import type { HTMLAttributes } from 'vue'
+  import { computed } from 'vue'
 
-  useForwardProps,
-} from 'reka-ui'
-import { computed } from 'vue'
+  const props = defineProps<RadioGroupItemProps & { class?: HTMLAttributes['class'] }>()
 
-const props = defineProps<RadioGroupItemProps & { class?: HTMLAttributes['class'] }>()
+  const delegatedProps = computed(() => {
+    const { class: _, ...delegated } = props
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props
+    return delegated
+  })
 
-  return delegated
-})
-
-const forwardedProps = useForwardProps(delegatedProps)
+  const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
@@ -33,10 +28,7 @@ const forwardedProps = useForwardProps(delegatedProps)
       )
     "
   >
-    <RadioGroupIndicator
-      data-slot="radio-group-indicator"
-      class="relative flex items-center justify-center"
-    >
+    <RadioGroupIndicator data-slot="radio-group-indicator" class="relative flex items-center justify-center">
       <CircleIcon class="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
     </RadioGroupIndicator>
   </RadioGroupItem>

@@ -14,7 +14,7 @@
 
   const filterValue = computed(() => props.table.getColumn(props.id)?.getFilterValue() as unknown[])
 
-  const isActive = computed(() => filterValue !== undefined && filterValue !== null)
+  const isActive = computed(() => filterValue.value !== undefined && filterValue.value !== null)
 
   const getModelValue = (value: string | number) => {
     return filterValue.value?.includes(value) ?? false
@@ -36,7 +36,7 @@
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger asChild>
+    <DropdownMenuTrigger as-child>
       <Button
         variant="outline"
         size="sm"
@@ -57,7 +57,7 @@
         :model-value="getModelValue(option.value)"
         @update:model-value="(value: any) => handleUpdateModelValue(option.value, value)"
       >
-        <component v-if="option.renderLabel" :is="option.renderLabel">{{ option.label }}</component>
+        <component :is="option.renderLabel" v-if="option.renderLabel">{{ option.label }}</component>
         <span v-else>{{ option.label }}</span>
       </DropdownMenuCheckboxItem>
     </DropdownMenuContent>

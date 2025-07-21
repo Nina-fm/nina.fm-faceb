@@ -19,9 +19,9 @@
       <div class="flex gap-2">
         <FormControl>
           <ColorPicker
-            :modelValue="componentField['modelValue']"
-            :name="name"
             v-slot="{ color, show }"
+            :model-value="componentField['modelValue']"
+            :name="name"
             :placeholder="placeholder"
             class="w-full"
             @change="({ hex }) => componentField['onUpdate:modelValue']?.(hex)"

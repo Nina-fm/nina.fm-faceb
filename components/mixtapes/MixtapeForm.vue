@@ -85,7 +85,7 @@
                   <TextField name="djsAsText" label="Djs" :description="hint" class="w-full" />
                   <SelectField name="year" label="Année" :options="yearsOptions" class="w-1/4 min-w-24" />
                 </div>
-                <TagsField name="tags" label="Tags" optionLabelKey="name" :options="tagsOptions" tagAs="TagBadge" />
+                <TagsField name="tags" label="Tags" option-label-key="name" :options="tagsOptions" tag-as="TagBadge" />
               </div>
               <div class="aspect-square w-full @xl/mixtapeform:w-1/2 @2xl/mixtapeform:w-1/3 @4xl/mixtapeform:w-1/4">
                 <ImageField name="cover" bucket="covers" label="Cover" description="Taille recommandée : 1600x1600px" />
@@ -95,7 +95,7 @@
             <ObjectsField
               name="tracks"
               label="Pistes"
-              :objectFields="[
+              :object-fields="[
                 { name: 'artist', type: 'text', label: 'Artiste' },
                 { name: 'title', type: 'text', label: 'Titre' },
                 { name: 'start_at', type: 'time', label: 'Début', class: 'w-32' },

@@ -92,12 +92,12 @@
     :name="name"
     :label="label"
     :placeholder="placeholder ?? 'Aucune piste.'"
-    :objectFields="[
+    :object-fields="[
       { type: 'text', label: 'Artiste(s)', name: 'artist' },
       { type: 'text', label: 'Titre', name: 'title' },
       { type: 'time', label: 'Début', hint: '(hh:mm:ss)', name: 'start_at', class: 'min-w-30 max-w-30' },
     ]"
-    @deleteRow="handleDeleteTrack"
+    @delete-row="handleDeleteTrack"
   >
     <template #actions>
       <Tooltiped text="Importer les pistes depuis un texte">

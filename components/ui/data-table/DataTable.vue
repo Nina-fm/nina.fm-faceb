@@ -12,7 +12,7 @@
   } from '@tanstack/vue-table'
   import { DeleteIcon, XIcon } from 'lucide-vue-next'
   import Badge from '~/components/ui/badge/Badge.vue'
-  import { type FilterBadgeValues, type FilterDef } from '~/components/ui/data-table'
+  import type { FilterBadgeValues, FilterDef } from '~/components/ui/data-table'
 
   const DataTableHeader = resolveComponent('DataTableHeader')
 
@@ -47,7 +47,7 @@
     if (column.filterFn) {
       return column.filterFn
     }
-    if (!!props.filters?.find((f) => f.id === column.accessorKey)?.multiple) {
+    if (props.filters?.find((f) => f.id === column.accessorKey)?.multiple) {
       return multiValuesFilterFn
     }
     return undefined
@@ -203,7 +203,7 @@
           <TableHead
             v-for="header in headerGroup.headers"
             :key="header.id"
-            :colSpan="header.colSpan"
+            :col-span="header.colSpan"
             :style="{ width: `${header.getSize()}px` }"
           >
             <FlexRender

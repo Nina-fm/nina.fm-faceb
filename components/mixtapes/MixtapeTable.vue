@@ -261,16 +261,16 @@
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
-      :searchValue="searchValue"
+      :search-value="searchValue"
       :filters="filters"
       search
       pagination
       background
-      @rowClick="handleRowShow"
-      @clearSearch="handleClearSearch"
+      @row-click="handleRowShow"
+      @clear-search="handleClearSearch"
     />
     <EmptyBlock v-else title="Aucune mixtape actuellement.">
-      <Button variant="secondary" asChild>
+      <Button variant="secondary" as-child>
         <NuxtLink to="/mixtapes/add">Créer une mixtape</NuxtLink>
       </Button>
     </EmptyBlock>

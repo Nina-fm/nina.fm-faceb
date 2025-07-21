@@ -20,7 +20,7 @@
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger asChild>
+    <DropdownMenuTrigger as-child>
       <Button size="icon" variant="ghost" class="text-muted-foreground">
         <MoreVerticalIcon />
       </Button>

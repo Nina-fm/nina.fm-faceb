@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-  import { UserRoundIcon } from 'lucide-vue-next';
-import type { Mixtape } from '~/types/db';
+  import { UserRoundIcon } from 'lucide-vue-next'
+  import type { Mixtape } from '~/types/db'
 
   const props = defineProps<{
     mixtape: Mixtape

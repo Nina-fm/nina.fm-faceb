@@ -9,7 +9,7 @@
 <template>
   <Dialog :open="active">
     <DialogContent class="border-none bg-transparent" :closable="false">
-      <VisuallyHidden asChild>
+      <VisuallyHidden as-child>
         <DialogHeader>
           <DialogTitle>Chargement...</DialogTitle>
           <DialogDescription />

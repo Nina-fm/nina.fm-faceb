@@ -99,17 +99,17 @@
 </script>
 
 <template>
-  <Combobox :modelValue="modelValue" v-model:open="open" :ignore-filter="true" @update:modelValue="updateModelValue">
+  <Combobox v-model:open="open" :model-value="modelValue" :ignore-filter="true" @update:model-value="updateModelValue">
     <ComboboxAnchor as-child class="p-0">
       <TagsInput
-        :modelValue="modelValue"
+        :model-value="modelValue"
         :delimiter="delimiter"
         :display-value="getOptionLabel"
         :convert-value="convertOptionValue"
         add-on-paste
         add-on-tab
         class="bg-input/30 flex w-full px-2"
-        @update:modelValue="updateModelValue"
+        @update:model-value="updateModelValue"
       >
         <div class="flex flex-wrap items-center gap-2 py-2">
           <TagsInputItem

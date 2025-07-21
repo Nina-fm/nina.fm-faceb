@@ -99,14 +99,14 @@
             <div v-for="objectField in objectFields" :key="objectField.name" :class="cn('flex-1', objectField.class)">
               <TimecodeField
                 v-if="objectField.type === 'time'"
-                :name="`${name}.${i}.${objectField.name}`"
                 v-model="object[objectField.name]"
+                :name="`${name}.${i}.${objectField.name}`"
                 class="w-full"
               />
               <TextField
                 v-else
-                :name="`${name}.${i}.${objectField.name}`"
                 v-model="object[objectField.name]"
+                :name="`${name}.${i}.${objectField.name}`"
                 class="w-full"
               />
             </div>

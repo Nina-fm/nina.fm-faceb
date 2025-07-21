@@ -26,7 +26,7 @@
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger asChild>
+    <DropdownMenuTrigger as-child>
       <Button
         variant="outline"
         size="sm"

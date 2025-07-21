@@ -34,7 +34,7 @@
           :side-offset="4"
         >
           <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem as-child>
               <NuxtLink to="/profile">
                 <IdCardIcon />
                 Mon profil

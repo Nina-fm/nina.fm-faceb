@@ -32,7 +32,7 @@
         <TagCombobox
           v-bind="props"
           :options="options"
-          :modelValue="componentField.modelValue"
+          :model-value="componentField.modelValue"
           @update:model-value="componentField['onUpdate:modelValue']"
         />
       </FormControl>

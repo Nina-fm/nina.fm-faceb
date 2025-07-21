@@ -127,15 +127,15 @@
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
-      :searchValue="searchValue"
+      :search-value="searchValue"
       search
       pagination
       background
-      @rowClick="handleRowShow"
-      @clearSearch="handleClearSearch"
+      @row-click="handleRowShow"
+      @clear-search="handleClearSearch"
     />
     <EmptyBlock v-else title="Aucun tag actuellement.">
-      <Button variant="secondary" asChild>
+      <Button variant="secondary" as-child>
         <NuxtLink to="/tags/add">Créer un tag</NuxtLink>
       </Button>
     </EmptyBlock>

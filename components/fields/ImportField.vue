@@ -43,7 +43,7 @@
 
 <template>
   <Dialog :open="open" @update:open="(value) => (open = value)">
-    <DialogTrigger asChild>
+    <DialogTrigger as-child>
       <Button type="button" variant="ghost" size="icon-sm" @click.prevent.stop><ImportIcon /></Button>
     </DialogTrigger>
     <DialogContent
@@ -57,10 +57,10 @@
       </DialogHeader>
       <Label>{{ label ?? 'Text à importer' }}</Label>
       <Textarea
-        :modelValue="field"
+        :model-value="field"
         class="h-full w-full resize-none"
         :placeholder="placeholder"
-        @update:modelValue="(value) => setValue(value as string)"
+        @update:model-value="(value) => setValue(value as string)"
       />
       <DialogFooter>
         <Button variant="ghost" @click="handleCancel">Annuler</Button>

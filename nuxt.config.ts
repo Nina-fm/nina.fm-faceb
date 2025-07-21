@@ -11,12 +11,10 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@vueuse/nuxt',
-    // '@nuxtjs/supabase',
     'nuxt-resend',
     '@pinia/nuxt',
     'shadcn-nuxt',
     'nuxt-seo-utils',
-    '@prisma/nuxt',
     '@vee-validate/nuxt',
     'nuxt-color-picker',
   ],
@@ -54,21 +52,11 @@ export default defineNuxtConfig({
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       filestorageUrl: process.env.FILESTORAGE_URL,
       filestoragePublicEndpoint: process.env.FILESTORAGE_PUBLIC_ENDPOINT,
-      supabaseFunctionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
     },
-  },
-
-  prisma: {
-    autoSetupPrisma: true,
   },
 
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: {
-        '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
-      },
-    },
   },
 
   devServer: {

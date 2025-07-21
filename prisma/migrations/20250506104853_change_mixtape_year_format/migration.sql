@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Mixtape" ALTER COLUMN "year" SET DATA TYPE TEXT;

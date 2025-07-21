@@ -14,57 +14,61 @@
 
 ---
 
-## 🔧 **Phase 1 : Setup et Configuration de Base** _(2-3 jours)_
+## 🔧 **Phase 1 : Setup et Configuration de Base** _(2-3 jours)_ ✅ **TERMINÉE**
 
-### 1.0 Préparation de l'Environnement
+### 1.0 Préparation de l'Environnement ✅ **COMPLÉTÉ**
 
-- [ ] **Migration vers pnpm**
+- [x] **Migration vers pnpm**
   - Supprimer `yarn.lock` et `node_modules/`
   - Créer `pnpm-workspace.yaml` si nécessaire
   - Installer les dépendances avec `pnpm install`
   - Mettre à jour les scripts dans `package.json`
-- [ ] **Configuration Changesets**
+- [x] **Configuration Changesets**
   - Installer `@changesets/cli`
   - Initialiser avec `pnpm changeset init`
   - Configurer les paramètres dans `.changeset/config.json`
-- [ ] **Commit initial :** Setup pnpm + changesets
-- [ ] **Changelog :** v1.0.0 - Préparation migration
+- [x] **Commit initial :** Setup pnpm + changesets
+- [x] **Changelog :** v1.0.0 - Préparation migration
 
-### 1.1 Nettoyage des Dépendances
+### 1.1 Nettoyage des Dépendances ✅ **COMPLÉTÉ**
 
-- [ ] Supprimer les packages Supabase/Prisma du `package.json`
+- [x] Supprimer les packages Supabase/Prisma du `package.json`
   - `@nuxtjs/supabase`
   - `@prisma/client`
   - `@prisma/nuxt`
   - `@sidebase/nuxt-auth`
   - `@auth/prisma-adapter`
-- [ ] Supprimer les fichiers et dossiers associés
+- [x] Supprimer les fichiers et dossiers associés
   - `prisma/` (schema, migrations)
   - `supabase/`
   - Configurations Supabase dans `nuxt.config.ts`
+- [x] Nettoyage des imports et références Prisma dans les composants
 
-### 1.2 Installation des Nouvelles Dépendances
+### 1.2 Installation des Nouvelles Dépendances ✅ **COMPLÉTÉ**
 
-- [ ] Installer TanStack Query : `@tanstack/vue-query`
-- [ ] Installer utilitaires API : `@vueuse/integrations` (si pas déjà présent)
-- [ ] Configurer les types TypeScript pour l'API
+- [x] Installer TanStack Query : `@tanstack/vue-query`
+- [x] Installer utilitaires API : `@vueuse/integrations`
+- [x] Configurer les types TypeScript pour l'API
 
-### 1.3 Configuration API Centralisée
+### 1.3 Configuration API Centralisée ✅ **COMPLÉTÉ**
 
-- [ ] Créer `composables/api.ts` - Service API central
+- [x] Créer `composables/api.ts` - Service API central
   - Configuration base URL API
   - Intercepteurs pour auth headers
   - Gestion automatique refresh tokens
   - Types de réponse standardisés
-- [ ] Variables d'environnement
+- [x] Variables d'environnement
   - `NUXT_PUBLIC_API_URL` pour l'URL de l'API
   - Configuration pour local/prod
-- [ ] Configuration TanStack Query dans `plugins/`
+- [x] Configuration TanStack Query dans `plugins/2.vue-query.ts`
+- [x] Création des Query Keys standardisées dans `composables/query-keys.ts`
+- [x] Suppression complète des APIs serveur obsolètes
 
-### 1.4 Types TypeScript depuis l'API
+### 1.4 Types TypeScript depuis l'API 🔄 **EN COURS**
 
 - [ ] Générer les types depuis Swagger de l'API
-- [ ] Créer `types/api.ts` avec toutes les interfaces
+- [x] Créer `types/api.d.ts` avec toutes les interfaces principales
+- [x] Créer `types/api-config.ts` avec endpoints et constantes
 - [ ] DTOs pour les requêtes/réponses
 
 ---
@@ -75,10 +79,10 @@
 
 - [ ] Refactor complet `stores/auth.ts`
   - Remplacer logique Supabase par endpoints API
-  - `POST /auth/login`
-  - `POST /auth/register`
+  - `POST /auth/signin`
+  - `POST /auth/signup`
   - `POST /auth/refresh`
-  - `GET /auth/profile`
+  - `GET /auth/me`
   - `POST /auth/logout`
 - [ ] Gestion des tokens JWT
   - Stockage sécurisé (httpOnly cookies ou localStorage)
@@ -406,6 +410,51 @@
 - **Type Safety :** Types générés depuis API
 - **Testing :** Vitest + Cypress pour E2E
 - **Monitoring :** Console logs + Sentry si besoin
+
+---
+
+## 📈 **État d'Avancement Actuel**
+
+**Date de dernière mise à jour :** 21 juillet 2025
+
+### ✅ **Phases Terminées**
+
+- **Phase 1.0** : Préparation de l'environnement (pnpm + changesets)
+- **Phase 1.1** : Nettoyage des dépendances Supabase/Prisma
+- **Phase 1.2** : Installation nouvelles dépendances (TanStack Query, VueUse)
+- **Phase 1.3** : Configuration API centralisée complète
+
+### 🔄 **Phase en Cours**
+
+- **Phase 1.4** : Types TypeScript depuis l'API (partiellement complété)
+
+### 📋 **Prochaines Étapes**
+
+1. Finaliser les types depuis Swagger
+2. Commencer Phase 2 : Migration authentification
+3. Tests et validation de l'architecture API
+
+### 🎯 **Progression Globale**
+
+- **Phase 1 Setup :** 75% complété
+- **Migration globale :** ~25% complété
+- **Commit History :** 4 phases majeures committées
+
+### 🏗️ **Architecture Actuelle**
+
+- ✅ Service API centralisé (`useApi()`)
+- ✅ TanStack Query configuré
+- ✅ Types TypeScript principaux
+- ✅ Query Keys standardisées
+- ✅ Configuration environnement
+- ✅ Build fonctionnel et testé
+
+### 📝 **Notes de Développement**
+
+- Pas de breaking changes majeures détectées
+- Build réussi après chaque phase
+- Nettoyage complet des dépendances obsolètes
+- Ready pour phase authentification
 
 ---
 

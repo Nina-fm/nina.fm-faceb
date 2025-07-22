@@ -4,16 +4,18 @@
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { sendPasswordRestEmail } = useAuthStore()
+  const { forgotPassword } = useAuthApi()
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
   })
 
-  const handleSubmit = async ({ email }: Record<string, any>) => {
-    const { error } = await sendPasswordRestEmail(email)
-    if (!error) {
+  const handleSubmit = async ({ email }: { email: string }) => {
+    const { success } = await forgotPassword(email)
+    if (success) {
       toast.success('Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !')
+    } else {
+      toast.error("Erreur lors de l'envoi de l'email de réinitialisation")
     }
   }
 </script>

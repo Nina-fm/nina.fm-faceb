@@ -141,6 +141,26 @@ export const useAuthApi = () => {
     }
   }
 
+  const forgotPassword = async (email: string) => {
+    try {
+      await post('/auth/forgot-password', { email })
+      return { success: true }
+    } catch (error) {
+      console.error('Erreur lors de la demande de réinitialisation:', error)
+      return { success: false, error }
+    }
+  }
+
+  const resetPassword = async (token: string, password: string) => {
+    try {
+      await post('/auth/reset-password', { token, password })
+      return { success: true }
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation du mot de passe:', error)
+      return { success: false, error }
+    }
+  }
+
   return {
     // State
     currentUserId,
@@ -153,5 +173,7 @@ export const useAuthApi = () => {
     logout,
     refreshSession,
     register,
+    forgotPassword,
+    resetPassword,
   }
 }

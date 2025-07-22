@@ -79,29 +79,37 @@
 
 ## 🔐 **Phase 2 : Migration de l'Authentification** _(3 jours)_
 
-### 2.1 Nouveau Store Auth
+### 2.1 Nouveau Store Auth ✅ **COMPLÉTÉ**
 
-- [ ] Refactor complet `stores/auth.ts`
+- [x] Refactor complet `stores/auth.ts`
   - Remplacer logique Supabase par endpoints API
-  - `POST /auth/signin`
-  - `POST /auth/signup`
+  - `POST /auth/login` (corrigé depuis signin)
+  - `POST /auth/register` (corrigé depuis signup)
   - `POST /auth/refresh`
-  - `GET /auth/me`
+  - `GET /auth/profile` (corrigé depuis me)
   - `POST /auth/logout`
-- [ ] Gestion des tokens JWT
-  - Stockage sécurisé (httpOnly cookies ou localStorage)
+- [x] Gestion des tokens JWT
+  - Stockage sécurisé (httpOnly cookies + localStorage)
   - Auto-refresh des access tokens
   - Nettoyage lors du logout
+- [x] Ajout d'états réactifs améliorés
+  - `isLoading` pour les interfaces utilisateur
+  - `userRole` et `hasProfile` computed
+  - Gestion du loading dans `loadUserProfile()`
 
-### 2.2 Composable Auth API
+### 2.2 Composable Auth API ✅ **COMPLÉTÉ**
 
-- [ ] Créer `composables/authApi.ts`
+- [x] Créer `composables/authApi.ts`
   - Méthodes login/register/logout
   - Gestion du state utilisateur
   - Vérification des permissions/rôles
-- [ ] Intégration avec TanStack Query pour la gestion du cache utilisateur
+- [x] Gestion des états de loading
+  - Loading states dans toutes les actions auth
+  - Gestion robuste des erreurs
+  - Auto-login après inscription
+- [x] Intégration avec l'architecture API existante
 
-### 2.3 Middleware et Navigation Guards
+### 2.3 Middleware et Navigation Guards ⏳ **EN COURS**
 
 - [ ] Adapter `middleware/auth.ts`
   - Vérification validité token
@@ -109,13 +117,13 @@
   - Gestion des permissions par route
 - [ ] Adapter les composants de navigation selon les rôles
 
-### 2.4 Pages d'Authentification
+### 2.4 Pages d'Authentification ⏳ **À FAIRE**
 
-- [ ] Migrer `pages/login.vue`
-  - Utiliser nouveaux endpoints API
+- [ ] Valider `pages/login.vue`
+  - Utilise déjà les nouveaux endpoints API
   - Conserver design actuel
   - Gestion d'erreurs améliorée
-- [ ] Migrer `pages/register.vue`
+- [ ] Valider `pages/register.vue`
 - [ ] Migrer `pages/reset-password.vue` et `pages/set-password.vue`
 - [ ] Tests des flows complets d'authentification
 
@@ -428,25 +436,26 @@
 - **Phase 1.2** : Installation nouvelles dépendances (TanStack Query, VueUse)
 - **Phase 1.3** : Configuration API centralisée complète
 - **Phase 1.4** : Types TypeScript depuis l'API (génération automatisée complète)
+- **Phase 2.1** : Refactor complet du store d'authentification
+- **Phase 2.2** : Composable authApi avec gestion états et erreurs
 
 ### 🔄 **Phase en Cours**
 
-- **Phase 2 : Migration de l'Authentification** (prête à commencer)
+- **Phase 2.3 : Middleware et Navigation Guards** (prête à commencer)
 
 ### 📋 **Prochaines Étapes**
 
-1. ✅ ~~Finaliser les types depuis Swagger~~
-2. **Commencer Phase 2 : Migration authentification**
-   - Refactor store auth avec nouveaux endpoints
-   - Composables authApi
-   - Middleware et guards
-3. Tests et validation de l'architecture API
+1. **Tests utilisateur de l'authentification actuelle** (en cours)
+2. **Phase 2.3 : Middleware auth** (après validation)
+3. **Phase 2.4 : Validation pages auth** (après middleware)
+4. **Commit et changelog Phase 2** (fin de phase)
 
 ### 🎯 **Progression Globale**
 
 - **Phase 1 Setup :** ✅ 100% complété
-- **Migration globale :** ~35% complété
-- **Commit History :** 5 commits organisés + changesets documentés
+- **Phase 2 Auth :** 🔄 65% complété (2.1 + 2.2 terminées)
+- **Migration globale :** ~45% complété
+- **Commit History :** Commits organisés + amendements propres
 
 ### 🏗️ **Architecture Actuelle**
 
@@ -457,35 +466,35 @@
 - ✅ Script de synchronisation automatique
 - ✅ Query Keys standardisées
 - ✅ Configuration environnement
+- ✅ **Store auth optimisé** avec states loading
+- ✅ **Composable authApi robuste** avec gestion erreurs
+- ✅ **Endpoints auth fonctionnels** (login/register/profile/refresh/logout)
 - ✅ Build fonctionnel et testé
-- ✅ Changesets documentés sur les 2 repos
 
 ### 📝 **Notes de Développement**
 
-- ✅ Commits organisés en 5 étapes logiques (types, config, logique, pages, composants)
-- ✅ Changesets créés pour API v1.4.0 (minor) et Face B v1.0.0 (major)
-- ✅ Architecture automatisée : `pnpm generate:types` synchronise avec l'API
-- ✅ Nettoyage complet des dépendances obsolètes
-- ✅ Build réussi après chaque phase
-- ✅ **Phase 1 complètement terminée** - Ready pour authentification
+- ✅ Commits organisés avec --amend pour garder l'historique propre
+- ✅ Endpoints auth testés avec credentials root (120@nina.fm)
+- ✅ Store auth : loading states, userRole, hasProfile computed
+- ✅ AuthApi : gestion loading dans login/logout/register
+- ✅ Correction automatique erreurs Prettier/ESLint
+- ✅ **Phase 2.1 et 2.2 complètement terminées** - Ready pour middleware
 
 ### 📊 **Commits & Releases Actuels**
 
 **Face B (nina.fm-faceb-v2) :**
 
-- `fe80130` - style: formatage et optimisation des composants
+- `b9dc749` - feat(auth): amélioration store auth et composables (Phase 2.1-2.2)
+- `fe80130` - style: formatage et optimisation des composants  
 - `2a526bd` - feat: migration des pages vers l'API Nina.fm
 - `ee75f91` - refactor: adaptation à la nouvelle architecture API
 - `48ba485` - chore: mise à jour des configurations projet
 - `484a364` - feat(types): optimise l'architecture des types API
-- `28239f8` - chore: ajout changeset Phase 1 (v1.0.0 major)
 
 **API (nina.fm-api) :**
 
-- `9d8190d` - feat: amélioration documentation Swagger des contrôleurs
-- `2f2eb94` - feat: enrichissement Swagger des entités
-- `f8db659` - feat: ajout des DTOs de réponse manquants
-- `248547c` - chore: ajout changeset Phase 1 (v1.4.0 minor)
+- Endpoints auth opérationnels (login, register, profile, refresh, logout)
+- Tests validés avec credentials root
 
 ---
 

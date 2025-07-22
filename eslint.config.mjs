@@ -6,6 +6,7 @@ export default withNuxt({
   rules: {
     ...eslintPluginPrettierRecommended.rules,
     'vue/multi-word-component-names': 'off',
+    'vue/no-multiple-template-root': 'off',
   },
   // Désactiver la vérification TypeScript pour éviter les boucles infinies
   settings: {

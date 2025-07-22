@@ -3,6 +3,41 @@
  * Permet une gestion cohérente du cache et de l'invalidation
  */
 
+// Types pour les paramètres des queries
+interface UserQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+  role?: string
+}
+
+interface DjQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+interface TagQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+interface MixtapeQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+  tag?: string
+  dj?: string
+}
+
+interface InvitationQueryParams {
+  page?: number
+  limit?: number
+  status?: 'pending' | 'used' | 'expired'
+  search?: string
+}
+
 export const queryKeys = {
   // Auth queries
   auth: {
@@ -51,6 +86,16 @@ export const queryKeys = {
   images: {
     all: ['images'] as const,
     detail: (id: string) => [...queryKeys.images.all, id] as const,
+  },
+
+  // Invitations queries
+  invitations: {
+    all: ['invitations'] as const,
+    lists: () => [...queryKeys.invitations.all, 'list'] as const,
+    list: (params?: InvitationQueryParams) => [...queryKeys.invitations.lists(), params] as const,
+    details: () => [...queryKeys.invitations.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.invitations.details(), id] as const,
+    validate: (token: string) => [...queryKeys.invitations.all, 'validate', token] as const,
   },
 } as const
 

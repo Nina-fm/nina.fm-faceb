@@ -15,6 +15,7 @@
     "changeset:publish": "changeset publish",
     "version:check": "changeset status",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "docker:up": "docker-compose up -d",
     "docker:up:dev": "docker-compose -f docker-compose.dev.yml up -d",

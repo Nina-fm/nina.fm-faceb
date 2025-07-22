@@ -66,7 +66,6 @@ export default defineNuxtConfig({
 
   nitro: {
     rollupConfig: {
-      //@ts-ignore
       plugins: [vue()],
     },
   },

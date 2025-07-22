@@ -1,19 +1,28 @@
 export const useAuthApi = () => {
-  const { hasRole, hasAnyRole, isLoggedIn, redirectTo, session, updateSession } = useNuxtApp().$auth
+  const authStore = useAuthStore()
+  const { post } = useApi()
   const { getImagePublicUrl } = useImageApi()
+  const { hasRole, hasAnyRole } = useRoles()
 
-  const user = computed(() => ({
-    ...session.value,
-    avatar: session.value?.avatar
-      ? {
-          ...session.value.avatar,
-          url: getImagePublicUrl(session.value.avatar.filename, session.value.avatar.bucket || ''),
-          alt: session.value.name ?? '',
-        }
-      : undefined,
-  }))
+  const user = computed(() => {
+    if (!authStore.user) return null
 
-  const currentUserId = computed(() => session.value?.id)
+    return {
+      ...authStore.user,
+      // Le nom vient du profile (nickname)
+      name: authStore.user.profile?.nickname || authStore.user.email,
+      avatar: authStore.user.profile?.avatar
+        ? {
+            ...authStore.user.profile.avatar,
+            url: getImagePublicUrl(authStore.user.profile.avatar.uri, authStore.user.profile.avatar.bucket || ''),
+            alt: authStore.user.profile?.nickname || authStore.user.email,
+          }
+        : undefined,
+    }
+  })
+
+  const currentUserId = computed(() => authStore.user?.id)
+  const isLoggedIn = computed(() => !!authStore.user && !!authStore.accessToken)
 
   const register = async ({
     email,
@@ -26,36 +35,88 @@ export const useAuthApi = () => {
     name?: string
     invitationToken?: string
   }) => {
-    await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
+    await post(
+      '/auth/register',
+      {
         email,
         name,
         password,
         invitationToken,
       },
-    })
+      { requireAuth: false },
+    )
+
+    // Auto-login après inscription
     return await login(email, password)
   }
 
   const login = async (email: string, password: string) => {
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: {
+    const response = await post(
+      '/auth/login',
+      {
         email,
         password,
       },
-    })
-    redirectTo.value = null
-    await updateSession()
-    await navigateTo(redirectTo.value || '/')
+      { requireAuth: false },
+    )
+
+    // Stocker les tokens (attention: l'API retourne access_token et refresh_token avec underscores)
+    await authStore.setTokens(response.access_token, response.refresh_token)
+
+    // Charger le profil utilisateur avec le token fraîchement reçu
+    await loadUserProfileWithToken(response.access_token)
+
+    // Redirection vers la page demandée ou l'accueil
+    await navigateTo('/')
+  }
+
+  /**
+   * Charger le profil utilisateur avec un token spécifique
+   */
+  const loadUserProfileWithToken = async (token: string) => {
+    try {
+      const config = useRuntimeConfig()
+      const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+      const profile = await $fetch<User>('/auth/profile', {
+        method: 'GET',
+        baseURL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (profile) {
+        authStore.setUser(profile)
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du profil:', error)
+      throw error
+    }
   }
 
   const logout = async () => {
-    await $fetch('/api/auth/logout', {
-      method: 'POST',
-    })
-    await updateSession()
+    try {
+      await post('/auth/logout', {}, { requireAuth: true })
+    } catch (error) {
+      // On continue même si la déconnexion côté serveur échoue
+      console.warn('Erreur lors de la déconnexion côté serveur:', error)
+    }
+
+    // Effacer les données locales
+    authStore.clearAuth()
+    await navigateTo('/login')
+  }
+
+  const refreshSession = async () => {
+    try {
+      await authStore.refreshTokens()
+      await authStore.loadUserProfile()
+    } catch (error) {
+      console.error('Erreur lors du refresh de session:', error)
+      throw error
+    }
   }
 
   return {
@@ -64,11 +125,11 @@ export const useAuthApi = () => {
     user,
     isLoggedIn,
     // Actions
-    hasRole,
-    hasAnyRole,
+    hasRole: (role: string) => hasRole(authStore.user?.role, role),
+    hasAnyRole: (roles: string[]) => hasAnyRole(authStore.user?.role, roles),
     login,
     logout,
-    refreshSession: updateSession,
+    refreshSession,
     register,
   }
 }

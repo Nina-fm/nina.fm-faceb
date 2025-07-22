@@ -1,121 +1,249 @@
-import type { Provider } from '@supabase/supabase-js'
-import { defineStore, storeToRefs } from 'pinia'
-import { toast } from 'vue-sonner'
-import type { AnyFn, Obj } from '~/types/supatypes'
+import { defineStore } from 'pinia'
+
+// Suppression de l'interface AuthTokens non utilisée
 
 export const useAuthStore = defineStore('auth', () => {
-  const supabase = useSupabaseClient()
-  const user = useSupabaseUser()
-  const session = useSupabaseSession()
-  const { loadingOn, loadingOff } = useLoadingStore()
+  // État réactif
+  const user = ref<User | null>(null)
+  const accessToken = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
 
-  const token = computed(() => session.value?.access_token)
-  const isLoggedIn = computed(() => !!user.value && !!token.value)
+  // Computed
+  const isLoggedIn = computed(() => !!user.value && !!accessToken.value)
 
-  // watch(isLoggedIn, (value) => {
-  //   if (!value) {
-  //     return navigateTo('/login')
-  //   }
-  // })
+  /**
+   * Stocker les tokens dans le store, localStorage et cookies
+   */
+  const setTokens = async (newAccessToken: string, newRefreshToken: string) => {
+    accessToken.value = newAccessToken
+    refreshToken.value = newRefreshToken
 
-  const errorHandler = async (fn: AnyFn) => {
+    // Persister dans localStorage (côté client)
+    if (import.meta.client) {
+      localStorage.setItem('nina_access_token', newAccessToken)
+      localStorage.setItem('nina_refresh_token', newRefreshToken)
+    }
+
+    // Persister dans les cookies (accessible côté serveur et client)
+    const accessTokenCookie = useCookie('nina_access_token', {
+      default: () => '',
+      httpOnly: false,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 15, // 15 minutes
+    })
+    const refreshTokenCookie = useCookie('nina_refresh_token', {
+      default: () => '',
+      httpOnly: false,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 jours
+    })
+
+    accessTokenCookie.value = newAccessToken
+    refreshTokenCookie.value = newRefreshToken
+  }
+
+  /**
+   * Définir l'utilisateur connecté
+   */
+  const setUser = (userData: User) => {
+    user.value = userData
+  }
+
+  /**
+   * Nettoyer l'authentification
+   */
+  const clearAuth = async () => {
+    user.value = null
+    accessToken.value = null
+    refreshToken.value = null
+
+    // Nettoyer localStorage
+    if (import.meta.client) {
+      localStorage.removeItem('nina_access_token')
+      localStorage.removeItem('nina_refresh_token')
+    }
+
+    // Nettoyer les cookies
+    const accessTokenCookie = useCookie('nina_access_token')
+    const refreshTokenCookie = useCookie('nina_refresh_token')
+    accessTokenCookie.value = null
+    refreshTokenCookie.value = null
+  }
+
+  /**
+   * Charger les tokens depuis localStorage/cookies et récupérer le profil
+   */
+  const loadUserProfile = async () => {
+    console.log('[AUTH] loadUserProfile - démarrage')
+
+    if (!import.meta.client) {
+      console.log('[AUTH] loadUserProfile - pas côté client, abandon')
+      return
+    }
+
+    // Essayer d'abord localStorage, puis cookies en fallback
+    let storedAccessToken = localStorage.getItem('nina_access_token')
+    let storedRefreshToken = localStorage.getItem('nina_refresh_token')
+
+    // Si pas dans localStorage, essayer les cookies
+    if (!storedAccessToken || !storedRefreshToken) {
+      const accessTokenCookie = useCookie('nina_access_token')
+      const refreshTokenCookie = useCookie('nina_refresh_token')
+      storedAccessToken = accessTokenCookie.value || null
+      storedRefreshToken = refreshTokenCookie.value || null
+    }
+
+    console.log('[AUTH] loadUserProfile - tokens trouvés:', {
+      hasAccessToken: !!storedAccessToken,
+      hasRefreshToken: !!storedRefreshToken,
+      accessTokenStart: storedAccessToken?.substring(0, 20) + '...',
+    })
+
+    if (!storedAccessToken || !storedRefreshToken) {
+      console.log('[AUTH] loadUserProfile - pas de tokens, abandon')
+      return
+    }
+
+    // Restaurer les tokens
+    accessToken.value = storedAccessToken
+    refreshToken.value = storedRefreshToken
+
+    console.log('[AUTH] loadUserProfile - tokens restaurés dans le store')
+
     try {
-      loadingOn('auth')
-      const result = await fn()
-      if (result.error) throw result.error
-      return result
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      log(error)
-      toast.error(error.error_description || error.message)
-    } finally {
-      loadingOff('auth')
+      // Utiliser $fetch directement pour éviter les boucles avec useApi
+      const config = useRuntimeConfig()
+      const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+      console.log('[AUTH] loadUserProfile - appel /auth/profile...')
+
+      const profile = await $fetch<User>('/auth/profile', {
+        method: 'GET',
+        baseURL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      })
+
+      if (profile) {
+        setUser(profile)
+        console.log('[AUTH] loadUserProfile - profil chargé avec succès:', profile.email)
+      } else {
+        console.log('[AUTH] loadUserProfile - profil invalide, nettoyage')
+        // Profil invalide, nettoyer
+        await clearAuth()
+      }
+    } catch (error: unknown) {
+      console.error('[AUTH] loadUserProfile - erreur:', error)
+
+      // Simplification : essayer le refresh sur toute erreur HTTP
+      console.log('[AUTH] loadUserProfile - erreur détectée, tentative de refresh...')
+      const refreshSuccess = await refreshTokens()
+      if (!refreshSuccess) {
+        console.log('[AUTH] loadUserProfile - refresh échoué, déconnexion')
+        await clearAuth()
+      } else {
+        console.log('[AUTH] loadUserProfile - refresh réussi')
+      }
     }
   }
 
   /**
-   * Login with email and password
+   * Rafraîchir les tokens
    */
-  const login = async ({ email, password }: SignInParams) =>
-    await errorHandler(
-      async () =>
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        }),
-    )
+  const refreshTokens = async () => {
+    if (!refreshToken.value) {
+      await clearAuth()
+      return false
+    }
+
+    try {
+      // Utiliser $fetch directement pour éviter la boucle infinie avec useApi
+      const config = useRuntimeConfig()
+      const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+      const response = await $fetch<{ access_token: string; refresh_token: string }>('/auth/refresh', {
+        method: 'POST',
+        baseURL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          refresh_token: refreshToken.value,
+        },
+      })
+
+      if (response.access_token && response.refresh_token) {
+        await setTokens(response.access_token, response.refresh_token)
+
+        // Charger le profil avec le nouveau token (sans risque de boucle)
+        try {
+          const config = useRuntimeConfig()
+          const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+          const profile = await $fetch<User>('/auth/profile', {
+            method: 'GET',
+            baseURL,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${response.access_token}`,
+            },
+          })
+
+          if (profile) {
+            setUser(profile)
+          }
+        } catch (profileError) {
+          console.error('Erreur lors du chargement du profil après refresh:', profileError)
+          // Ne pas faire clearAuth ici, on a déjà les nouveaux tokens
+        }
+
+        return true
+      } else {
+        await clearAuth()
+        return false
+      }
+    } catch (error) {
+      console.error('Erreur lors du refresh:', error)
+      await clearAuth()
+      return false
+    }
+  }
 
   /**
-   * Login with email (magic)
+   * Gérer l'expiration du token
    */
-  const loginWithEmail = async ({ email }: Pick<SignInParams, 'email'>) =>
-    await errorHandler(async () => await supabase.auth.signInWithOtp({ email }))
-
-  /**
-   * Login with google, github, etc
-   */
-
-  const loginWithSocialProvider = async (provider: Provider) =>
-    await errorHandler(
-      async () =>
-        await supabase.auth.signInWithOAuth({
-          provider,
-        }),
-    )
-
-  /**
-   * Logout
-   */
-  const logout = async () => await errorHandler(async () => await supabase.auth.signOut())
-
-  /**
-   * Register
-   */
-  const register = async ({ email, password, ...meta }: SignUpParams) =>
-    await errorHandler(
-      async () =>
-        await supabase.auth.signUp({
-          email,
-          password,
-        }),
-    )
-
-  /**
-   * Update user email, password, or meta data
-   */
-  const update = async (userData: Obj) => await errorHandler(async () => await supabase.auth.updateUser(userData))
-
-  /**
-   * Send user an email to reset their password
-   * (ie. support "Forgot Password?")
-   */
-  const sendPasswordRestEmail = async (email: string) =>
-    await errorHandler(async () => await supabase.auth.resetPasswordForEmail(email))
-
-  const resetPassword = async (accessToken: string, newPassword: string) =>
-    await errorHandler(
-      async () =>
-        await supabase.auth.admin.updateUserById(accessToken, {
-          password: newPassword,
-        }),
-    )
+  const handleTokenExpired = async () => {
+    console.log('[AUTH] handleTokenExpired - démarrage')
+    const success = await refreshTokens()
+    console.log('[AUTH] handleTokenExpired - refresh result:', success)
+    if (!success) {
+      console.log('[AUTH] handleTokenExpired - refresh échoué, redirection vers /login')
+      await navigateTo('/login')
+    } else {
+      console.log('[AUTH] handleTokenExpired - refresh réussi, pas de redirection')
+    }
+  }
 
   return {
+    // État
     user,
-    token,
-    login,
-    loginWithEmail,
-    loginWithSocialProvider,
+    accessToken,
+    refreshToken,
     isLoggedIn,
-    logout,
-    register,
-    update,
-    sendPasswordRestEmail,
-    resetPassword,
+
+    // Actions
+    setTokens,
+    setUser,
+    clearAuth,
+    loadUserProfile,
+    refreshTokens,
+    handleTokenExpired,
   }
 })
-
-export const useAuthStoreRefs = () => storeToRefs(useAuthStore())
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))

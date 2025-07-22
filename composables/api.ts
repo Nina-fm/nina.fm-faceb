@@ -73,9 +73,11 @@ export const useApi = () => {
           console.error('[API] Response Error:', response.status, response._data)
 
           // Gestion des erreurs d'authentification
-          if (response.status === 401) {
+          // Attention: Ne pas déclencher le refresh pour les endpoints d'auth eux-mêmes
+          if (response.status === 401 && !endpoint.includes('/auth/')) {
+            console.log('[API] Token expiré détecté sur:', endpoint, '- déclenchement handleTokenExpired')
             // Token expiré, tentative de refresh
-            return authStore.handleTokenExpired()
+            authStore.handleTokenExpired()
           }
         },
       })) as T

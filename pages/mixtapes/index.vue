@@ -9,7 +9,6 @@
   const { data, error, refresh } = await useAsyncData('mixtapes', () => fetchMixtapes())
 
   const mixtapes = computed(() => data.value?.results || [])
-  const tags = computed(() => data.value?.results || [])
 
   const variant = computed(() => {
     if (pending.value) return 'primaryMuted'
@@ -43,7 +42,7 @@
       await deleteMixtape(id)
       await refresh()
       toast.success('Mixtape supprimée !')
-    } catch (error) {
+    } catch {
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
     }
   }

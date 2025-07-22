@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-  // Types globaux depuis api.d.ts - Role est disponible
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
+  import { Role } from '~/utils/roles'
 
   definePageMeta({ roles: [Role.ADMIN] })
 

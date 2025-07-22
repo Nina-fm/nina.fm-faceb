@@ -35,7 +35,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     debug: false,
-    app: {
+    nina: {
       auth: {
         name: 'nuxt-session',
         password: process.env.AUTH_SECRET,

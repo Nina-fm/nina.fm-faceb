@@ -77,7 +77,7 @@
 
 ---
 
-## 🔐 **Phase 2 : Migration de l'Authentification** _(3 jours)_ ⏳ **PRESQUE TERMINÉE** (3/4)
+## 🔐 **Phase 2 : Migration de l'Authentification** _(4 jours)_ ⏳ **EN COURS** (4/5)
 
 ### 2.1 Nouveau Store Auth ✅ **COMPLÉTÉ**
 
@@ -120,15 +120,90 @@
 - [x] Configuration middleware global (`auth.global.ts`)
 - [x] Tests de redirection et accès aux pages protégées
 
-### 2.4 Pages d'Authentification ⏳ **À FAIRE**
+### 2.4 Pages d'Authentification ✅ **TERMINÉE**
 
-- [ ] Valider `pages/login.vue`
+- [x] Valider `pages/login.vue`
   - Utilise déjà les nouveaux endpoints API
   - Conserver design actuel
   - Gestion d'erreurs améliorée
-- [ ] Valider `pages/register.vue`
-- [ ] Migrer `pages/reset-password.vue` et `pages/set-password.vue`
-- [ ] Tests des flows complets d'authentification
+- [x] Valider `pages/register.vue`
+- [x] Migrer `pages/reset-password.vue` et `pages/set-password.vue`
+  - Intégration avec EmailService et Resend
+  - Flow complet de réinitialisation par email
+  - Gestion des tokens JWT avec expiration
+- [x] Tests des flows complets d'authentification
+
+### 2.5 Système d'Invitation ⏳ **EN COURS**
+
+> **🎯 Objectif :** Sécuriser Face B avec un système d'invitation pour contrôler l'accès
+
+**Architecture :**
+- **API Nina.fm** : Endpoints flexibles (inscription libre + invitation optionnelle)
+- **Face B** : Interface privée avec invitation obligatoire
+- **Autres apps futures** : Choix libre entre inscription publique et privée
+
+#### 2.5.1 API - Infrastructure d'Invitation
+
+- [ ] **Table `invitations`** (TypeORM Entity)
+  - `id` : UUID
+  - `email` : String (destinataire)
+  - `token` : String (JWT avec expiration 7 jours)
+  - `used_at` : Date nullable (quand l'invitation est utilisée)
+  - `expires_at` : Date (expiration du token)
+  - `invited_by` : Relation vers User (administrateur invitant)
+  - `created_at` / `updated_at` : Timestamps
+  
+- [ ] **Migration TypeORM** : Créer la table invitations
+  
+- [ ] **Endpoints API** (`/invitations`)
+  - `POST /invitations/send` (Rôle: ADMIN) - Envoyer une invitation
+  - `GET /invitations` (Rôle: ADMIN) - Lister les invitations
+  - `GET /invitations/validate/:token` (Public) - Vérifier validité token
+  - `DELETE /invitations/:id` (Rôle: ADMIN) - Annuler invitation
+  
+- [ ] **EmailService enrichi**
+  - Template professionnel pour email d'invitation
+  - Lien vers `/register?token=xxx` avec branding Nina.fm
+  
+- [ ] **Auth Register adapté**
+  - Paramètre `invitationToken` optionnel dans RegisterDto
+  - Validation et consommation du token si fourni
+  - Compatibilité avec inscription libre (autres apps)
+
+#### 2.5.2 Face B - Interface Privée
+
+- [ ] **Protection page register**
+  - Middleware check token d'invitation obligatoire
+  - Redirection vers `/login` si pas de token valide
+  - Message informatif sur l'accès par invitation
+  
+- [ ] **Page gestion invitations** (`/invitations`)
+  - Liste des invitations (envoyées, utilisées, expirées)
+  - Formulaire envoi nouvelle invitation
+  - Actions : annuler, renvoyer
+  - Rôle requis : ADMIN
+  
+- [ ] **Composables d'invitation**
+  - `composables/invitationApi.ts` : CRUD invitations
+  - Intégration TanStack Query
+  - Gestion d'erreurs et loading states
+
+#### 2.5.3 UX et Flow Utilisateur
+
+- [ ] **Email d'invitation professionnel**
+  - Template HTML avec branding Nina.fm
+  - Bouton CTA vers page register
+  - Informations sur l'expiration (7 jours)
+  
+- [ ] **Page register avec token**
+  - Pre-remplissage email si dans token
+  - Message de bienvenue personnalisé
+  - Feedback sur succès création compte
+  
+- [ ] **Tests end-to-end**
+  - Flow complet admin → invitation → création compte
+  - Gestion des tokens expirés/invalides
+  - Interface admin fonctionnelle
 
 ---
 

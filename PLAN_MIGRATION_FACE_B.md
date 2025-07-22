@@ -77,7 +77,7 @@
 
 ---
 
-## 🔐 **Phase 2 : Migration de l'Authentification** _(3 jours)_
+## 🔐 **Phase 2 : Migration de l'Authentification** _(3 jours)_ ⏳ **PRESQUE TERMINÉE** (3/4)
 
 ### 2.1 Nouveau Store Auth ✅ **COMPLÉTÉ**
 
@@ -109,13 +109,16 @@
   - Auto-login après inscription
 - [x] Intégration avec l'architecture API existante
 
-### 2.3 Middleware et Navigation Guards ⏳ **EN COURS**
+### 2.3 Middleware et Navigation Guards ✅ **TERMINÉE**
 
-- [ ] Adapter `middleware/auth.ts`
-  - Vérification validité token
-  - Redirection si non authentifié
-  - Gestion des permissions par route
-- [ ] Adapter les composants de navigation selon les rôles
+- [x] Adapter `middleware/auth.ts`
+  - Vérification validité token côté serveur et client
+  - Redirection si non authentifié vers `/login`
+  - Gestion des permissions par route (`requiresRoles`)
+  - Middleware global pour protection automatique
+  - Pages publiques avec `auth: false`
+- [x] Configuration middleware global (`auth.global.ts`)
+- [x] Tests de redirection et accès aux pages protégées
 
 ### 2.4 Pages d'Authentification ⏳ **À FAIRE**
 
@@ -315,7 +318,6 @@
 ### 9.1 Système d'Invitations Complet
 
 - [ ] **Côté API (NestJS) :**
-
   - Créer module `invitations` complet
   - Entités et DTOs pour les invitations
   - `POST /invitations` - Créer une invitation
@@ -338,7 +340,6 @@
 > **💡 Feature :** Gestionnaire centralisé des médias pour le backoffice
 
 - [ ] **Côté API (si nécessaire) :**
-
   - Étendre endpoints `/images/*` avec métadonnées
   - Ajout de tags/catégories pour les images
   - Recherche et filtrage avancés
@@ -485,7 +486,7 @@
 **Face B (nina.fm-faceb-v2) :**
 
 - `b9dc749` - feat(auth): amélioration store auth et composables (Phase 2.1-2.2)
-- `fe80130` - style: formatage et optimisation des composants  
+- `fe80130` - style: formatage et optimisation des composants
 - `2a526bd` - feat: migration des pages vers l'API Nina.fm
 - `ee75f91` - refactor: adaptation à la nouvelle architecture API
 - `48ba485` - chore: mise à jour des configurations projet

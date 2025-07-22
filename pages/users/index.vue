@@ -2,7 +2,9 @@
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: ['ADMIN'] })
+  definePageMeta({
+    requiresRoles: ['ADMIN'],
+  })
 
   const { currentUserId } = useAuthApi()
   const { fetchUsers, deleteUser } = useUserApi()

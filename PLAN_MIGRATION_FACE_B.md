@@ -5,6 +5,8 @@
 ## 📊 **Vue d'Ensemble**
 
 - **Durée estimée :** 10-14 jours
+- **Progression actuelle :** 5/6 phases complétées (Phase 2.6 en préparation)
+- **Dernière mise à jour :** Système d'invitations complet côté API
 - **Environnements :** Local + Production (staging ultérieurement si besoin)
 - **Cache Strategy :** TanStack Query (Vue Query) pour optimiser les performances
 - **Migration des données :** Phase séparée après la migration technique
@@ -77,7 +79,7 @@
 
 ---
 
-## 🔐 **Phase 2 : Migration de l'Authentification** _(4 jours)_ ⏳ **EN COURS** (4/5)
+## 🔐 **Phase 2 : Migration de l'Authentification** _(4 jours)_ ✅ **TERMINÉE** (5/5)
 
 ### 2.1 Nouveau Store Auth ✅ **COMPLÉTÉ**
 
@@ -133,7 +135,7 @@
   - Gestion des tokens JWT avec expiration
 - [x] Tests des flows complets d'authentification
 
-### 2.5 Système d'Invitation ⏳ **EN COURS**
+### 2.5 Système d'Invitation ✅ **TERMINÉE**
 
 > **🎯 Objectif :** Sécuriser Face B avec un système d'invitation pour contrôler l'accès
 
@@ -142,9 +144,9 @@
 - **Face B** : Interface privée avec invitation obligatoire
 - **Autres apps futures** : Choix libre entre inscription publique et privée
 
-#### 2.5.1 API - Infrastructure d'Invitation
+#### 2.5.1 API - Infrastructure d'Invitation ✅ **COMPLÉTÉ**
 
-- [ ] **Table `invitations`** (TypeORM Entity)
+- [x] **Table `invitations`** (TypeORM Entity)
   - `id` : UUID
   - `email` : String (destinataire)
   - `token` : String (JWT avec expiration 7 jours)
@@ -153,24 +155,35 @@
   - `invited_by` : Relation vers User (administrateur invitant)
   - `created_at` / `updated_at` : Timestamps
   
-- [ ] **Migration TypeORM** : Créer la table invitations
+- [x] **Migration TypeORM** : `1753219951996-AddInvitationsTable.ts` créée et appliquée
   
-- [ ] **Endpoints API** (`/invitations`)
-  - `POST /invitations/send` (Rôle: ADMIN) - Envoyer une invitation
+- [x] **Endpoints API** (`/invitations`)
+  - `POST /invitations` (Rôle: ADMIN) - Envoyer une invitation
   - `GET /invitations` (Rôle: ADMIN) - Lister les invitations
-  - `GET /invitations/validate/:token` (Public) - Vérifier validité token
+  - `GET /invitations/validate` (Public) - Vérifier validité token via query param
   - `DELETE /invitations/:id` (Rôle: ADMIN) - Annuler invitation
   
-- [ ] **EmailService enrichi**
-  - Template professionnel pour email d'invitation
-  - Lien vers `/register?token=xxx` avec branding Nina.fm
+- [x] **EmailService enrichi**
+  - Template professionnel pour email d'invitation avec branding Nina.fm
+  - Lien vers Face B avec token d'invitation intégré
+  - Service Resend configuré et fonctionnel
   
-- [ ] **Auth Register adapté**
-  - Paramètre `invitationToken` optionnel dans RegisterDto
-  - Validation et consommation du token si fourni
-  - Compatibilité avec inscription libre (autres apps)
+- [x] **Auth Register adapté**
+  - Support des invitations via `consumeInvitation()` dans InvitationsService
+  - Validation et consommation automatique du token
+  - Compatibilité maintenue avec inscription libre (autres apps)
 
-#### 2.5.2 Face B - Interface Privée
+- [x] **Tests et Documentation**
+  - 5 tests unitaires ajoutés (InvitationsService + Controller)
+  - Documentation Bruno API complète avec exemples
+  - 292 tests passent au total
+  
+- [x] **Automatisation Infrastructure**
+  - Script `generate-migration.ts` pour automatiser les migrations TypeORM
+  - Commandes `pnpm db:diff` et `pnpm db:migrate` fonctionnelles
+  - Résolution des problèmes CLI TypeORM avec ES6
+
+#### 2.5.2 Face B - Interface Privée ⏳ **PROCHAINE ÉTAPE**
 
 - [ ] **Protection page register**
   - Middleware check token d'invitation obligatoire
@@ -190,7 +203,7 @@
 
 #### 2.5.3 UX et Flow Utilisateur
 
-- [ ] **Email d'invitation professionnel**
+- [ ] **Email d'invitation professionnel** (✅ côté API, validation côté Face B)
   - Template HTML avec branding Nina.fm
   - Bouton CTA vers page register
   - Informations sur l'expiration (7 jours)
@@ -204,6 +217,72 @@
   - Flow complet admin → invitation → création compte
   - Gestion des tokens expirés/invalides
   - Interface admin fonctionnelle
+
+---
+
+## 🎯 **Phase 2.6 : Intégration Face B avec Système d'Invitations** _(1-2 jours)_
+
+> **🎯 Objectif :** Connecter Face B au système d'invitations déjà fonctionnel côté API
+
+### 2.6.1 Composables et API Integration
+
+- [ ] **Créer `composables/invitationApi.ts`**
+  - `sendInvitation(email, message?)` - Envoyer invitation
+  - `validateInvitationToken(token)` - Valider token d'invitation  
+  - `getInvitations()` - Lister invitations pour admin
+  - `cancelInvitation(id)` - Annuler invitation
+  - Intégration TanStack Query pour cache et état
+  - Gestion d'erreurs standardisée
+
+### 2.6.2 Pages et Interface Utilisateur
+
+- [ ] **Page `/invitations` (Admin uniquement)**
+  - Table des invitations avec statuts (envoyée, utilisée, expirée)
+  - Formulaire d'envoi de nouvelle invitation
+  - Actions : annuler, renvoyer invitation
+  - Filtres : statut, date, email
+  - Pagination si nécessaire
+
+- [ ] **Mise à jour `/register`**
+  - Détection automatique du token d'invitation dans l'URL
+  - Pre-remplissage de l'email si contenu dans le token
+  - Message de bienvenue personnalisé avec nom de l'invitant
+  - Validation côté client du token avant soumission
+
+- [ ] **Protection accès privé**
+  - Middleware pour vérifier token d'invitation sur `/register`
+  - Redirection vers `/login` avec message informatif si pas de token
+  - Page d'information sur l'accès par invitation uniquement
+
+### 2.6.3 Composants et UX
+
+- [ ] **Composant `InvitationForm.vue`**
+  - Champ email avec validation
+  - Champ message optionnel personnalisé
+  - État de loading pendant envoi
+  - Feedback succès/erreur
+
+- [ ] **Composant `InvitationsList.vue`**
+  - Table responsive avec statuts visuels
+  - Actions contextuelles par invitation
+  - Indicateurs de temps (envoyée il y a X, expire dans X)
+
+- [ ] **Navigation et permissions**
+  - Ajout lien "Invitations" dans menu admin
+  - Badge compteur d'invitations en attente
+  - Mise à jour des guards de navigation
+
+### 2.6.4 Tests et Validation
+
+- [ ] **Tests end-to-end**
+  - Flow complet : admin envoie invitation → utilisateur s'inscrit
+  - Gestion des cas d'erreur (token expiré, déjà utilisé)
+  - Validation interface admin
+  
+- [ ] **Tests d'intégration**
+  - Vérification des appels API
+  - États de loading et d'erreur
+  - Navigation et redirections
 
 ---
 

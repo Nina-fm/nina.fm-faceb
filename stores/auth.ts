@@ -7,9 +7,12 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const accessToken = ref<string | null>(null)
   const refreshToken = ref<string | null>(null)
+  const isLoading = ref<boolean>(false)
 
   // Computed
   const isLoggedIn = computed(() => !!user.value && !!accessToken.value)
+  const userRole = computed(() => user.value?.role || null)
+  const hasProfile = computed(() => !!user.value?.profile)
 
   /**
    * Stocker les tokens dans le store, localStorage et cookies
@@ -83,36 +86,38 @@ export const useAuthStore = defineStore('auth', () => {
       return
     }
 
-    // Essayer d'abord localStorage, puis cookies en fallback
-    let storedAccessToken = localStorage.getItem('nina_access_token')
-    let storedRefreshToken = localStorage.getItem('nina_refresh_token')
-
-    // Si pas dans localStorage, essayer les cookies
-    if (!storedAccessToken || !storedRefreshToken) {
-      const accessTokenCookie = useCookie('nina_access_token')
-      const refreshTokenCookie = useCookie('nina_refresh_token')
-      storedAccessToken = accessTokenCookie.value || null
-      storedRefreshToken = refreshTokenCookie.value || null
-    }
-
-    console.log('[AUTH] loadUserProfile - tokens trouvés:', {
-      hasAccessToken: !!storedAccessToken,
-      hasRefreshToken: !!storedRefreshToken,
-      accessTokenStart: storedAccessToken?.substring(0, 20) + '...',
-    })
-
-    if (!storedAccessToken || !storedRefreshToken) {
-      console.log('[AUTH] loadUserProfile - pas de tokens, abandon')
-      return
-    }
-
-    // Restaurer les tokens
-    accessToken.value = storedAccessToken
-    refreshToken.value = storedRefreshToken
-
-    console.log('[AUTH] loadUserProfile - tokens restaurés dans le store')
+    isLoading.value = true
 
     try {
+      // Essayer d'abord localStorage, puis cookies en fallback
+      let storedAccessToken = localStorage.getItem('nina_access_token')
+      let storedRefreshToken = localStorage.getItem('nina_refresh_token')
+
+      // Si pas dans localStorage, essayer les cookies
+      if (!storedAccessToken || !storedRefreshToken) {
+        const accessTokenCookie = useCookie('nina_access_token')
+        const refreshTokenCookie = useCookie('nina_refresh_token')
+        storedAccessToken = accessTokenCookie.value || null
+        storedRefreshToken = refreshTokenCookie.value || null
+      }
+
+      console.log('[AUTH] loadUserProfile - tokens trouvés:', {
+        hasAccessToken: !!storedAccessToken,
+        hasRefreshToken: !!storedRefreshToken,
+        accessTokenStart: storedAccessToken?.substring(0, 20) + '...',
+      })
+
+      if (!storedAccessToken || !storedRefreshToken) {
+        console.log('[AUTH] loadUserProfile - pas de tokens, abandon')
+        return
+      }
+
+      // Restaurer les tokens
+      accessToken.value = storedAccessToken
+      refreshToken.value = storedRefreshToken
+
+      console.log('[AUTH] loadUserProfile - tokens restaurés dans le store')
+
       // Utiliser $fetch directement pour éviter les boucles avec useApi
       const config = useRuntimeConfig()
       const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
@@ -148,6 +153,8 @@ export const useAuthStore = defineStore('auth', () => {
       } else {
         console.log('[AUTH] loadUserProfile - refresh réussi')
       }
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -234,6 +241,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     isLoggedIn,
+    isLoading,
+    userRole,
+    hasProfile,
 
     // Actions
     setTokens,

@@ -8,7 +8,7 @@
 
   withDefaults(
     defineProps<{
-      data: InvitationResponse[]
+      data?: InvitationResponse[]
       loading?: boolean
     }>(),
     {
@@ -55,6 +55,7 @@
     {
       accessorKey: 'id',
       header: '',
+      size: 60,
       cell: () => {
         return h('div', { class: 'size-2 rounded-full bg-info' })
       },
@@ -67,35 +68,37 @@
       accessorFn: (row) => {
         // DEBUG: log structure de la ligne
         if (typeof window !== 'undefined') {
-          // eslint-disable-next-line no-console
           console.log('Invitation row:', row)
         }
-        return row.created_at
+        return row.createdAt
       },
       id: 'created_at',
       header: "Date d'invitation",
       cell: ({ row }) => {
-        const createdAt = row.original.created_at
+        const createdAt = row.original.createdAt
         const date = createdAt ? new Date(createdAt) : null
         return h(
           'span',
           {},
-          { default: () => [date && !isNaN(date.getTime()) ? date.toLocaleDateString('fr-FR', { dateStyle: 'medium' }) : ''] },
+          {
+            default: () => [
+              date && !isNaN(date.getTime()) ? date.toLocaleDateString('fr-FR', { dateStyle: 'medium' }) : '',
+            ],
+          },
         )
       },
     },
     {
       accessorFn: (row) => {
         if (typeof window !== 'undefined') {
-          // eslint-disable-next-line no-console
-          console.log('Invitation row (invited_by):', row)
+          console.log('Invitation row (invitedBy):', row)
         }
-        return row.invited_by?.email
+        return row.invitedBy
       },
-      id: 'invited_by',
+      id: 'invitedBy',
       header: 'Invité par',
       cell: ({ row }) => {
-        const email = row.original.invited_by?.email
+        const email = row.original.invitedBy
         return h('span', {}, { default: () => [email || ''] })
       },
     },

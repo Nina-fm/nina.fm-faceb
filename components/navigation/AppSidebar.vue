@@ -14,7 +14,7 @@
       <SidebarTrigger class="text-muted-foreground size-8" />
     </SidebarHeader>
     <SidebarContent class="pt-14">
-      <Fragment v-if="navigation">
+      <template v-if="navigation">
         <SidebarGroup v-for="group in navigation" :key="group.label">
           <SidebarGroupLabel class="text-sidebar-foreground/20 group-data-[collapsible=icon]:hidden">
             {{ group.label }}
@@ -37,7 +37,7 @@
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </Fragment>
+      </template>
     </SidebarContent>
     <SidebarFooter>
       <NavUser />

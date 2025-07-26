@@ -4,7 +4,7 @@
 
 <template>
   <!-- <transition name="fade"> -->
-  <div v-if="active" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div v-if="active" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
     <div class="flex flex-col items-center justify-center">
       <AnimatedLoader />
     </div>

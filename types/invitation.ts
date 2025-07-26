@@ -13,14 +13,11 @@ export interface InvitationResponse {
   email: string
   message?: string
   token: string
-  used_at?: string | null
-  expires_at: string
-  invited_by: {
-    id: string
-    email: string
-  }
-  created_at: string
-  updated_at: string
+  usedAt?: string | null
+  expiresAt: string
+  invitedBy: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PaginatedInvitationsResponse {

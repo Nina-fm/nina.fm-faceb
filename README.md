@@ -1,4 +1,4 @@
-# Nuxt Minimal Starter# 🎛️ Nina.fm Face B
+# 🎛️ Nina.fm Face B
 
 Interface d'administration moderne pour la plateforme Nina.fm, développée avec Nuxt 3, TypeScript et TanStack Query. Cette application backoffice permet de gérer entièrement le contenu et les utilisateurs de Nina.fm.
 

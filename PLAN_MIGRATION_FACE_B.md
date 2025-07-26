@@ -137,9 +137,19 @@
 
 ### 2.5 Système d'Invitation ✅ **TERMINÉE**
 
+### 2.6 Harmonisation Ownership & Guards (API) ✅ **TERMINÉE**
+
+- [x] Factorisation et DRY du code d'ownership (own resource) sur toutes les entités (images, mixtapes, djs, tags, users)
+- [x] Application systématique des guards et décorateurs d'ownership sur toutes les routes concernées
+- [x] Harmonisation de l'ordre des décorateurs (@Permissions, @OwnerOrAdmin, @UseGuards) sur toutes les routes ownership
+- [x] Couverture de tests unitaires et e2e sur les guards/décorateurs d'ownership
+- [x] Suppression des warnings lint, build et tests 100% verts
+- [x] Documentation et audit sécurité sur l'accès aux ressources propres
+
 > **🎯 Objectif :** Sécuriser Face B avec un système d'invitation pour contrôler l'accès
 
 **Architecture :**
+
 - **API Nina.fm** : Endpoints flexibles (inscription libre + invitation optionnelle)
 - **Face B** : Interface privée avec invitation obligatoire
 - **Autres apps futures** : Choix libre entre inscription publique et privée
@@ -154,20 +164,16 @@
   - `expires_at` : Date (expiration du token)
   - `invited_by` : Relation vers User (administrateur invitant)
   - `created_at` / `updated_at` : Timestamps
-  
 - [x] **Migration TypeORM** : `1753219951996-AddInvitationsTable.ts` créée et appliquée
-  
 - [x] **Endpoints API** (`/invitations`)
   - `POST /invitations` (Rôle: ADMIN) - Envoyer une invitation
   - `GET /invitations` (Rôle: ADMIN) - Lister les invitations
   - `GET /invitations/validate` (Public) - Vérifier validité token via query param
   - `DELETE /invitations/:id` (Rôle: ADMIN) - Annuler invitation
-  
 - [x] **EmailService enrichi**
   - Template professionnel pour email d'invitation avec branding Nina.fm
   - Lien vers Face B avec token d'invitation intégré
   - Service Resend configuré et fonctionnel
-  
 - [x] **Auth Register adapté**
   - Support des invitations via `consumeInvitation()` dans InvitationsService
   - Validation et consommation automatique du token
@@ -177,7 +183,6 @@
   - 5 tests unitaires ajoutés (InvitationsService + Controller)
   - Documentation Bruno API complète avec exemples
   - 292 tests passent au total
-  
 - [x] **Automatisation Infrastructure**
   - Script `generate-migration.ts` pour automatiser les migrations TypeORM
   - Commandes `pnpm db:diff` et `pnpm db:migrate` fonctionnelles
@@ -189,13 +194,11 @@
   - Middleware check token d'invitation obligatoire
   - Redirection vers `/login` si pas de token valide
   - Message informatif sur l'accès par invitation
-  
 - [ ] **Page gestion invitations** (`/invitations`)
   - Liste des invitations (envoyées, utilisées, expirées)
   - Formulaire envoi nouvelle invitation
   - Actions : annuler, renvoyer
   - Rôle requis : ADMIN
-  
 - [ ] **Composables d'invitation**
   - `composables/invitationApi.ts` : CRUD invitations
   - Intégration TanStack Query
@@ -207,12 +210,10 @@
   - Template HTML avec branding Nina.fm
   - Bouton CTA vers page register
   - Informations sur l'expiration (7 jours)
-  
 - [ ] **Page register avec token**
   - Pre-remplissage email si dans token
   - Message de bienvenue personnalisé
   - Feedback sur succès création compte
-  
 - [ ] **Tests end-to-end**
   - Flow complet admin → invitation → création compte
   - Gestion des tokens expirés/invalides
@@ -228,7 +229,7 @@
 
 - [ ] **Créer `composables/invitationApi.ts`**
   - `sendInvitation(email, message?)` - Envoyer invitation
-  - `validateInvitationToken(token)` - Valider token d'invitation  
+  - `validateInvitationToken(token)` - Valider token d'invitation
   - `getInvitations()` - Lister invitations pour admin
   - `cancelInvitation(id)` - Annuler invitation
   - Intégration TanStack Query pour cache et état
@@ -278,7 +279,6 @@
   - Flow complet : admin envoie invitation → utilisateur s'inscrit
   - Gestion des cas d'erreur (token expiré, déjà utilisé)
   - Validation interface admin
-  
 - [ ] **Tests d'intégration**
   - Vérification des appels API
   - États de loading et d'erreur
@@ -596,14 +596,19 @@
 
 ### 🔄 **Phase en Cours**
 
-- **Phase 2.3 : Middleware et Navigation Guards** (prête à commencer)
+- **Phase 2.6 : Intégration Face B avec Système d'Invitations** (prête à commencer)
 
 ### 📋 **Prochaines Étapes**
 
-1. **Tests utilisateur de l'authentification actuelle** (en cours)
-2. **Phase 2.3 : Middleware auth** (après validation)
-3. **Phase 2.4 : Validation pages auth** (après middleware)
-4. **Commit et changelog Phase 2** (fin de phase)
+1. **Phase 2.6 : Intégration Face B avec Système d'Invitations**
+   - Créer/composer `composables/invitationApi.ts` côté Face B
+   - Protéger la page register par token d'invitation
+   - Pages et composants `/invitations` pour l'admin
+   - Flows UX et tests e2e sur l'invitation
+2. **Phase 3 : Migration des Composables et Stores Métier**
+   - Débuter la migration des composables métier (userApi, mixtapeApi, etc.)
+3. **Phase 4 : Migration des Pages et Composants**
+   - Migration des pages utilisateurs, mixtapes, djs, tags, etc.
 
 ### 🎯 **Progression Globale**
 

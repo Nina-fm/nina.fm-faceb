@@ -38,7 +38,7 @@ export const useInvitationApi = () => {
         message: message || undefined,
       }
 
-      return call<InvitationResponse>('/invitations', {
+      return call<InvitationResponse>('/invitations/send', {
         method: HttpMethod.POST,
         body: payload,
         requireAuth: true,
@@ -66,7 +66,7 @@ export const useInvitationApi = () => {
       queryFn: async (): Promise<PaginatedInvitationsResponse> => {
         const resolvedParams = unref(params)
         const searchParams = new URLSearchParams()
-        
+
         if (resolvedParams.page) searchParams.append('page', resolvedParams.page.toString())
         if (resolvedParams.limit) searchParams.append('limit', resolvedParams.limit.toString())
         if (resolvedParams.status) searchParams.append('status', resolvedParams.status)
@@ -152,14 +152,14 @@ export const useInvitationApi = () => {
     if (invitation.used_at) {
       return 'Utilisée'
     }
-    
+
     const now = new Date()
     const expiresAt = new Date(invitation.expires_at)
-    
+
     if (now > expiresAt) {
       return 'Expirée'
     }
-    
+
     return 'En attente'
   }
 
@@ -168,7 +168,7 @@ export const useInvitationApi = () => {
    */
   const getInvitationStatusColor = (invitation: InvitationResponse): string => {
     const status = getInvitationStatusLabel(invitation)
-    
+
     switch (status) {
       case 'Utilisée':
         return 'text-green-600 bg-green-100'
@@ -187,10 +187,10 @@ export const useInvitationApi = () => {
     validateInvitationToken,
     cancelInvitation,
     resendInvitation,
-    
+
     // Queries
     getInvitations,
-    
+
     // Utilities
     canManageInvitations,
     getInvitationStatusLabel,

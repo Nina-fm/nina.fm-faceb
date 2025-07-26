@@ -5,12 +5,12 @@
 
   const emit = defineEmits<{
     'update:modelValue': [value: boolean]
-    submit: [email: string]
+    submit: [payload: { email: string; message?: string }]
   }>()
 
-  const handleSubmit = async (email: string) => {
+  const handleSubmit = async (payload: { email: string; message?: string }) => {
     emit('update:modelValue', false)
-    emit('submit', email)
+    emit('submit', payload)
   }
 </script>
 

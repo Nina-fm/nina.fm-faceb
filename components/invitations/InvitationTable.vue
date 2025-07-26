@@ -2,12 +2,13 @@
   // Types globaux depuis api.d.ts
   import type { ColumnDef } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
+  import type { InvitationResponse } from '~/types/invitation'
 
   const InvitationTableActions = resolveComponent('InvitationTableActions')
 
   withDefaults(
     defineProps<{
-      data: Invitation[]
+      data: InvitationResponse[]
       loading?: boolean
     }>(),
     {
@@ -42,7 +43,7 @@
     if (idToDelete.value) {
       try {
         emit('rowDelete', idToDelete.value)
-      } catch (error) {
+      } catch {
         toast.error("Une erreur est survenue lors de la suppression de l'invitation.")
       } finally {
         openConfirm.value = false
@@ -50,12 +51,11 @@
     }
   }
 
-  const columns: ColumnDef<Invitation>[] = [
+  const columns: ColumnDef<InvitationResponse>[] = [
     {
       accessorKey: 'id',
       header: '',
-      cell: ({ cell }) => {
-        const id = cell.getValue() as string
+      cell: () => {
         return h('div', { class: 'size-2 rounded-full bg-info' })
       },
     },
@@ -64,23 +64,39 @@
       header: 'Email',
     },
     {
-      accessorKey: 'createdAt',
+      accessorFn: (row) => {
+        // DEBUG: log structure de la ligne
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.log('Invitation row:', row)
+        }
+        return row.created_at
+      },
+      id: 'created_at',
       header: "Date d'invitation",
-      cell: ({ cell }) => {
-        const createdAt = cell.getValue() as Date
+      cell: ({ row }) => {
+        const createdAt = row.original.created_at
+        const date = createdAt ? new Date(createdAt) : null
         return h(
           'span',
           {},
-          { default: () => [new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] },
+          { default: () => [date && !isNaN(date.getTime()) ? date.toLocaleDateString('fr-FR', { dateStyle: 'medium' }) : ''] },
         )
       },
     },
     {
-      accessorKey: 'invitedBy',
+      accessorFn: (row) => {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.log('Invitation row (invited_by):', row)
+        }
+        return row.invited_by?.email
+      },
+      id: 'invited_by',
       header: 'Invité par',
-      cell: ({ cell }) => {
-        const invitedBy = cell.getValue() as User
-        return h('span', {}, { default: () => [invitedBy.name || invitedBy.email] })
+      cell: ({ row }) => {
+        const email = row.original.invited_by?.email
+        return h('span', {}, { default: () => [email || ''] })
       },
     },
     {

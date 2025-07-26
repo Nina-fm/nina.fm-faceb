@@ -14,28 +14,30 @@
       <SidebarTrigger class="text-muted-foreground size-8" />
     </SidebarHeader>
     <SidebarContent class="pt-14">
-      <SidebarGroup v-for="group in navigation" v-if="navigation" :key="group.label">
-        <SidebarGroupLabel class="text-sidebar-foreground/20 group-data-[collapsible=icon]:hidden">
-          {{ group.label }}
-        </SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            <SidebarMenuItem v-for="item in group.children" :key="item.label">
-              <SidebarMenuButton as-child :is-active="item.to === $route.path">
-                <NuxtLink :to="item.to">
-                  <component :is="item.icon" />
-                  <span>{{ item.label }}</span>
-                </NuxtLink>
-              </SidebarMenuButton>
-              <SidebarMenuAction v-if="item?.action" as-child>
-                <NuxtLink :to="item.action.to">
-                  <component :is="item.action.icon" />
-                </NuxtLink>
-              </SidebarMenuAction>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+      <Fragment v-if="navigation">
+        <SidebarGroup v-for="group in navigation" :key="group.label">
+          <SidebarGroupLabel class="text-sidebar-foreground/20 group-data-[collapsible=icon]:hidden">
+            {{ group.label }}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem v-for="item in group.children" :key="item.label">
+                <SidebarMenuButton as-child :is-active="item.to === $route.path">
+                  <NuxtLink :to="item.to">
+                    <component :is="item.icon" />
+                    <span>{{ item.label }}</span>
+                  </NuxtLink>
+                </SidebarMenuButton>
+                <SidebarMenuAction v-if="item?.action" as-child>
+                  <NuxtLink :to="item.action.to">
+                    <component :is="item.action.icon" />
+                  </NuxtLink>
+                </SidebarMenuAction>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </Fragment>
     </SidebarContent>
     <SidebarFooter>
       <NavUser />

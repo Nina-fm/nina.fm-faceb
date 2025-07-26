@@ -12,6 +12,7 @@
     password: z.string().min(1, 'Mot de passe requis'),
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleError = (error: any) => {
     if (error?.response?.status === 401) {
       toast.error('Email ou mot de passe incorrect')
@@ -20,9 +21,20 @@
     }
   }
 
-  const handleSubmit = async ({ email, password }: Record<string, any>) => {
+  const handleSubmit = async ({ email, password }: Record<string, string>) => {
     await login(email, password).catch(handleError)
   }
+
+  onMounted(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      if (url.searchParams.get('error') === 'invitation_required') {
+        toast.error("Lien d'invitation requis pour accéder à l'inscription.")
+        url.searchParams.delete('error')
+        window.history.replaceState({}, '', url.pathname + url.search)
+      }
+    }
+  })
 </script>
 
 <template>
@@ -46,7 +58,6 @@
         </div>
         <div class="flex gap-2 text-xs">
           <NuxtLink to="/reset-password">Mot de passe oublié ?</NuxtLink>
-          <NuxtLink to="/register">Pas encore de compte ?</NuxtLink>
         </div>
       </div>
     </AutoForm>

@@ -1,8 +1,22 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+  import { onMounted } from 'vue'
+  import { toast } from 'vue-sonner'
+
   definePageMeta({
     breadcrumb: {
       label: 'Accueil',
     },
+  })
+
+  onMounted(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      if (url.searchParams.get('error') === 'invitation_required') {
+        toast.error("Lien d'invitation requis pour accéder à l'inscription.")
+        url.searchParams.delete('error')
+        window.history.replaceState({}, '', url.pathname + url.search)
+      }
+    }
   })
 </script>
 

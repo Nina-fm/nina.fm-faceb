@@ -2,9 +2,12 @@
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
-  definePageMeta({ layout: 'naked', auth: false })
+  definePageMeta({ layout: 'naked', auth: false, middleware: ['invitation'] })
 
   const { register } = useAuthApi()
+  const { invitationToken, tokenValidation } = useInvitationValidation()
+  const emailPrefill = ref<string | undefined>(undefined)
+  const invitationError = ref<string | null>(null)
 
   const formSchema = z
     .object({
@@ -18,18 +21,47 @@
       path: ['confirm'],
     })
 
-  const handleError = (error: any) => {
-    if (error?.response?.status === 401) {
+  const handleError = (error: unknown) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const err = error as any
+    if (err?.response?.status === 401) {
       toast.error('Email ou mot de passe incorrect')
     } else {
       toast.error('Une erreur est survenue')
     }
   }
 
-  const handleSubmit = async ({ email, name, password }: Record<string, any>) => {
-    await register({ email, name, password }).catch(handleError)
+  const handleSubmit = async ({
+    email,
+    name,
+    password,
+  }: {
+    email: string
+    name?: string
+    password: string
+    confirm: string
+  }) => {
+    // invitationToken doit être string | undefined
+    const token = invitationToken.value || undefined
+    await register({ email, name, password, invitationToken: token }).catch(handleError)
     await navigateTo('/')
   }
+
+  onMounted(async () => {
+    if (invitationToken.value) {
+      try {
+        const { mutateAsync } = tokenValidation.value || {}
+        if (mutateAsync) {
+          const data = await mutateAsync({ token: invitationToken.value })
+          emailPrefill.value = data?.email || undefined
+        }
+      } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        invitationError.value = (err as any)?.response?.data?.message || "Lien d'invitation invalide ou expiré."
+        if (invitationError.value) toast.error(invitationError.value)
+      }
+    }
+  })
 </script>
 
 <template>
@@ -48,6 +80,9 @@
           label: 'Email',
           inputProps: {
             type: 'email',
+            autocomplete: 'email',
+            value: emailPrefill,
+            readonly: !!emailPrefill,
           },
         },
         password: {
@@ -67,12 +102,15 @@
     >
       <div class="flex flex-col items-center gap-5">
         <div class="flex gap-2">
-          <Button type="submit">Créer le compte</Button>
+          <Button :disabled="!!invitationError" type="submit">Créer le compte</Button>
         </div>
         <div class="flex gap-2 text-xs">
           <NuxtLink to="/login">Déjà un compte ?</NuxtLink>
         </div>
       </div>
     </AutoForm>
+    <div v-if="invitationError" class="mb-6 rounded bg-red-100 p-4 text-red-700">
+      {{ invitationError }}
+    </div>
   </AuthBox>
 </template>

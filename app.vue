@@ -1,7 +1,11 @@
 <script lang="ts" setup>
-  // useAuthStoreRefs()
-  // useProfileStoreRefs()
-  // const { loading, loadingPercent } = useLoadingStoreRefs()
+  import { storeToRefs } from 'pinia'
+  import { useAuthStore } from '~/stores/auth'
+
+  const authStore = useAuthStore()
+  const { isLoading, isAuthChecking } = storeToRefs(authStore)
+
+  const loading = computed(() => isLoading.value || isAuthChecking.value)
 </script>
 
 <template>
@@ -11,5 +15,5 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <!-- <Loading :model-value="loading" :percent-value="loadingPercent" /> -->
+  <LoadingFullscreen :active="loading" />
 </template>

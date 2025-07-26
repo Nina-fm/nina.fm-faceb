@@ -22,7 +22,7 @@
     status: statusFilter.value,
   }))
 
-  const { data: invitationsData, error, refetch, isLoading } = getInvitations(queryParams)
+  const { data: invitationsData, error, refetch } = getInvitations(queryParams)
 
   const invitations = computed(() => invitationsData.value?.data || [])
   const openInviteDialog = ref(false)
@@ -106,5 +106,4 @@
     @row-delete="handleDeleteInvitation"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
-  <LoadingOverlay :active="isLoading" />
 </template>

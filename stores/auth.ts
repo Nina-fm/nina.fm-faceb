@@ -8,6 +8,8 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
   const refreshToken = ref<string | null>(null)
   const isLoading = ref<boolean>(false)
+  // Flag global pour le middleware
+  const isAuthChecking = ref<boolean>(true)
 
   // Computed
   const isLoggedIn = computed(() => !!user.value && !!accessToken.value)
@@ -80,21 +82,23 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const loadUserProfile = async () => {
     console.log('[AUTH] loadUserProfile - démarrage')
-
-    if (!import.meta.client) {
-      console.log('[AUTH] loadUserProfile - pas côté client, abandon')
-      return
-    }
-
     isLoading.value = true
-
     try {
-      // Essayer d'abord localStorage, puis cookies en fallback
-      let storedAccessToken = localStorage.getItem('nina_access_token')
-      let storedRefreshToken = localStorage.getItem('nina_refresh_token')
+      let storedAccessToken: string | null = null
+      let storedRefreshToken: string | null = null
 
-      // Si pas dans localStorage, essayer les cookies
-      if (!storedAccessToken || !storedRefreshToken) {
+      if (import.meta.client) {
+        // Côté client : localStorage puis cookies
+        storedAccessToken = localStorage.getItem('nina_access_token')
+        storedRefreshToken = localStorage.getItem('nina_refresh_token')
+        if (!storedAccessToken || !storedRefreshToken) {
+          const accessTokenCookie = useCookie('nina_access_token')
+          const refreshTokenCookie = useCookie('nina_refresh_token')
+          storedAccessToken = accessTokenCookie.value || null
+          storedRefreshToken = refreshTokenCookie.value || null
+        }
+      } else {
+        // Côté serveur : cookies uniquement
         const accessTokenCookie = useCookie('nina_access_token')
         const refreshTokenCookie = useCookie('nina_refresh_token')
         storedAccessToken = accessTokenCookie.value || null
@@ -105,6 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
         hasAccessToken: !!storedAccessToken,
         hasRefreshToken: !!storedRefreshToken,
         accessTokenStart: storedAccessToken?.substring(0, 20) + '...',
+        isServer: import.meta.server,
       })
 
       if (!storedAccessToken || !storedRefreshToken) {
@@ -129,7 +134,7 @@ export const useAuthStore = defineStore('auth', () => {
         baseURL,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken.value}`,
+          Authorization: `Bearer ${storedAccessToken}`,
         },
       })
 
@@ -143,7 +148,6 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (error: unknown) {
       console.error('[AUTH] loadUserProfile - erreur:', error)
-
       // Simplification : essayer le refresh sur toute erreur HTTP
       console.log('[AUTH] loadUserProfile - erreur détectée, tentative de refresh...')
       const refreshSuccess = await refreshTokens()
@@ -242,6 +246,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     isLoggedIn,
     isLoading,
+    isAuthChecking,
     userRole,
     hasProfile,
 

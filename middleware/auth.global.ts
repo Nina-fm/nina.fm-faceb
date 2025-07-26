@@ -4,56 +4,57 @@
  * Compatible avec l'API Nina.fm (NestJS)
  */
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Vérifier si la page nécessite une authentification
-  if (to.meta.auth === false) {
-    console.log('[AUTH] Middleware - page publique, autorisation sans vérification')
-    return
-  }
-
   const authStore = useAuthStore()
-
-  console.log('[AUTH] Middleware - côté:', import.meta.server ? 'serveur' : 'client', 'route:', to.path)
-  console.log('[AUTH] Middleware - user:', !!authStore.user, 'token:', !!authStore.accessToken)
-
-  // Si côté serveur, récupérer les tokens depuis les cookies
-  if (import.meta.server) {
-    const accessTokenCookie = useCookie('nina_access_token')
-    const refreshTokenCookie = useCookie('nina_refresh_token')
-
-    if (!accessTokenCookie.value || !refreshTokenCookie.value) {
-      console.log('[AUTH] Middleware - pas de tokens côté serveur, redirection vers /login')
-      return navigateTo('/login')
+  authStore.isAuthChecking = true
+  try {
+    // Vérifier si la page nécessite une authentification
+    if (to.meta.auth === false) {
+      console.log('[AUTH] Middleware - page publique, autorisation sans vérification')
+      return
     }
 
-    // Vérifier l'expiration du token côté serveur
-    try {
-      const payload = JSON.parse(atob(accessTokenCookie.value.split('.')[1]))
-      const now = Math.floor(Date.now() / 1000)
+    console.log('[AUTH] Middleware - côté:', import.meta.server ? 'serveur' : 'client', 'route:', to.path)
+    console.log('[AUTH] Middleware - user:', !!authStore.user, 'token:', !!authStore.accessToken)
 
-      if (payload.exp && payload.exp < now) {
-        console.log('[AUTH] Middleware - token expiré côté serveur, nettoyage et redirection')
+    // Si côté serveur, récupérer les tokens depuis les cookies
+    if (import.meta.server) {
+      const accessTokenCookie = useCookie('nina_access_token')
+      const refreshTokenCookie = useCookie('nina_refresh_token')
+
+      if (!accessTokenCookie.value || !refreshTokenCookie.value) {
+        console.log('[AUTH] Middleware - pas de tokens côté serveur, redirection vers /login')
+        return navigateTo('/login')
+      }
+
+      // Vérifier l'expiration du token côté serveur
+      try {
+        const payload = JSON.parse(atob(accessTokenCookie.value.split('.')[1]))
+        const now = Math.floor(Date.now() / 1000)
+
+        if (payload.exp && payload.exp < now) {
+          console.log('[AUTH] Middleware - token expiré côté serveur, nettoyage et redirection')
+          accessTokenCookie.value = null
+          refreshTokenCookie.value = null
+          return navigateTo('/login')
+        }
+      } catch {
+        console.log('[AUTH] Middleware - token invalide côté serveur, nettoyage et redirection')
         accessTokenCookie.value = null
         refreshTokenCookie.value = null
         return navigateTo('/login')
       }
-    } catch {
-      console.log('[AUTH] Middleware - token invalide côté serveur, nettoyage et redirection')
-      accessTokenCookie.value = null
-      refreshTokenCookie.value = null
-      return navigateTo('/login')
     }
-  }
 
-  // Côté client : utiliser le store auth
-  if (import.meta.client) {
-    // Si pas d'utilisateur dans le store, essayer de charger depuis les tokens
+    // Chargement du profil utilisateur si nécessaire (client ou serveur)
     if (!authStore.user || !authStore.accessToken) {
-      console.log("[AUTH] Middleware - pas d'utilisateur côté client, chargement du profil...")
-
       try {
         await authStore.loadUserProfile()
-
-        // Si toujours pas d'utilisateur après chargement, rediriger
+        console.log('[AUTH] Middleware - après loadUserProfile:', {
+          user: authStore.user,
+          accessToken: authStore.accessToken,
+          userRole: authStore.userRole,
+          isServer: import.meta.server,
+        })
         if (!authStore.user || !authStore.accessToken) {
           console.log('[AUTH] Middleware - chargement profil échoué, redirection vers /login')
           return navigateTo('/login')
@@ -64,31 +65,42 @@ export default defineNuxtRouteMiddleware(async (to) => {
       }
     }
 
-    // Vérifier les permissions selon les métadonnées de la route
+    // Vérifier les permissions selon les métadonnées de la route (client ET serveur)
     const requiredRole = to.meta.requiresRole as string | undefined
     const requiredRoles = to.meta.requiresRoles as string[] | undefined
 
-    if (requiredRole && authStore.userRole !== requiredRole) {
-      console.log(`[AUTH] Middleware - rôle requis: ${requiredRole}, rôle utilisateur: ${authStore.userRole}`)
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Accès non autorisé - Permissions insuffisantes',
-      })
-    }
+    // Attendre que le userRole soit bien défini (évite la redirection prématurée)
+    if (requiredRole || (requiredRoles && requiredRoles.length > 0)) {
+      let tries = 0
+      while (!authStore.userRole && tries < 20) {
+        await new Promise((resolve) => setTimeout(resolve, 25))
+        tries++
+      }
 
-    if (requiredRoles && requiredRoles.length > 0) {
-      const hasValidRole = requiredRoles.includes(authStore.userRole || '')
-      if (!hasValidRole) {
-        console.log(
-          `[AUTH] Middleware - rôles requis: ${requiredRoles.join(', ')}, rôle utilisateur: ${authStore.userRole}`,
-        )
-        throw createError({
-          statusCode: 403,
-          statusMessage: 'Accès non autorisé - Permissions insuffisantes',
-        })
+      // Si après le délai userRole est toujours indéfini, on ne redirige pas (on laisse le loader tourner)
+      if (!authStore.userRole) {
+        console.warn('[AUTH] Middleware - userRole toujours indéfini après attente, on ne redirige pas')
+        return
+      }
+
+      if (requiredRole && authStore.userRole !== requiredRole) {
+        console.log(`[AUTH] Middleware - rôle requis: ${requiredRole}, rôle utilisateur: ${authStore.userRole}`)
+        return navigateTo('/login')
+      }
+
+      if (requiredRoles && requiredRoles.length > 0) {
+        const hasValidRole = requiredRoles.includes(authStore.userRole || '')
+        if (!hasValidRole) {
+          console.log(
+            `[AUTH] Middleware - rôles requis: ${requiredRoles.join(', ')}, rôle utilisateur: ${authStore.userRole}`,
+          )
+          return navigateTo('/login')
+        }
       }
     }
-  }
 
-  console.log('[AUTH] Middleware - accès autorisé à:', to.path)
+    console.log('[AUTH] Middleware - accès autorisé à:', to.path)
+  } finally {
+    authStore.isAuthChecking = false
+  }
 })

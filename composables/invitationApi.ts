@@ -149,12 +149,12 @@ export const useInvitationApi = () => {
    * Utility: Formater le statut d'une invitation pour l'affichage
    */
   const getInvitationStatusLabel = (invitation: InvitationResponse): string => {
-    if (invitation.used_at) {
+    if (invitation.usedAt) {
       return 'Utilisée'
     }
 
     const now = new Date()
-    const expiresAt = new Date(invitation.expires_at)
+    const expiresAt = new Date(invitation.expiresAt)
 
     if (now > expiresAt) {
       return 'Expirée'

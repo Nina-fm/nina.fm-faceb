@@ -72,7 +72,7 @@
         }
         return row.createdAt
       },
-      id: 'created_at',
+      id: 'createdAt',
       header: "Date d'invitation",
       cell: ({ row }) => {
         const createdAt = row.original.createdAt

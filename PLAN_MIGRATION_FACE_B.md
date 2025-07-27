@@ -146,14 +146,6 @@
 - [x] Suppression des warnings lint, build et tests 100% verts
 - [x] Documentation et audit sécurité sur l'accès aux ressources propres
 
-> **🎯 Objectif :** Sécuriser Face B avec un système d'invitation pour contrôler l'accès
-
-**Architecture :**
-
-- **API Nina.fm** : Endpoints flexibles (inscription libre + invitation optionnelle)
-- **Face B** : Interface privée avec invitation obligatoire
-- **Autres apps futures** : Choix libre entre inscription publique et privée
-
 #### 2.5.1 API - Infrastructure d'Invitation ✅ **COMPLÉTÉ**
 
 - [x] **Table `invitations`** (TypeORM Entity)
@@ -188,101 +180,54 @@
   - Commandes `pnpm db:diff` et `pnpm db:migrate` fonctionnelles
   - Résolution des problèmes CLI TypeORM avec ES6
 
-#### 2.5.2 Face B - Interface Privée ⏳ **PROCHAINE ÉTAPE**
+#### 2.5.2 Face B - Interface Privée & Invitations (fusionnée)
 
-- [ ] **Protection page register**
+- [x] **Protection page register**
   - Middleware check token d'invitation obligatoire
   - Redirection vers `/login` si pas de token valide
   - Message informatif sur l'accès par invitation
-- [ ] **Page gestion invitations** (`/invitations`)
-  - Liste des invitations (envoyées, utilisées, expirées)
-  - Formulaire envoi nouvelle invitation
-  - Actions : annuler, renvoyer
-  - Rôle requis : ADMIN
-- [ ] **Composables d'invitation**
-  - `composables/invitationApi.ts` : CRUD invitations
-  - Intégration TanStack Query
-  - Gestion d'erreurs et loading states
 
-#### 2.5.3 UX et Flow Utilisateur
-
-- [ ] **Email d'invitation professionnel** (✅ côté API, validation côté Face B)
-  - Template HTML avec branding Nina.fm
-  - Bouton CTA vers page register
-  - Informations sur l'expiration (7 jours)
-- [ ] **Page register avec token**
-  - Pre-remplissage email si dans token
-  - Message de bienvenue personnalisé
-  - Feedback sur succès création compte
-- [ ] **Tests end-to-end**
-  - Flow complet admin → invitation → création compte
-  - Gestion des tokens expirés/invalides
-  - Interface admin fonctionnelle
-
----
-
-## 🎯 **Phase 2.6 : Intégration Face B avec Système d'Invitations** _(1-2 jours)_
-
-> **🎯 Objectif :** Connecter Face B au système d'invitations déjà fonctionnel côté API
-
-### 2.6.1 Composables et API Integration
-
-- [ ] **Créer `composables/invitationApi.ts`**
-  - `sendInvitation(email, message?)` - Envoyer invitation
-  - `validateInvitationToken(token)` - Valider token d'invitation
-  - `getInvitations()` - Lister invitations pour admin
-  - `cancelInvitation(id)` - Annuler invitation
+- [x] **Composable `composables/invitationApi.ts`**
+  - `sendInvitation(email, message?)`, `validateInvitationToken(token)`, `getInvitations()`, `cancelInvitation(id)`
   - Intégration TanStack Query pour cache et état
-  - Gestion d'erreurs standardisée
+  - Gestion d'erreurs standardisée (notifications/toasts à améliorer)
 
-### 2.6.2 Pages et Interface Utilisateur
+- [~] **Page `/invitations` (Admin uniquement)**
+  - Table des invitations (affichage basique OK, statuts visuels à faire)
+  - Formulaire d'envoi de nouvelle invitation (fait)
+  - Actions : annuler, renvoyer invitation (à faire)
+  - Filtres : statut, date, email (à faire)
+  - Pagination (à faire)
 
-- [ ] **Page `/invitations` (Admin uniquement)**
-  - Table des invitations avec statuts (envoyée, utilisée, expirée)
-  - Formulaire d'envoi de nouvelle invitation
-  - Actions : annuler, renvoyer invitation
-  - Filtres : statut, date, email
-  - Pagination si nécessaire
+- [~] **Composants UX**
+  - `InvitationForm.vue` : loading UI à ajouter
+  - `InvitationsList.vue` : statuts visuels, actions contextuelles, indicateurs de temps à faire
+  - Badge compteur d'invitations en attente (à faire)
+  - Navigation/guards à mettre à jour
 
-- [ ] **Mise à jour `/register`**
-  - Détection automatique du token d'invitation dans l'URL
-  - Pre-remplissage de l'email si contenu dans le token
-  - Message de bienvenue personnalisé avec nom de l'invitant
-  - Validation côté client du token avant soumission
+- [~] **Page `/register`**
+  - Détection automatique du token d'invitation dans l'URL (fait)
+  - Pre-remplissage email si dans token (à faire)
+  - Message de bienvenue personnalisé (à vérifier)
+  - Validation côté client du token avant soumission (à vérifier)
 
-- [ ] **Protection accès privé**
-  - Middleware pour vérifier token d'invitation sur `/register`
-  - Redirection vers `/login` avec message informatif si pas de token
-  - Page d'information sur l'accès par invitation uniquement
+- [~] **Email d'invitation professionnel**
+  - Template HTML côté API OK, validation/aperçu côté Face B à améliorer
 
-### 2.6.3 Composants et UX
+- [ ] **Tests et validation**
+  - E2E : flow complet admin → invitation → création compte (à vérifier)
+  - Gestion des cas d'erreur (token expiré, déjà utilisé) (à vérifier)
+  - Intégration : appels API, loading, navigation/redirections (à faire)
 
-- [ ] **Composant `InvitationForm.vue`**
-  - Champ email avec validation
-  - Champ message optionnel personnalisé
-  - État de loading pendant envoi
-  - Feedback succès/erreur
-
-- [ ] **Composant `InvitationsList.vue`**
-  - Table responsive avec statuts visuels
-  - Actions contextuelles par invitation
-  - Indicateurs de temps (envoyée il y a X, expire dans X)
-
-- [ ] **Navigation et permissions**
-  - Ajout lien "Invitations" dans menu admin
-  - Badge compteur d'invitations en attente
-  - Mise à jour des guards de navigation
-
-### 2.6.4 Tests et Validation
-
-- [ ] **Tests end-to-end**
-  - Flow complet : admin envoie invitation → utilisateur s'inscrit
-  - Gestion des cas d'erreur (token expiré, déjà utilisé)
-  - Validation interface admin
-- [ ] **Tests d'intégration**
-  - Vérification des appels API
-  - États de loading et d'erreur
-  - Navigation et redirections
+> **Points à compléter pour finaliser la phase 2.5.2 :**
+>
+> - Statuts visuels et actions contextuelles sur la liste des invitations
+> - Loading UI et feedbacks UX (formulaire, listes)
+> - Filtres, pagination, badge compteur
+> - Pre-remplissage email sur `/register`, message personnalisé
+> - Notifications/toasts d'erreur et succès
+> - Tests E2E et d'intégration sur tout le flow invitation
+> - Validation/aperçu email côté Face B
 
 ---
 

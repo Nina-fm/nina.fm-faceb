@@ -19,9 +19,10 @@
     "format": "prettier --write .",
     "docker:up": "docker-compose up -d",
     "docker:up:dev": "docker-compose -f docker-compose.dev.yml up -d",
-    "generate-types": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum",
-    "generate-types-safe": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum --additional-properties",
-    "sync-api-types": "pnpm generate-types && echo '✅ Types API synchronisés depuis Swagger'"
+    "types:generate": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum",
+    "types:generate-safe": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum --additional-properties",
+    "types:extract": "NODE_NO_WARNINGS=1 node --loader ts-node/esm scripts/extract-globals.ts",
+    "types:sync": "pnpm types:generate && pnpm types:extract && echo '✅ Types API synchronisés depuis Swagger'"
   },
   "dependencies": {
     "@date-io/luxon": "^3.2.0",
@@ -78,6 +79,7 @@
     "query-string": "^9.1.1",
     "sass": "^1.86.0",
     "sass-loader": "^16.0.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "typescript-deno-plugin": "^1.31.0",
     "vue-tsc": "^3.0.3"

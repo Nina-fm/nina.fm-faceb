@@ -4,34 +4,14 @@
 import type { components, operations, paths } from './api-generated'
 
 declare global {
-  // ===== TYPES PRINCIPAUX DE L'API =====
 
-  // Types des composants (schemas)
+  // ===== TYPES PRINCIPAUX DE L'API =====
   type ApiComponents = components
   type ApiSchemas = components['schemas']
-
-  // Types des opérations
   type ApiOperations = operations
-
-  // Types des chemins
   type ApiPaths = paths
 
   // ===== ENTITÉS PRINCIPALES =====
-
-  /**
-   * Utilisateur avec profil
-   */
-  type User = ApiSchemas['User']
-
-  /**
-   * Profil utilisateur
-   */
-  type Profile = ApiSchemas['Profile']
-
-  /**
-   * Image avec métadonnées
-   */
-  type Image = ApiSchemas['Image']
 
   /**
    * DJ
@@ -39,159 +19,118 @@ declare global {
   type Dj = ApiSchemas['Dj']
 
   /**
-   * Tag avec couleur
+   * Image avec métadonnées
    */
-  type Tag = ApiSchemas['Tag']
+  type Image = ApiSchemas['Image']
+
+  /**
+   * Invitation utilisateur
+   */
+  type Invitation = ApiSchemas['Invitation']
 
   /**
    * Mixtape avec relations
    */
   type Mixtape = ApiSchemas['Mixtape']
 
+  /**
+   * Profil utilisateur
+   */
+  type Profile = ApiSchemas['Profile']
+
+  /**
+   * Tag avec couleur
+   */
+  type Tag = ApiSchemas['Tag']
+
+  /**
+   * Utilisateur avec profil
+   */
+  type User = ApiSchemas['User']
+
+
   // ===== DTOs DE CRÉATION/MISE À JOUR =====
 
-  /**
-   * DTO pour créer un utilisateur
-   */
-  type CreateUserDto = ApiSchemas['CreateUserDto']
+  type AddDjsToMixtapeDto = ApiSchemas['AddDjsToMixtapeDto']
 
-  /**
-   * DTO pour mettre à jour un utilisateur
-   */
-  type UpdateUserDto = ApiSchemas['UpdateUserDto']
-
-  /**
-   * DTO pour mettre à jour un profil utilisateur
-   */
-  type UpdateUserProfileDto = ApiSchemas['UpdateUserProfileDto']
-
-  /**
-   * DTO pour créer un DJ
-   */
-  type CreateDjDto = ApiSchemas['CreateDjDto']
-
-  /**
-   * DTO pour mettre à jour un DJ
-   */
-  type UpdateDjDto = ApiSchemas['UpdateDjDto']
-
-  /**
-   * DTO pour créer un tag
-   */
-  type CreateTagDto = ApiSchemas['CreateTagDto']
-
-  /**
-   * DTO pour mettre à jour un tag
-   */
-  type UpdateTagDto = ApiSchemas['UpdateTagDto']
-
-  /**
-   * DTO pour créer une mixtape
-   */
-  type CreateMixtapeDto = ApiSchemas['CreateMixtapeDto']
-
-  /**
-   * DTO pour mettre à jour une mixtape
-   */
-  type UpdateMixtapeDto = ApiSchemas['UpdateMixtapeDto']
-
-  /**
-   * DTO pour ajouter des tags à une mixtape
-   */
   type AddTagsToMixtapeDto = ApiSchemas['AddTagsToMixtapeDto']
 
-  /**
-   * DTO pour ajouter des DJs à une mixtape
-   */
-  type AddDjsToMixtapeDto = ApiSchemas['AddDjsToMixtapeDto']
+  type CreateDjDto = ApiSchemas['CreateDjDto']
+
+  type CreateMixtapeDto = ApiSchemas['CreateMixtapeDto']
+
+  type CreateTagDto = ApiSchemas['CreateTagDto']
+
+  type CreateUserDto = ApiSchemas['CreateUserDto']
+
+  type UpdateDjDto = ApiSchemas['UpdateDjDto']
+
+  type UpdateMixtapeDto = ApiSchemas['UpdateMixtapeDto']
+
+  type UpdateTagDto = ApiSchemas['UpdateTagDto']
+
+  type UpdateUserDto = ApiSchemas['UpdateUserDto']
+
+  type UpdateUserProfileDto = ApiSchemas['UpdateUserProfileDto']
+
 
   // ===== DTOs D'AUTHENTIFICATION =====
 
-  /**
-   * DTO pour la connexion
-   */
+  type ForgotPasswordDto = ApiSchemas['ForgotPasswordDto']
+
+  type RefreshTokenDto = ApiSchemas['RefreshTokenDto']
+
+  type ResetPasswordDto = ApiSchemas['ResetPasswordDto']
+
   type SignInDto = ApiSchemas['SignInDto']
 
-  /**
-   * DTO pour l'inscription
-   */
   type SignUpDto = ApiSchemas['SignUpDto']
 
-  /**
-   * DTO pour le refresh token
-   */
-  type RefreshTokenDto = ApiSchemas['RefreshTokenDto']
 
   // ===== RÉPONSES DE LISTE =====
 
-  /**
-   * Réponse de liste d'utilisateurs
-   */
-  type UsersListResponseDto = ApiSchemas['UsersListResponseDto']
-
-  /**
-   * Réponse de liste de DJs
-   */
   type DjsListResponseDto = ApiSchemas['DjsListResponseDto']
 
-  /**
-   * Réponse de liste de tags
-   */
+  type InvitationsListResponseDto = ApiSchemas['InvitationsListResponseDto']
+
+  type MixtapesListResponseDto = ApiSchemas['MixtapesListResponseDto']
+
   type TagsListResponseDto = ApiSchemas['TagsListResponseDto']
 
-  /**
-   * Réponse de liste de mixtapes
-   */
-  type MixtapesListResponseDto = ApiSchemas['MixtapesListResponseDto']
+  type UsersListResponseDto = ApiSchemas['UsersListResponseDto']
+
 
   // ===== RÉPONSES INDIVIDUELLES =====
 
-  /**
-   * Réponse d'un DJ
-   */
   type DjResponseDto = ApiSchemas['DjResponseDto']
 
-  /**
-   * Réponse d'un tag
-   */
+  type EventsResponseDto = ApiSchemas['EventsResponseDto']
+
+  type ListenersResponseDto = ApiSchemas['ListenersResponseDto']
+
+  type MixtapeResponseDto = ApiSchemas['MixtapeResponseDto']
+
+  type ProgressResponseDto = ApiSchemas['ProgressResponseDto']
+
   type TagResponseDto = ApiSchemas['TagResponseDto']
 
-  /**
-   * Réponse d'une mixtape
-   */
-  type MixtapeResponseDto = ApiSchemas['MixtapeResponseDto']
+  type UserResponseDto = ApiSchemas['UserResponseDto']
+
 
   // ===== TYPES DE STREAMING =====
 
-  /**
-   * Données IceCast
-   */
-  type IceCastDataDto = ApiSchemas['IceCastDataDto']
-
-  /**
-   * Données AirTime
-   */
   type AirTimeDataDto = ApiSchemas['AirTimeDataDto']
 
-  /**
-   * Données d'événements combinés
-   */
   type EventsDataDto = ApiSchemas['EventsDataDto']
 
-  /**
-   * Réponse d'événements
-   */
   type EventsResponseDto = ApiSchemas['EventsResponseDto']
 
-  /**
-   * Réponse de listeners
-   */
+  type IceCastDataDto = ApiSchemas['IceCastDataDto']
+
   type ListenersResponseDto = ApiSchemas['ListenersResponseDto']
 
-  /**
-   * Réponse de progression
-   */
   type ProgressResponseDto = ApiSchemas['ProgressResponseDto']
+
 }
 
 export {}

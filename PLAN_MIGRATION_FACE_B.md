@@ -135,9 +135,7 @@
   - Gestion des tokens JWT avec expiration
 - [x] Tests des flows complets d'authentification
 
-### 2.5 Système d'Invitation ✅ **TERMINÉE**
-
-### 2.6 Harmonisation Ownership & Guards (API) ✅ **TERMINÉE**
+### 2.5 Harmonisation Ownership & Guards (API) ✅ **TERMINÉE**
 
 - [x] Factorisation et DRY du code d'ownership (own resource) sur toutes les entités (images, mixtapes, djs, tags, users)
 - [x] Application systématique des guards et décorateurs d'ownership sur toutes les routes concernées
@@ -146,7 +144,9 @@
 - [x] Suppression des warnings lint, build et tests 100% verts
 - [x] Documentation et audit sécurité sur l'accès aux ressources propres
 
-#### 2.5.1 API - Infrastructure d'Invitation ✅ **COMPLÉTÉ**
+### 2.6 Système d'Invitation ✅ **TERMINÉE**
+
+#### 2.6.1 API - Infrastructure d'Invitation ✅ **COMPLÉTÉ**
 
 - [x] **Table `invitations`** (TypeORM Entity)
   - `id` : UUID
@@ -180,7 +180,7 @@
   - Commandes `pnpm db:diff` et `pnpm db:migrate` fonctionnelles
   - Résolution des problèmes CLI TypeORM avec ES6
 
-#### 2.5.2 Face B - Interface Privée & Invitations (fusionnée)
+#### 2.6.2 Face B - Interface Privée & Invitations (fusionnée)
 
 - [x] **Protection page register**
   - Middleware check token d'invitation obligatoire
@@ -416,7 +416,7 @@
 
 ### 9.1 Système d'Invitations Complet
 
-- [ ] **Côté API (NestJS) :**
+- [x] **Côté API (NestJS) :**
   - Créer module `invitations` complet
   - Entités et DTOs pour les invitations
   - `POST /invitations` - Créer une invitation
@@ -427,7 +427,7 @@
   - Permissions et rôles pour les invitations
   - Tests unitaires et E2E
 
-- [ ] **Côté Face B (Nuxt) :**
+- [x] **Côté Face B (Nuxt) :**
   - Créer `composables/invitationApi.ts`
   - Migrer/créer `pages/invitations/*`
   - Intégrer dans le flow d'inscription

@@ -4,6 +4,7 @@
   import { toast } from 'vue-sonner'
 
   const InvitationTableActions = resolveComponent('InvitationTableActions')
+  const InvitationStatus = resolveComponent('InvitationStatus')
 
   withDefaults(
     defineProps<{
@@ -55,13 +56,31 @@
       accessorKey: 'id',
       header: '',
       size: 60,
-      cell: () => {
-        return h('div', { class: 'size-2 rounded-full bg-info' })
+      cell: ({ row }) => {
+        const usedAt = row.original.usedAt
+        const expiresAt = row.original.expiresAt
+        return h(InvitationStatus, { usedAt, expiresAt })
       },
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: 'Invitation envoyée à',
+    },
+    {
+      accessorFn: (row) => {
+        if (typeof window !== 'undefined') {
+          console.log('Invitation row (invitedBy):', row)
+        }
+        return row.invitedBy
+      },
+      id: 'invitedBy',
+      header: 'Par',
+      cell: ({ row }) => {
+        const displayName = row.original.invitedBy?.profile?.nickname
+          ? row.original.invitedBy.profile.nickname
+          : row.original.invitedBy?.email
+        return h('span', {}, { default: () => [displayName || ''] })
+      },
     },
     {
       accessorFn: (row) => {
@@ -72,7 +91,7 @@
         return row.createdAt
       },
       id: 'createdAt',
-      header: "Date d'invitation",
+      header: 'Le',
       cell: ({ row }) => {
         const createdAt = row.original.createdAt
         const date = createdAt ? new Date(createdAt) : null
@@ -85,22 +104,6 @@
             ],
           },
         )
-      },
-    },
-    {
-      accessorFn: (row) => {
-        if (typeof window !== 'undefined') {
-          console.log('Invitation row (invitedBy):', row)
-        }
-        return row.invitedBy
-      },
-      id: 'invitedBy',
-      header: 'Invité par',
-      cell: ({ row }) => {
-        const displayName = row.original.invitedBy?.profile?.nickname
-          ? row.original.invitedBy.profile.nickname
-          : row.original.invitedBy?.email
-        return h('span', {}, { default: () => [displayName || ''] })
       },
     },
     {

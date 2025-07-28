@@ -4,10 +4,11 @@ import { fileURLToPath } from 'url'
 
 // === PATTERNS DE CATEGORISATION DES TYPES ===
 const ENTITY_NAMES = ['User', 'Invitation', 'Profile', 'Image', 'Dj', 'Tag', 'Mixtape']
-const CRUD_DTO_PATTERN = /^(Create|Update|Add)[A-Z].*Dto$/
+const CRUD_DTO_PATTERN = /^(Create|Update|Add|Send)[A-Z].*Dto$/
+const ADDITIONAL_DTO_PATTERN = /^(Profile)Dto$/
 const AUTH_DTO_NAMES = ['SignInDto', 'SignUpDto', 'RefreshTokenDto', 'ForgotPasswordDto', 'ResetPasswordDto']
 const AUTH_DTO_PATTERN = new RegExp(`^(${AUTH_DTO_NAMES.join('|')})$`)
-const CRUD_DTO_EXCLUDE_AUTH_PATTERN = new RegExp(
+const DTO_EXCLUDE_AUTH_PATTERN = new RegExp(
   `^(${AUTH_DTO_NAMES.map((n) => n.replace('Dto', '')).join('|')})[A-Z].*Dto$`,
 )
 const LIST_RESPONSE_PATTERN = /ListResponseDto$/
@@ -73,12 +74,22 @@ const sections = [
   },
   {
     title: '// ===== DTOs DE CRÉATION/MISE À JOUR =====',
-    filter: (name: string) => CRUD_DTO_PATTERN.test(name) && !CRUD_DTO_EXCLUDE_AUTH_PATTERN.test(name),
+    filter: (name: string) => CRUD_DTO_PATTERN.test(name) && !DTO_EXCLUDE_AUTH_PATTERN.test(name),
+    doc: {} as Record<string, string>,
+  },
+  {
+    title: '// ===== DTOs ADDITIONNELS =====',
+    filter: (name: string) => ADDITIONAL_DTO_PATTERN.test(name) && !DTO_EXCLUDE_AUTH_PATTERN.test(name),
     doc: {} as Record<string, string>,
   },
   {
     title: "// ===== DTOs D'AUTHENTIFICATION =====",
     filter: (name: string) => AUTH_DTO_PATTERN.test(name),
+    doc: {} as Record<string, string>,
+  },
+  {
+    title: '// ===== DTOs DE QUERY DE LISTES =====',
+    filter: (name: string) => name.endsWith('QueryDto'),
     doc: {} as Record<string, string>,
   },
   {

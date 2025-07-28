@@ -924,6 +924,90 @@ export interface components {
              */
             password: string;
         };
+        UsersQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+            /**
+             * @description Filtrer par rôle utilisateur
+             * @example VIEWER
+             * @enum {string}
+             */
+            role?: "ADMIN" | "MANAGER" | "CONTRIBUTOR" | "VIEWER";
+            /**
+             * @description Filtrer par utilisateurs ayant un profil défini
+             * @example true
+             */
+            hasProfile?: boolean;
+        };
+        ProfileDto: {
+            /** @description Profile unique identifier */
+            id: string;
+            /** @description User nickname */
+            nickname: string;
+            /** @description User description */
+            description?: string | null;
+            /** @description User avatar */
+            avatar?: components["schemas"]["Image"] | null;
+            /**
+             * Format: date-time
+             * @description Profile creation date
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Profile last update date
+             */
+            updatedAt: string;
+        };
+        User: {
+            /** @description User unique identifier */
+            id: string;
+            /** @description User email address */
+            email: string;
+            /**
+             * @description User role
+             * @enum {string}
+             */
+            role: "ADMIN" | "MANAGER" | "CONTRIBUTOR" | "VIEWER";
+            /**
+             * Format: date-time
+             * @description User creation date
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description User last update date
+             */
+            updatedAt: string;
+            profile?: components["schemas"]["ProfileDto"] | null;
+        };
         Image: {
             /** @description Image unique identifier */
             id: string;
@@ -978,29 +1062,8 @@ export interface components {
              * @description Profile last update date
              */
             updatedAt: string;
-        };
-        User: {
-            /** @description User unique identifier */
-            id: string;
-            /** @description User email address */
-            email: string;
-            /**
-             * @description User role
-             * @enum {string}
-             */
-            role: "ADMIN" | "MANAGER" | "CONTRIBUTOR" | "VIEWER";
-            /**
-             * Format: date-time
-             * @description User creation date
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description User last update date
-             */
-            updatedAt: string;
-            /** @description User profile */
-            profile: components["schemas"]["Profile"];
+            /** @description Associated user */
+            user: components["schemas"]["User"];
         };
         UsersListResponseDto: {
             /** @description Pagination metadata */
@@ -1063,6 +1126,42 @@ export interface components {
              * @example 456e4567-e89b-12d3-a456-426614174001
              */
             avatarId?: string;
+        };
+        DjsQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+            /**
+             * @description Filtrer par DJs ayant des mixtapes
+             * @example true
+             */
+            hasMixtapes?: boolean;
         };
         Tag: {
             /** @description Tag unique identifier */
@@ -1167,6 +1266,87 @@ export interface components {
         };
         CreateDjDto: Record<string, never>;
         UpdateDjDto: Record<string, never>;
+        ImagesQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+            /**
+             * @description Filtrer par type MIME
+             * @example image/jpeg
+             */
+            mimeType?: string;
+            /**
+             * @description Filtrer par bucket de stockage
+             * @example covers
+             * @enum {string}
+             */
+            bucket?: "covers" | "web";
+        };
+        InvitationsQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+        };
+        ValidateInvitationTokenResponseDto: {
+            /** @description Indicates if the token is valid */
+            valid: boolean;
+            /** @description The invitation email */
+            email: string;
+            /** @description The invitation message */
+            message: string;
+        };
         SendInvitationDto: {
             /**
              * @description Email de la personne à inviter
@@ -1212,6 +1392,68 @@ export interface components {
             };
             /** @description The list of invitations */
             data: components["schemas"]["Invitation"][];
+        };
+        MixtapesQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+            /**
+             * @description Filtrer par tags (noms)
+             * @example [
+             *       "house",
+             *       "techno"
+             *     ]
+             */
+            tags?: string[];
+            /**
+             * @description Filtrer par DJs (noms ou slugs)
+             * @example [
+             *       "john-doe",
+             *       "jane-smith"
+             *     ]
+             */
+            djs?: string[];
+            /**
+             * @description Filtrer par année exacte
+             * @example 2024
+             */
+            year?: number;
+            /**
+             * @description Filtrer par année minimum
+             * @example 2020
+             */
+            yearFrom?: number;
+            /**
+             * @description Filtrer par année maximum
+             * @example 2024
+             */
+            yearTo?: number;
         };
         MixtapesListResponseDto: {
             /** @description Pagination metadata */
@@ -1399,6 +1641,42 @@ export interface components {
              *     ]
              */
             djNames: string[];
+        };
+        TagsQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+            /**
+             * @description Filtrer par tags utilisés dans des mixtapes
+             * @example true
+             */
+            hasUsage?: boolean;
         };
         CreateTagDto: Record<string, never>;
         TagsListResponseDto: {
@@ -1728,11 +2006,11 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
                 /** @description Filtrer par rôle utilisateur */
-                role?: "ADMIN" | "MANAGER" | "CONTRIBUTOR" | "VIEWER";
+                role?: string;
                 /** @description Filtrer par utilisateurs ayant un profil défini */
                 hasProfile?: boolean;
             };
@@ -2072,7 +2350,7 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
                 /** @description Filtrer par DJs ayant des mixtapes */
@@ -2332,13 +2610,13 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
                 /** @description Filtrer par type MIME */
                 mimeType?: string;
                 /** @description Filtrer par bucket de stockage */
-                bucket?: "covers" | "web";
+                bucket?: string;
             };
             header?: never;
             path?: never;
@@ -2654,7 +2932,7 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
             };
@@ -2739,7 +3017,7 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
                 /** @description Filtrer par tags (noms) */
@@ -3242,7 +3520,7 @@ export interface operations {
                 /** @description Champ de tri */
                 sortBy?: string;
                 /** @description Ordre de tri */
-                sortOrder?: "ASC" | "DESC";
+                sortOrder?: string;
                 /** @description Recherche textuelle globale */
                 search?: string;
                 /** @description Filtrer par tags utilisés dans des mixtapes */

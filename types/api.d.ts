@@ -63,6 +63,8 @@ declare global {
 
   type CreateUserDto = ApiSchemas['CreateUserDto']
 
+  type SendInvitationDto = ApiSchemas['SendInvitationDto']
+
   type UpdateDjDto = ApiSchemas['UpdateDjDto']
 
   type UpdateMixtapeDto = ApiSchemas['UpdateMixtapeDto']
@@ -72,6 +74,11 @@ declare global {
   type UpdateUserDto = ApiSchemas['UpdateUserDto']
 
   type UpdateUserProfileDto = ApiSchemas['UpdateUserProfileDto']
+
+
+  // ===== DTOs ADDITIONNELS =====
+
+  type ProfileDto = ApiSchemas['ProfileDto']
 
 
   // ===== DTOs D'AUTHENTIFICATION =====
@@ -85,6 +92,21 @@ declare global {
   type SignInDto = ApiSchemas['SignInDto']
 
   type SignUpDto = ApiSchemas['SignUpDto']
+
+
+  // ===== DTOs DE QUERY DE LISTES =====
+
+  type DjsQueryDto = ApiSchemas['DjsQueryDto']
+
+  type ImagesQueryDto = ApiSchemas['ImagesQueryDto']
+
+  type InvitationsQueryDto = ApiSchemas['InvitationsQueryDto']
+
+  type MixtapesQueryDto = ApiSchemas['MixtapesQueryDto']
+
+  type TagsQueryDto = ApiSchemas['TagsQueryDto']
+
+  type UsersQueryDto = ApiSchemas['UsersQueryDto']
 
 
   // ===== RÉPONSES DE LISTE =====
@@ -115,6 +137,8 @@ declare global {
   type TagResponseDto = ApiSchemas['TagResponseDto']
 
   type UserResponseDto = ApiSchemas['UserResponseDto']
+
+  type ValidateInvitationTokenResponseDto = ApiSchemas['ValidateInvitationTokenResponseDto']
 
 
   // ===== TYPES DE STREAMING =====

@@ -1,19 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import type {
-  CreateInvitationDto,
-  InvitationQueryParams,
-  InvitationResponse,
-  PaginatedInvitationsResponse,
-  ValidationTokenResponse,
-} from '../types/invitation'
+// Types API utilisés via globalThis (déclarés globalement dans types/api.d.ts)
 import { HttpMethod, useApi } from './api'
 import { queryKeys } from './query-keys'
-
-// Types pour les paramètres des fonctions
-interface SendInvitationParams {
-  email: string
-  message?: string
-}
 
 interface ValidateTokenParams {
   token: string
@@ -32,13 +20,8 @@ export const useInvitationApi = () => {
    * Nécessite le rôle ADMIN
    */
   const sendInvitation = useMutation({
-    mutationFn: async ({ email, message }: SendInvitationParams): Promise<InvitationResponse> => {
-      const payload: CreateInvitationDto = {
-        email,
-        message: message || undefined,
-      }
-
-      return call<InvitationResponse>('/invitations/send', {
+    mutationFn: async (payload: SendInvitationDto): Promise<Invitation> => {
+      return call<Invitation>('/invitations/send', {
         method: HttpMethod.POST,
         body: payload,
         requireAuth: true,
@@ -57,25 +40,26 @@ export const useInvitationApi = () => {
    * Récupérer la liste des invitations (pagination supportée)
    * Nécessite le rôle ADMIN
    */
-  const getInvitations = (params: InvitationQueryParams | ComputedRef<InvitationQueryParams> = {}) => {
+  const getInvitations = (params: Partial<InvitationsQueryDto> | ComputedRef<Partial<InvitationsQueryDto>> = {}) => {
     return useQuery({
       queryKey: computed(() => {
         const resolvedParams = unref(params)
         return queryKeys.invitations.list(resolvedParams)
       }),
-      queryFn: async (): Promise<PaginatedInvitationsResponse> => {
+      queryFn: async (): Promise<InvitationsListResponseDto> => {
         const resolvedParams = unref(params)
         const searchParams = new URLSearchParams()
 
         if (resolvedParams.page) searchParams.append('page', resolvedParams.page.toString())
         if (resolvedParams.limit) searchParams.append('limit', resolvedParams.limit.toString())
-        if (resolvedParams.status) searchParams.append('status', resolvedParams.status)
+        if (resolvedParams.sortBy) searchParams.append('sortBy', resolvedParams.sortBy)
+        if (resolvedParams.sortOrder) searchParams.append('sortOrder', resolvedParams.sortOrder)
         if (resolvedParams.search) searchParams.append('search', resolvedParams.search)
 
         const queryString = searchParams.toString()
         const endpoint = queryString ? `/invitations?${queryString}` : '/invitations'
 
-        return call<PaginatedInvitationsResponse>(endpoint, {
+        return call<InvitationsListResponseDto>(endpoint, {
           method: HttpMethod.GET,
           requireAuth: true,
         })
@@ -90,8 +74,8 @@ export const useInvitationApi = () => {
    * Endpoint public - pas besoin d'authentification
    */
   const validateInvitationToken = useMutation({
-    mutationFn: async ({ token }: ValidateTokenParams): Promise<ValidationTokenResponse> => {
-      return call<ValidationTokenResponse>(`/invitations/validate?token=${encodeURIComponent(token)}`, {
+    mutationFn: async ({ token }: ValidateTokenParams): Promise<ValidateInvitationTokenResponseDto> => {
+      return call<ValidateInvitationTokenResponseDto>(`/invitations/validate?token=${encodeURIComponent(token)}`, {
         method: HttpMethod.GET,
         requireAuth: false,
       })
@@ -127,9 +111,7 @@ export const useInvitationApi = () => {
    */
   const resendInvitation = useMutation({
     mutationFn: async ({ invitationId, email, message }: { invitationId: string; email: string; message?: string }) => {
-      // D'abord annuler l'ancienne invitation
       await cancelInvitation.mutateAsync(invitationId)
-      // Puis envoyer une nouvelle invitation
       return sendInvitation.mutateAsync({ email, message })
     },
     onSuccess: () => {
@@ -148,7 +130,7 @@ export const useInvitationApi = () => {
   /**
    * Utility: Formater le statut d'une invitation pour l'affichage
    */
-  const getInvitationStatusLabel = (invitation: InvitationResponse): string => {
+  const getInvitationStatusLabel = (invitation: Invitation): string => {
     if (invitation.usedAt) {
       return 'Utilisée'
     }
@@ -166,7 +148,7 @@ export const useInvitationApi = () => {
   /**
    * Utility: Obtenir la couleur CSS pour le statut
    */
-  const getInvitationStatusColor = (invitation: InvitationResponse): string => {
+  const getInvitationStatusColor = (invitation: Invitation): string => {
     const status = getInvitationStatusLabel(invitation)
 
     switch (status) {

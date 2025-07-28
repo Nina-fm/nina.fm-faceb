@@ -2,13 +2,12 @@
   // Types globaux depuis api.d.ts
   import type { ColumnDef } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
-  import type { InvitationResponse } from '~/types/invitation'
 
   const InvitationTableActions = resolveComponent('InvitationTableActions')
 
   withDefaults(
     defineProps<{
-      data?: InvitationResponse[]
+      data?: InvitationsListResponseDto['data']
       loading?: boolean
     }>(),
     {
@@ -51,7 +50,7 @@
     }
   }
 
-  const columns: ColumnDef<InvitationResponse>[] = [
+  const columns: ColumnDef<Invitation>[] = [
     {
       accessorKey: 'id',
       header: '',
@@ -98,8 +97,10 @@
       id: 'invitedBy',
       header: 'Invité par',
       cell: ({ row }) => {
-        const email = row.original.invitedBy
-        return h('span', {}, { default: () => [email || ''] })
+        const displayName = row.original.invitedBy?.profile?.nickname
+          ? row.original.invitedBy.profile.nickname
+          : row.original.invitedBy?.email
+        return h('span', {}, { default: () => [displayName || ''] })
       },
     },
     {

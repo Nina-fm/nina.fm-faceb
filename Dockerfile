@@ -70,8 +70,9 @@ WORKDIR /app
 COPY --from=build --chown=nuxtjs:nodejs /app/.output ./.output
 COPY --from=build --chown=nuxtjs:nodejs /app/package.json ./package.json
 
-# Install production dependencies (skip scripts)
-RUN yarn install --frozen-lockfile --production --ignore-scripts
+# Copy node_modules from build stage instead of reinstalling
+# This avoids the Supabase JS Node 20 requirement issue
+COPY --from=dependencies --chown=nuxtjs:nodejs /app/node_modules ./node_modules
 
 USER nuxtjs
 

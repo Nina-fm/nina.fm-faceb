@@ -9,14 +9,6 @@ export default defineNuxtPlugin(() => {
   const supabaseUrl = __SUPABASE_URL__ || ""
   const supabaseKey = __SUPABASE_KEY__ || ""
 
-  console.log("🔧 Supabase plugin init")
-  console.log("URL:", supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : "MISSING")
-  console.log("KEY:", supabaseKey ? `${supabaseKey.substring(0, 30)}...` : "MISSING")
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.error("❌ Supabase credentials missing!")
-  }
-
   const supabase = createClient(supabaseUrl, supabaseKey)
 
   return {

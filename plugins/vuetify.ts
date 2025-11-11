@@ -20,6 +20,7 @@ const NinaTheme: ThemeDefinition = {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
+    ssr: false, // Explicitly disable SSR for Vuetify in SPA mode
     locale: {
       locale: "fr",
       messages: { fr },

@@ -10,7 +10,6 @@ export const useTagsStore = defineStore("tags", () => {
     await process(async () => {
       const result = await api.get(`/tags`)
       if (!Array.isArray(result)) {
-        console.error("❌ Tags fetch: result is not an array", result)
         data.value = []
         index.value = {}
         return

@@ -36,7 +36,6 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
     await process(async () => {
       const result = await api.get(`/mixtapes`)
       if (!Array.isArray(result)) {
-        console.error("❌ Mixtapes fetch: result is not an array", result)
         data.value = []
         index.value = {}
         return

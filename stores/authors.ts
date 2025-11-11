@@ -10,7 +10,6 @@ export const useAuthorsStore = defineStore("authors", () => {
     await process(async () => {
       const result = await api.get(`/authors`)
       if (!Array.isArray(result)) {
-        console.error("❌ Authors fetch: result is not an array", result)
         data.value = []
         index.value = {}
         return

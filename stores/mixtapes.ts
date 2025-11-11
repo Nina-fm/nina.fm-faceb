@@ -35,6 +35,12 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
   const fetchMixtapes = async () =>
     await process(async () => {
       const result = await api.get(`/mixtapes`)
+      if (!Array.isArray(result)) {
+        console.error("❌ Mixtapes fetch: result is not an array", result)
+        data.value = []
+        index.value = {}
+        return
+      }
       data.value = result as MixtapeExt[]
       index.value = (result as MixtapeExt[]).reduce((r, m) => ({ ...r, [m.id]: m }), {})
     })
@@ -92,7 +98,9 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
             data: mixtapeData,
           },
         })) as MixtapeExt
-        data.value = [...data.value.filter((a) => a.id !== mixtapeId), result]
+        if (Array.isArray(data.value)) {
+          data.value = [...data.value.filter((a: MixtapeExt) => a.id !== mixtapeId), result]
+        }
         index.value = { ...index.value, [mixtapeId]: result }
         return result
       },
@@ -110,10 +118,12 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
       { successMsg: "Merci d'avoir fait du ménage !" }
     )
 
-  const filteredData = computed(() =>
-    data.value.filter((m: MixtapeExt) => {
+  const filteredData = computed(() => {
+    if (!Array.isArray(data.value)) return []
+    return data.value.filter((m: MixtapeExt) => {
       if (tagFilters.value.length) {
         return tagFilters.value.reduce((acc: boolean, id: number) => {
+          if (!Array.isArray(m.tags)) return acc
           const isMatching = m.tags.reduce(
             (match: boolean, mixtapeTag: Tag) => (mixtapeTag.id === id ? true : match),
             false
@@ -123,7 +133,7 @@ export const useMixtapesStore = defineStore("mixtapes", () => {
       }
       return true
     })
-  )
+  })
 
   return {
     data,

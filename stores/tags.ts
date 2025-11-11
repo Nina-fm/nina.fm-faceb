@@ -9,6 +9,12 @@ export const useTagsStore = defineStore("tags", () => {
   const fetchTags = async () =>
     await process(async () => {
       const result = await api.get(`/tags`)
+      if (!Array.isArray(result)) {
+        console.error("❌ Tags fetch: result is not an array", result)
+        data.value = []
+        index.value = {}
+        return
+      }
       data.value = result as Tag[]
       index.value = (result as Tag[]).reduce((r, a) => ({ ...r, [a.id]: a }), {})
     })
@@ -53,7 +59,9 @@ export const useTagsStore = defineStore("tags", () => {
           query: { id: tagId },
           body: { data: tagData },
         })) as Tag
-        data.value = [...data.value.filter((a) => a.id !== tagId), result]
+        if (Array.isArray(data.value)) {
+          data.value = [...data.value.filter((a: Tag) => a.id !== tagId), result]
+        }
         index.value = { ...index.value, [tagId]: result }
         return data
       },

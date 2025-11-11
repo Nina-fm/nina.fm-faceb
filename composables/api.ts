@@ -16,11 +16,14 @@ export interface ApiOptions {
   body?: Obj
 }
 
+// Declare global constants defined in vite.define
+declare const __SUPABASE_KEY__: string
+declare const __SUPABASE_FUNCTIONS_URL__: string
+
 export const useApi = () => {
-  const config = useRuntimeConfig()
   const { token } = useAuthStoreRefs()
-  const apikey = config.public.supabase.key
-  const baseURL = config.public.supabase.functionsUrl
+  const apikey = __SUPABASE_KEY__ || ""
+  const baseURL = __SUPABASE_FUNCTIONS_URL__ || ""
 
   const call = async (path: string, method?: Methods, options?: ApiOptions) => {
     if (!token.value) {

@@ -46,6 +46,7 @@ jobs:
           SITE_URL: ${{ vars.SITE_URL }}
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_KEY: ${{ vars.SUPABASE_KEY }}
+          SUPABASE_FUNCTIONS_URL: ${{ vars.SUPABASE_FUNCTIONS_URL }}
           STREAM_API_URL: ${{ vars.STREAM_API_URL }}
           STREAM_API_URL_FALLBACK: ${{ vars.STREAM_API_URL_FALLBACK }}
 
@@ -116,6 +117,7 @@ jobs:
             SITE_URL=${{ vars.SITE_URL }}
             SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ vars.SUPABASE_KEY }}
+            SUPABASE_FUNCTIONS_URL=${{ vars.SUPABASE_FUNCTIONS_URL }}
             STREAM_API_URL=${{ vars.STREAM_API_URL }}
             STREAM_API_URL_FALLBACK=${{ vars.STREAM_API_URL_FALLBACK }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -175,6 +177,7 @@ jobs:
             SITE_URL=${{ vars.SITE_URL }}
             SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ vars.SUPABASE_KEY }}
+            SUPABASE_FUNCTIONS_URL=${{ vars.SUPABASE_FUNCTIONS_URL }}
             STREAM_API_URL=${{ vars.STREAM_API_URL }}
             STREAM_API_URL_FALLBACK=${{ vars.STREAM_API_URL_FALLBACK }}
             EOF

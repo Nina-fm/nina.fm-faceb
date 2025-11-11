@@ -32,6 +32,8 @@ export default defineNuxtConfig({
       streamApiUrl: process.env.STREAM_API_URL,
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       supabase: {
+        url: process.env.SUPABASE_URL,
+        key: process.env.SUPABASE_KEY,
         functionsUrl: process.env.SUPABASE_FUNCTIONS_URL,
       },
     },
@@ -61,6 +63,10 @@ export default defineNuxtConfig({
     },
     define: {
       "process.env.DEBUG": false,
+      // Expose Supabase env vars for SPA mode as global constants
+      __SUPABASE_URL__: JSON.stringify(process.env.SUPABASE_URL),
+      __SUPABASE_KEY__: JSON.stringify(process.env.SUPABASE_KEY),
+      __SUPABASE_FUNCTIONS_URL__: JSON.stringify(process.env.SUPABASE_FUNCTIONS_URL),
     },
     resolve: {
       alias: {

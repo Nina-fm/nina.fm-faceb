@@ -9,6 +9,12 @@ export const useAuthorsStore = defineStore("authors", () => {
   const fetchAuthors = async () =>
     await process(async () => {
       const result = await api.get(`/authors`)
+      if (!Array.isArray(result)) {
+        console.error("❌ Authors fetch: result is not an array", result)
+        data.value = []
+        index.value = {}
+        return
+      }
       data.value = result as AuthorExt[]
       index.value = (result as AuthorExt[]).reduce((r, a) => ({ ...r, [a.id]: a }), {})
     })
@@ -53,7 +59,9 @@ export const useAuthorsStore = defineStore("authors", () => {
           query: { id: authorId },
           body: { data: authorData },
         })) as AuthorExt
-        data.value = [...data.value.filter((a) => a.id !== authorId), result]
+        if (Array.isArray(data.value)) {
+          data.value = [...data.value.filter((a: AuthorExt) => a.id !== authorId), result]
+        }
         index.value = { ...index.value, [authorId]: result }
         return data
       },

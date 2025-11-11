@@ -1,0 +1,40 @@
+services:
+  faceb:
+    image: ghcr.io/nina-fm/nina.fm-faceb:latest
+    container_name: nina-faceb
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - HOST=0.0.0.0
+      - SITE_URL=${SITE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - STREAM_API_URL=${STREAM_API_URL}
+      - STREAM_API_URL_FALLBACK=${STREAM_API_URL_FALLBACK}
+    ports:
+      - "127.0.0.1:3002:3002"
+    networks:
+      - nina-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3002/', (res) => process.exit(res.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  nina-network:
+    name: nina-network
+    external: true

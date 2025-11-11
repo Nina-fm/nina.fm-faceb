@@ -7,11 +7,10 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getTagById, deleteTag } = useTagApi()
-  const { data } = await useAsyncData('tag', () => getTagById(id))
+  const { getTag, deleteTag } = useTagApi()
+  const { data: tag } = getTag(id)
 
   const openConfirm = ref(false)
-  const tag = computed(() => data.value)
 
   useBreadcrumbItems({
     overrides: [
@@ -37,9 +36,9 @@
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteTag(id)
+      await deleteTag.mutateAsync(id)
       await navigateTo('/tags')
-    } catch (error) {
+    } catch {
       toast.error('Une erreur est survenue lors de la suppression du tag.')
     } finally {
       openConfirm.value = false

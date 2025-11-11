@@ -52,6 +52,11 @@
   const handleSubmit = form.handleSubmit((values: Data) => {
     emit('submit', values)
   })
+
+  // Exposer la méthode resetForm pour usage externe
+  defineExpose({
+    resetForm: () => form.resetForm(),
+  })
 </script>
 
 <template>

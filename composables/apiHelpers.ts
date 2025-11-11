@@ -13,6 +13,22 @@ interface PaginationParams {
 }
 
 /**
+ * Structure de réponse paginée standard de l'API
+ */
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext?: boolean
+    hasPrev?: boolean
+  }
+  filters?: Record<string, unknown>
+}
+
+/**
  * Convertit les paramètres en URLSearchParams
  * Utilisé par tous les composables pour les requêtes avec pagination
  */

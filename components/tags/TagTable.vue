@@ -57,7 +57,8 @@
       header: 'Mixtapes',
       size: 30,
       cell: ({ cell }) => {
-        const mixtapesCount = (cell.getValue() as Mixtape[]).length
+        const mixtapes = cell.getValue() as Mixtape[] | undefined
+        const mixtapesCount = mixtapes?.length || 0
         return h(Badge, { variant: mixtapesCount ? 'primaryMuted' : 'outline' }, { default: () => [mixtapesCount] })
       },
     },

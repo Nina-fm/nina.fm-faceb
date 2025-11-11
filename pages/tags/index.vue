@@ -5,10 +5,30 @@
   definePageMeta({ roles: ['ADMIN'] })
 
   const route = useRoute()
-  const { pending, fetchTags, deleteTag } = useTagApi()
-  const { data, error, refresh } = await useAsyncData('tags', () => fetchTags())
+  const { getTags, deleteTag } = useTagApi()
 
-  const tags = computed(() => data.value?.results || [])
+  // Query params
+  const page = computed(() => Number(route.query.page) || 1)
+  const limit = computed(() => Number(route.query.limit) || 10)
+  const search = computed(() => route.query.search?.toString())
+  const hasUsage = computed(() => (route.query.hasUsage === 'true' ? true : undefined))
+
+  // Fetch tags avec query params
+  const {
+    data: tagsData,
+    isPending: pending,
+    error,
+    refetch: refresh,
+  } = getTags(
+    computed(() => ({
+      page: page.value,
+      limit: limit.value,
+      search: search.value,
+      hasUsage: hasUsage.value,
+    })),
+  )
+
+  const tags = computed(() => tagsData.value?.data || [])
 
   const variant = computed(() => {
     if (pending.value) return 'primaryMuted'
@@ -39,10 +59,9 @@
 
   const handleRowDelete = async (id: string) => {
     try {
-      await deleteTag(id)
-      await refresh()
+      await deleteTag.mutateAsync(id)
       toast.success('Tag supprimé !')
-    } catch (error) {
+    } catch {
       toast.error('Une erreur est survenue lors de la suppression du Tag.')
     }
   }

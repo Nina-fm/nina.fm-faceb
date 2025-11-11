@@ -5,31 +5,31 @@
 
   definePageMeta({ roles: [Role.ADMIN] })
 
-  const { createTag, pending } = useTagApi()
+  const { createTag } = useTagApi()
+  const formRef = ref()
 
   useBreadcrumbItems({
     overrides: [
       undefined,
       undefined,
       {
-        label: 'Nouvelle mixtape',
+        label: 'Nouveau tag',
       },
     ],
   })
 
   const handleCancel = async () => {
-    await navigateTo('/mixtapes')
+    await navigateTo('/tags')
   }
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: { name: string; color?: string }) => {
     try {
-      const tag = await createTag(values as TagCreate)
-      if (tag) {
-        toast.success('Tag créé.')
-        await navigateTo(`/tags/${tag.id}/edit`)
-      }
-    } catch (error) {
-      console.error('Error creating tag:', error)
+      await createTag.mutateAsync(values)
+      // Réinitialiser le formulaire AVANT la navigation pour éviter le dialogue
+      formRef.value?.resetForm()
+      toast.success('Tag créé avec succès !')
+      await navigateTo('/tags')
+    } catch {
       toast.error('Erreur lors de la création du tag.')
     }
   }
@@ -43,5 +43,11 @@
       </Button>
     </template>
   </PageHeader>
-  <TagForm teleport-to="page-header-actions" :pending="pending" @cancel="handleCancel" @submit="handleSubmit" />
+  <TagForm
+    ref="formRef"
+    teleport-to="page-header-actions"
+    :pending="createTag.isPending.value"
+    @cancel="handleCancel"
+    @submit="handleSubmit"
+  />
 </template>

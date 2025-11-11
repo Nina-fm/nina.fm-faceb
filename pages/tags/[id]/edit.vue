@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-  // Types globaux depuis api.d.ts - Role est disponible
-  import { XIcon } from 'lucide-vue-next'
+  import { Loader2Icon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
+  import { Role } from '~/utils/roles'
 
   definePageMeta({ roles: [Role.ADMIN] })
 
   const { params } = useRoute()
   const id = params.id as string
-  const { pending, getTagById, updateTag } = useTagApi()
-  const { data, refresh } = await useAsyncData('tag', () => getTagById(id))
-
-  const tag = computed(() => data.value)
+  const { getTag, updateTag } = useTagApi()
+  const { data: tag, isPending, error } = getTag(id)
 
   useBreadcrumbItems({
     overrides: [
@@ -29,13 +27,11 @@
     await navigateTo('/tags')
   }
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: { name: string; color?: string }) => {
     try {
-      await updateTag(id, values as TagCreate)
-      await refresh()
-      toast.success('Tag modifié.')
-    } catch (error) {
-      console.error('Error editing tag:', error)
+      await updateTag.mutateAsync({ tagId: id, payload: values })
+      toast.success('Tag modifié avec succès !')
+    } catch {
       toast.error('Erreur lors de la modification du tag.')
     }
   }
@@ -49,10 +45,17 @@
       </Button>
     </template>
   </PageHeader>
+
+  <div v-if="isPending" class="flex items-center justify-center py-8">
+    <Loader2Icon class="text-muted-foreground h-8 w-8 animate-spin" />
+  </div>
+  <div v-else-if="error" class="text-destructive flex flex-col items-center justify-center py-8">
+    <p>Erreur lors du chargement du tag</p>
+  </div>
   <TagForm
-    v-if="tag"
+    v-else-if="tag"
     :tag="tag"
-    :pending="pending"
+    :pending="updateTag.isPending.value"
     teleport-to="page-header-actions"
     @cancel="handleCancel"
     @submit="handleSubmit"

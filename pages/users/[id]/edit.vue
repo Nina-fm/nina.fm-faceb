@@ -7,8 +7,8 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUserById, updateUser, pending } = useUserApi()
-  const { data, refresh } = await useAsyncData('user', () => getUserById(id))
+  const { getUser, updateUser, updateUserProfile, uploadUserAvatar } = useUserApi()
+  const { data } = getUser(id)
   const user = computed(() => data.value)
 
   useBreadcrumbItems({
@@ -18,7 +18,7 @@
         label: 'Utilisateurs',
       },
       {
-        label: user.value?.name ?? "Modification de l'utilisateur",
+        label: user.value?.profile?.nickname ?? "Modification de l'utilisateur",
       },
       {
         label: 'Modifier',
@@ -30,10 +30,40 @@
     await navigateTo('/users')
   }
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: any) => {
     try {
-      await updateUser(id, values as UserUpdate)
-      await refresh()
+      // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
+      if (values.avatar?.file instanceof File) {
+        await uploadUserAvatar.mutateAsync({
+          userId: id,
+          file: values.avatar.file,
+        })
+      }
+
+      // Étape 2 : Mise à jour du profil (nickname, description)
+      const profilePayload: Record<string, any> = {
+        nickname: values.nickname,
+        description: values.description,
+      }
+
+      await updateUserProfile.mutateAsync({
+        userId: id,
+        payload: profilePayload,
+      })
+
+      // Étape 3 : Mise à jour de l'email et du rôle si modifiés
+      const userPayload: Record<string, any> = {}
+      if (values.email !== user.value?.email) {
+        userPayload.email = values.email
+      }
+      if (values.role && values.role !== user.value?.role) {
+        userPayload.role = values.role
+      }
+
+      if (Object.keys(userPayload).length > 0) {
+        await updateUser.mutateAsync({ userId: id, payload: userPayload })
+      }
+
       toast.success('Utilisateur modifié.')
     } catch (error) {
       console.error('Error editing user:', error)
@@ -53,7 +83,7 @@
   <UserForm
     v-if="user"
     :user="user"
-    :pending="pending"
+    :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadUserAvatar.isPending.value"
     can-edit-roles
     teleport-to="page-header-actions"
     @cancel="handleCancel"

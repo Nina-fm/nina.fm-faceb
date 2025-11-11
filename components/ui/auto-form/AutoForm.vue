@@ -20,6 +20,7 @@
     form?: FormContext<GenericObject>
     fieldConfig?: Config<z.infer<T>>
     dependencies?: Dependency<z.infer<T>>[]
+    defaultValues?: Partial<z.infer<T>>
   }>()
 
   const emits = defineEmits<{
@@ -73,9 +74,11 @@
       }
     } else {
       const formSchema = toTypedSchema(props.schema)
+      const initialValues = props.defaultValues || {}
       return {
         keepValues: true,
         validationSchema: formSchema,
+        initialValues,
         onSubmit: (val: GenericObject) => emits('submit', val),
       }
     }

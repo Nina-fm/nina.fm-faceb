@@ -4,11 +4,17 @@
 
   const { isMobile } = useSidebar()
   const { logout, user } = useAuthApi()
+  const { getThumbnailUrl } = useImageApi()
 
   const currentUser = computed(() => ({
-    name: user.value?.name,
-    email: user.value?.email,
-    avatar: user.value?.avatar,
+    name: user.value?.profile?.nickname || user.value?.name || 'Utilisateur',
+    email: user.value?.email || '',
+    avatar: user.value?.profile?.avatar
+      ? {
+          url: getThumbnailUrl(user.value.profile.avatar),
+          alt: user.value?.profile?.nickname || 'Avatar',
+        }
+      : undefined,
   }))
 
   const handleLogout = async () => {

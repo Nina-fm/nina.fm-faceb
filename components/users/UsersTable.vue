@@ -3,7 +3,6 @@
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
-  import type { User } from '~/types/db'
 
   const UserRoundIcon = await import('lucide-vue-next').then((module) => module.UserRoundIcon)
   const ShieldUserIcon = await import('lucide-vue-next').then((module) => module.ShieldUserIcon)
@@ -11,7 +10,7 @@
   const Avatar = resolveComponent('Avatar')
   const AvatarFallback = resolveComponent('AvatarFallback')
   const AvatarImage = resolveComponent('AvatarImage')
-  const TooltipedBadge = resolveComponent('TooltipedBadge')
+  const Badge = resolveComponent('Badge')
   const UsersTableActions = resolveComponent('UsersTableActions')
 
   const props = withDefaults(
@@ -21,8 +20,8 @@
       undeletableIds?: string[]
     }>(),
     {
-      data: () => [],
       loading: false,
+      undeletableIds: () => [],
     },
   )
 
@@ -31,7 +30,10 @@
     rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
+    filterChange: [filters: Record<string, unknown>]
   }>()
+
+  const { getThumbnailUrl } = useImageApi()
 
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
@@ -39,16 +41,18 @@
   const roleFilterOptions = computed(() => {
     return [
       { label: 'Administrateur', value: Role.ADMIN },
-      { label: 'Utilisateur', value: Role.USER },
+      { label: 'Responsable', value: Role.MANAGER },
+      { label: 'Contributeur', value: Role.CONTRIBUTOR },
+      { label: 'Utilisateur', value: Role.VIEWER },
     ]
   })
 
   const filters: FilterDef[] = [
     {
-      id: 'roles',
+      id: 'role',
       label: 'Rôles',
       options: roleFilterOptions.value,
-      multiple: true,
+      multiple: false,
     },
   ]
 
@@ -64,8 +68,9 @@
       accessorKey: 'name',
       header: 'Utilisateur',
       cell: ({ cell }) => {
-        const name = cell.getValue() as string
-        const avatar = cell.row.original.avatar
+        const profile = cell.row.original.profile
+        const name = profile?.nickname || cell.row.original.email
+        const avatarUrl = profile?.avatar ? getThumbnailUrl(profile.avatar) : null
         return h(
           'span',
           { class: 'flex gap-3 items-center' },
@@ -76,11 +81,11 @@
                 {},
                 {
                   default: () => [
-                    ...(avatar
+                    ...(avatarUrl
                       ? [
                           h(AvatarImage, {
-                            src: avatar.url,
-                            alt: avatar.alt,
+                            src: avatarUrl,
+                            alt: name,
                           }),
                         ]
                       : []),
@@ -99,18 +104,21 @@
       },
     },
     {
-      accessorKey: 'roles',
+      accessorKey: 'role',
       header: '',
       cell: ({ cell }) => {
-        const roles = cell.getValue() as string[]
-        const name = cell.row.original.name
-        const isAdmin = roles.includes(Role.ADMIN)
+        const role = cell.getValue() as string
+        const isAdmin = role === Role.ADMIN
+        const roleOption = roleFilterOptions.value.find((o) => o.value === role)
+        const roleLabel = roleOption?.label || 'Inconnu'
         return isAdmin
           ? [
               h(
-                TooltipedBadge,
-                { variant: 'successMuted', tooltip: `${name} est Administrateur` },
-                { default: () => [h(ShieldUserIcon)] },
+                Badge,
+                { variant: isAdmin ? 'successMuted' : 'infoMuted' },
+                {
+                  default: () => (isAdmin ? [h(ShieldUserIcon), roleLabel] : [roleLabel]),
+                },
               ),
             ]
           : null
@@ -146,7 +154,7 @@
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
         return h(UsersTableActions, {
-          deletable: !props.undeletableIds?.includes(id),
+          deletable: !props.undeletableIds.includes(id),
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),
@@ -177,18 +185,30 @@
       try {
         emit('rowDelete', idToDelete.value)
       } catch (error) {
-        toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
+        toast.error(
+          error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression de l'utilisateur.",
+        )
       } finally {
         openConfirm.value = false
       }
     }
+  }
+
+  const handleFilterChange = (filters: { id: string; value: unknown }[]) => {
+    const filtersObj = filters.reduce(
+      (acc, filter) => {
+        acc[filter.id] = filter.value
+        return acc
+      },
+      {} as Record<string, unknown>,
+    )
+    emit('filterChange', filtersObj)
   }
 </script>
 
 <template>
   <div class="py-10">
     <DataTable
-      v-if="data.length"
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
@@ -196,11 +216,10 @@
       search
       pagination
       background
+      empty-text="Aucun utilisateur ne correspond aux critères de recherche."
       @row-click="handleRowShow"
+      @filter-change="handleFilterChange"
     />
-    <EmptyBlock v-else title="Aucun utilisateur actuellement.">
-      <Button variant="secondary" class="w-fit" @click="$emit('invite')">Inviter un utilisateur</Button>
-    </EmptyBlock>
   </div>
   <ConfirmDeleteDialog
     v-model="openConfirm"

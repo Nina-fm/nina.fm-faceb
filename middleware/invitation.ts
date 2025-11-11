@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware((to) => {
   if (to.path !== '/register') return
 
   // Vérifie la présence du token d'invitation dans l'URL
-  const invitationToken = to.query.invitationToken
+  const invitationToken = to.query.token
   if (!invitationToken) {
     // Redirige vers la page de login avec un paramètre d'erreur
     return navigateTo({ path: '/login', query: { error: 'invitation_required' } })

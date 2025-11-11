@@ -1,4 +1,4 @@
-type Action = (...params: any[]) => Promise<any>
+type Action = (...params: unknown[]) => Promise<unknown>
 
 export const useAction = () => {
   const pending = ref(false)

@@ -2,14 +2,12 @@
   // Types globaux depuis api.d.ts - Role est disponible
   import { PencilIcon, XIcon } from 'lucide-vue-next'
 
-  definePageMeta({ roles: [Role.USER, Role.ADMIN] })
+  definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
-  const { currentUserId, hasRole } = useAuthApi()
-  const { getUserById } = useUserApi()
-  const { data: user } = await useAsyncData('user', () => getUserById(currentUserId.value ?? ''))
+  const { currentUserId, hasRole, user } = useAuthApi()
 
   onBeforeMount(() => {
-    if (hasRole(Role.USER) && user.value?.id !== currentUserId.value) {
+    if (hasRole(Role.VIEWER) && user.value?.id !== currentUserId.value) {
       return navigateTo('/')
     }
   })

@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-// Types API utilisés via globalThis (déclarés globalement dans types/api.d.ts)
+import type { components } from '~/types/api/globals.types'
 import { HttpMethod, useApi } from './api'
+import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
 import { queryKeys } from './query-keys'
+
+type SendInvitationDto = components['schemas']['SendInvitationDto']
+type Invitation = components['schemas']['Invitation']
+type InvitationsQueryDto = components['schemas']['InvitationsQueryDto']
+type InvitationsListResponseDto = components['schemas']['InvitationsListResponseDto']
+type ValidateInvitationTokenResponseDto = components['schemas']['ValidateInvitationTokenResponseDto']
 
 interface ValidateTokenParams {
   token: string
@@ -29,11 +36,9 @@ export const useInvitationApi = () => {
     },
     onSuccess: () => {
       // Invalider le cache des invitations pour rafraîchir la liste
-      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.list() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.lists() })
     },
-    onError: (error) => {
-      console.error("Erreur lors de l'envoi de l'invitation:", error)
-    },
+    onError: createErrorHandler("l'envoi de l'invitation"),
   })
 
   /**
@@ -48,24 +53,14 @@ export const useInvitationApi = () => {
       }),
       queryFn: async (): Promise<InvitationsListResponseDto> => {
         const resolvedParams = unref(params)
-        const searchParams = new URLSearchParams()
-
-        if (resolvedParams.page) searchParams.append('page', resolvedParams.page.toString())
-        if (resolvedParams.limit) searchParams.append('limit', resolvedParams.limit.toString())
-        if (resolvedParams.sortBy) searchParams.append('sortBy', resolvedParams.sortBy)
-        if (resolvedParams.sortOrder) searchParams.append('sortOrder', resolvedParams.sortOrder)
-        if (resolvedParams.search) searchParams.append('search', resolvedParams.search)
-
-        const queryString = searchParams.toString()
-        const endpoint = queryString ? `/invitations?${queryString}` : '/invitations'
+        const endpoint = buildEndpoint('/invitations', resolvedParams)
 
         return call<InvitationsListResponseDto>(endpoint, {
           method: HttpMethod.GET,
           requireAuth: true,
         })
       },
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes (anciennement cacheTime)
+      ...getListQueryConfig(),
     })
   }
 
@@ -80,9 +75,7 @@ export const useInvitationApi = () => {
         requireAuth: false,
       })
     },
-    onError: (error) => {
-      console.error('Erreur lors de la validation du token:', error)
-    },
+    onError: createErrorHandler('la validation du token'),
   })
 
   /**
@@ -98,11 +91,9 @@ export const useInvitationApi = () => {
     },
     onSuccess: () => {
       // Invalider le cache des invitations
-      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.list() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.lists() })
     },
-    onError: (error) => {
-      console.error("Erreur lors de l'annulation de l'invitation:", error)
-    },
+    onError: createErrorHandler("l'annulation de l'invitation"),
   })
 
   /**
@@ -115,7 +106,7 @@ export const useInvitationApi = () => {
       return sendInvitation.mutateAsync({ email, message })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.list() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.lists() })
     },
   })
 

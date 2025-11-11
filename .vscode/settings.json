@@ -2,6 +2,10 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.linkedEditing": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
   "deno.enable": false,
   "deno.enablePaths": ["supabase/functions"],
   "files.associations": {

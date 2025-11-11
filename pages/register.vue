@@ -24,7 +24,15 @@
   const handleError = (error: unknown) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = error as any
-    if (err?.response?.status === 401) {
+    if (err?.response?.status === 409 || err?.response?.status === 500) {
+      // Erreur 409 Conflict ou 500 avec duplicate key
+      const message = err?.response?.data?.message || err?.message || ''
+      if (message.includes('duplicate') || message.includes('already exists')) {
+        toast.error('Cet email est déjà utilisé')
+      } else {
+        toast.error("Une erreur est survenue lors de l'inscription")
+      }
+    } else if (err?.response?.status === 401) {
       toast.error('Email ou mot de passe incorrect')
     } else {
       toast.error('Une erreur est survenue')
@@ -41,11 +49,27 @@
     password: string
     confirm: string
   }) => {
-    // invitationToken doit être string | undefined
-    const token = invitationToken.value || undefined
-    await register({ email, name, password, invitationToken: token }).catch(handleError)
-    await navigateTo('/')
+    try {
+      // invitationToken doit être string | undefined
+      const token = invitationToken.value || undefined
+      await register({ email, name, password, invitationToken: token })
+      // Redirection seulement si l'inscription réussit
+      await navigateTo('/')
+    } catch (error) {
+      handleError(error)
+    }
   }
+
+  // Clé pour forcer la re-création du formulaire
+  const formKey = computed(() => (emailPrefill.value ? 'with-email' : 'without-email'))
+
+  // Valeurs par défaut du formulaire
+  const defaultValues = computed(() => ({
+    name: '',
+    email: emailPrefill.value || '',
+    password: '',
+    confirm: '',
+  }))
 
   onMounted(async () => {
     if (invitationToken.value) {
@@ -67,8 +91,10 @@
 <template>
   <AuthBox title="Création de compte">
     <AutoForm
+      :key="formKey"
       class="space-y-6"
       :schema="formSchema"
+      :default-values="defaultValues"
       :field-config="{
         name: {
           label: 'Nom',
@@ -81,7 +107,6 @@
           inputProps: {
             type: 'email',
             autocomplete: 'email',
-            value: emailPrefill,
             readonly: !!emailPrefill,
           },
         },

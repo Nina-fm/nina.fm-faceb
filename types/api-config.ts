@@ -45,13 +45,13 @@ export const API_ENDPOINTS = {
 
   // Images
   IMAGES: {
-    BASE: '/images',
-    UPLOAD: '/images/upload',
-    BY_ID: (id: string) => `/images/${id}`,
-    METADATA: (id: string) => `/images/metadata/${id}`,
-    THUMBNAIL: (id: string) => `/images/${id}/thumbnail`,
-    PUBLIC: (bucket: string, filename: string) => `/images/${bucket}/${filename}`,
-    THUMB: (bucket: string, filename: string) => `/images/${bucket}/thumb/${filename}`,
+    BASE: '/files/images',
+    UPLOAD: '/files/images/upload',
+    BY_ID: (id: string) => `/files/images/${id}`,
+    METADATA: (id: string) => `/files/images/metadata/${id}`,
+    THUMBNAIL: (id: string) => `/files/images/${id}/thumbnail`,
+    PUBLIC: (bucket: string, filename: string) => `/files/images/images/${bucket}/${filename}`,
+    THUMB: (bucket: string, filename: string) => `/files/images/images/${bucket}/thumb/${filename}`,
   },
 
   // Stream

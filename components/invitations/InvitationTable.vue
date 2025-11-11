@@ -112,12 +112,15 @@
       size: 60,
       cell: ({ cell }) => {
         const id = cell.row.original.id
+        const status = getInvitationStatus(cell.row.original.usedAt, cell.row.original.expiresAt)
         return h(
           'div',
           { class: 'flex justify-end' },
           {
             default: () => [
               h(InvitationTableActions, {
+                sendable: status !== 'accepted',
+                deletable: status === 'pending',
                 onResend: () => handleRowResend(id),
                 onDelete: () => handleRowDelete(id),
               }),

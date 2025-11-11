@@ -7,12 +7,27 @@
   })
 
   const { currentUserId } = useAuthApi()
-  const { fetchUsers, deleteUser } = useUserApi()
-  const { data, error, refresh, status } = await useAsyncData('users', () => fetchUsers())
+  const { getUsers, deleteUser } = useUserApi()
+  const { sendInvitation } = useInvitationApi()
 
-  const isLoading = ref(false)
+  // Pagination et filtres
+  const currentPage = ref(1)
+  const pageSize = ref(10)
+  const searchQuery = ref('')
+  const roleFilter = ref<Role | undefined>(undefined)
+
+  // Query avec pagination et filtres - utilisation de computed pour la réactivité
+  const queryParams = computed(() => ({
+    page: currentPage.value,
+    limit: pageSize.value,
+    search: searchQuery.value || undefined,
+    role: roleFilter.value,
+  }))
+
+  const { data: usersData, error, refetch } = getUsers(queryParams)
+
+  const users = computed(() => usersData.value?.data || [])
   const openInviteDialog = ref(false)
-  const users = computed(() => data.value?.results || [])
 
   const isMe = (id: string) => currentUserId.value === id
 
@@ -25,14 +40,6 @@
     ],
   })
 
-  watch(status, (newStatus) => {
-    if (newStatus === 'pending') {
-      isLoading.value = true
-    } else {
-      setTimeout(() => (isLoading.value = false), 500)
-    }
-  })
-
   watch(error, (value) => {
     if (value) {
       toast.error('Une erreur est survenue lors de la récupération des utilisateurs.')
@@ -40,11 +47,19 @@
   })
 
   const handleRefresh = async () => {
-    await refresh()
+    await refetch()
   }
 
-  const handleSubmitInvite = async (email: string) => {
-    await navigateTo('/invitations')
+  const handleSubmitInvite = async ({ email, message }: { email: string; message?: string }) => {
+    try {
+      await sendInvitation.mutateAsync({ email, message })
+      toast.success(`Invitation envoyée à ${email} !`)
+      openInviteDialog.value = false
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi de l'invitation."
+      toast.error(errorMessage)
+    }
   }
 
   const handleRowShow = (id: string) => {
@@ -63,12 +78,18 @@
 
   const handleDeleteRow = async (id: string) => {
     try {
-      await deleteUser(id)
-      await refresh()
+      await deleteUser.mutateAsync(id)
+      await refetch()
       toast.success('Utilisateur supprimé !')
     } catch (error) {
-      toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
+      toast.error(
+        error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression de l'utilisateur.",
+      )
     }
+  }
+
+  const handleFilterChange = (filters: Record<string, unknown>) => {
+    roleFilter.value = filters.role as Role | undefined
   }
 </script>
 
@@ -90,7 +111,7 @@
     @row-show="handleRowShow"
     @row-edit="handleEditRow"
     @row-delete="handleDeleteRow"
+    @filter-change="handleFilterChange"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
-  <LoadingOverlay :active="isLoading" />
 </template>

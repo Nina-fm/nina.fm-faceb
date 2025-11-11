@@ -5,7 +5,7 @@
 export const useAuthApi = () => {
   const authStore = useAuthStore()
   const { post } = useApi()
-  const { getImagePublicUrl } = useImageApi()
+  const { getThumbnailUrl } = useImageApi()
   const { hasRole, hasAnyRole } = useRoles()
 
   const user = computed(() => {
@@ -18,7 +18,7 @@ export const useAuthApi = () => {
       avatar: authStore.user.profile?.avatar
         ? {
             ...authStore.user.profile.avatar,
-            url: getImagePublicUrl(authStore.user.profile.avatar.uri, authStore.user.profile.avatar.bucket || ''),
+            url: getThumbnailUrl(authStore.user.profile.avatar),
             alt: authStore.user.profile?.nickname || authStore.user.email,
           }
         : undefined,
@@ -64,7 +64,7 @@ export const useAuthApi = () => {
     authStore.isLoading = true
 
     try {
-      const response = await post(
+      const response = await post<{ access_token: string; refresh_token: string }>(
         '/auth/login',
         {
           email,

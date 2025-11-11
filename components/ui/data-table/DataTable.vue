@@ -32,6 +32,7 @@
   const emits = defineEmits<{
     (e: 'clearSearch'): void
     (e: 'rowClick', id: string | number): void
+    (e: 'filterChange', filters: ColumnFiltersState): void
   }>()
 
   const hasRowClick = computed(() => {
@@ -65,6 +66,15 @@
   const sorting = ref<SortingState>(props.sorting ?? [])
   const columnFilters = ref<ColumnFiltersState>([])
   const searchText = ref<string | number>('')
+
+  // Émettre les changements de filtres vers le parent
+  watch(
+    columnFilters,
+    (newFilters) => {
+      emits('filterChange', newFilters)
+    },
+    { deep: true },
+  )
 
   const table = useVueTable({
     get data() {

@@ -85,6 +85,9 @@ export const queryKeys = {
   // Images queries
   images: {
     all: ['images'] as const,
+    lists: () => [...queryKeys.images.all, 'list'] as const,
+    list: (params?: { page?: number; limit?: number; search?: string; mimeType?: string; bucket?: string }) =>
+      [...queryKeys.images.lists(), params] as const,
     detail: (id: string) => [...queryKeys.images.all, id] as const,
   },
 

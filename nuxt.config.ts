@@ -30,6 +30,8 @@ export default defineNuxtConfig({
     {
       path: '~/components/',
       pathPrefix: false,
+      // Ignorer les fichiers index.ts dans components/ui pour éviter les doublons
+      ignore: ['**/ui/**/index.ts'],
     },
   ],
 
@@ -49,6 +51,7 @@ export default defineNuxtConfig({
       sitename,
       siteurl: process.env.SITE_URL,
       apiUrl: process.env.API_URL || 'http://localhost:4000',
+      apiFileStoragePublicEndpoint: process.env.API_FILESTORAGE_PUBLIC_ENDPOINT || 'images',
       streamApiUrl: process.env.STREAM_API_URL,
       streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
       filestorageUrl: process.env.FILESTORAGE_URL,

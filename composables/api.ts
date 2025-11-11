@@ -17,7 +17,7 @@ export interface ApiRequestOptions extends Omit<FetchOptions, 'method' | 'baseUR
 
 export interface ApiError extends Error {
   statusCode?: number
-  data?: any
+  data?: unknown
 }
 
 /**
@@ -33,7 +33,7 @@ export const useApi = () => {
   /**
    * Fonction générique pour effectuer des appels API
    */
-  const call = async <T = any>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
+  const call = async <T = unknown>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
     const {
       method = HttpMethod.GET,
       requireAuth = true,
@@ -43,8 +43,9 @@ export const useApi = () => {
     } = options
 
     // Préparation des headers
+    // Ne pas forcer Content-Type pour FormData (le navigateur doit définir le boundary)
     const requestHeaders: HeadersInit = {
-      'Content-Type': 'application/json',
+      ...(!(fetchOptions.body instanceof FormData) && { 'Content-Type': 'application/json' }),
       ...headers,
     }
 
@@ -54,59 +55,78 @@ export const useApi = () => {
     }
 
     try {
-      const response = (await $fetch(endpoint, {
+      const fetchConfig: Record<string, unknown> = {
         ...fetchOptions,
         method,
         baseURL,
         headers: requestHeaders,
         timeout,
-        onRequest({ request, options }) {
+        onRequest(context: { request: RequestInfo }) {
           // Log des requêtes en développement
           if (import.meta.dev) {
-            console.log(`[API] ${method} ${request}`)
+            console.log(`[API] ${method} ${context.request}`)
           }
         },
-        onRequestError({ error }) {
-          console.error('[API] Request Error:', error)
+        onRequestError(context: { error: unknown }) {
+          console.error('[API] Request Error:', context.error)
         },
-        onResponseError({ response }) {
-          console.error('[API] Response Error:', response.status, response._data)
+        onResponseError(context: { response: { status: number; _data: unknown } }) {
+          console.error('[API] Response Error:', context.response.status, context.response._data)
 
           // Gestion des erreurs d'authentification
           // Attention: Ne pas déclencher le refresh pour les endpoints d'auth eux-mêmes
-          if (response.status === 401 && !endpoint.includes('/auth/')) {
+          if (context.response.status === 401 && !endpoint.includes('/auth/')) {
             console.log('[API] Token expiré détecté sur:', endpoint, '- déclenchement handleTokenExpired')
             // Token expiré, tentative de refresh
             authStore.handleTokenExpired()
           }
         },
-      })) as T
+      }
 
+      // Utilisation de l'assertion de type pour contourner les conflits de types complexes de Nuxt
+      const response = await ($fetch as (url: string, opts?: Record<string, unknown>) => Promise<T>)(
+        endpoint,
+        fetchConfig,
+      )
       return response
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Transformation de l'erreur pour l'interface utilisateur
-      const apiError: ApiError = new Error(error?.data?.message || error?.message || 'Une erreur est survenue')
-      apiError.statusCode = error?.status || error?.statusCode
-      apiError.data = error?.data
+      const errorObj = error as Record<string, unknown>
+      const apiError: ApiError = new Error(
+        ((errorObj?.data as Record<string, unknown>)?.message as string) ||
+          (errorObj?.message as string) ||
+          'Une erreur est survenue',
+      )
+      apiError.statusCode = (errorObj?.status || errorObj?.statusCode) as number
+      apiError.data = errorObj?.data
 
       throw apiError
     }
   }
 
   // Méthodes de convenance pour les différents types de requêtes
-  const get = <T = any>(endpoint: string, options?: ApiRequestOptions) =>
+  const get = <T = unknown>(endpoint: string, options?: ApiRequestOptions) =>
     call<T>(endpoint, { ...options, method: HttpMethod.GET })
 
-  const post = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
-    call<T>(endpoint, { ...options, method: HttpMethod.POST, body })
+  const post = <T = unknown>(
+    endpoint: string,
+    body?: Record<string, unknown> | FormData | string | null,
+    options?: ApiRequestOptions,
+  ) => call<T>(endpoint, { ...options, method: HttpMethod.POST, body })
 
-  const put = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
-    call<T>(endpoint, { ...options, method: HttpMethod.PUT, body })
+  const put = <T = unknown>(
+    endpoint: string,
+    body?: Record<string, unknown> | FormData | string | null,
+    options?: ApiRequestOptions,
+  ) => call<T>(endpoint, { ...options, method: HttpMethod.PUT, body })
 
-  const patch = <T = any>(endpoint: string, body?: any, options?: ApiRequestOptions) =>
-    call<T>(endpoint, { ...options, method: HttpMethod.PATCH, body })
+  const patch = <T = unknown>(
+    endpoint: string,
+    body?: Record<string, unknown> | FormData | string | null,
+    options?: ApiRequestOptions,
+  ) => call<T>(endpoint, { ...options, method: HttpMethod.PATCH, body })
 
-  const del = <T = any>(endpoint: string, options?: ApiRequestOptions) =>
+  const del = <T = unknown>(endpoint: string, options?: ApiRequestOptions) =>
     call<T>(endpoint, { ...options, method: HttpMethod.DELETE })
 
   // Upload de fichiers

@@ -26,8 +26,10 @@
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuItem v-if="sendable" @click="$emit('resend')">Renvoyer</DropdownMenuItem>
-      <DropdownMenuItem v-if="deletable" class="text-destructive" @click="$emit('delete')">Supprimer</DropdownMenuItem>
+      <DropdownMenuItem v-if="sendable" @click.prevent="$emit('resend')">Renvoyer</DropdownMenuItem>
+      <DropdownMenuItem v-if="deletable" class="text-destructive" @click.prevent="$emit('delete')">
+        Supprimer
+      </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

@@ -70,11 +70,16 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('nina_refresh_token')
     }
 
-    // Nettoyer les cookies
-    const accessTokenCookie = useCookie('nina_access_token')
-    const refreshTokenCookie = useCookie('nina_refresh_token')
-    accessTokenCookie.value = null
-    refreshTokenCookie.value = null
+    // Nettoyer les cookies (seulement dans un contexte Nuxt valide)
+    try {
+      const accessTokenCookie = useCookie('nina_access_token')
+      const refreshTokenCookie = useCookie('nina_refresh_token')
+      accessTokenCookie.value = null
+      refreshTokenCookie.value = null
+    } catch (error) {
+      // Si on ne peut pas accéder aux cookies, ce n'est pas grave
+      console.warn('[AUTH] Impossible de nettoyer les cookies:', error)
+    }
   }
 
   /**

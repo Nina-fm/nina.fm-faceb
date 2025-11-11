@@ -1,12 +1,14 @@
 <script lang="ts" setup>
   import { UserRoundIcon } from 'lucide-vue-next'
-  import type { User } from '~/types/db'
 
   defineProps<{
     user: {
-      name?: User['name']
-      email?: User['email']
-      avatar?: User['avatar']
+      name?: string
+      email?: string
+      avatar?: {
+        url?: string | null
+        alt?: string
+      }
     }
   }>()
 </script>

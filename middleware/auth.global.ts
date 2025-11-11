@@ -67,7 +67,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     // Vérifier les permissions selon les métadonnées de la route (client ET serveur)
     const requiredRole = to.meta.requiresRole as string | undefined
-    const requiredRoles = to.meta.requiresRoles as string[] | undefined
+    const requiredRoles = (to.meta.requiresRoles || to.meta.roles) as string[] | undefined
 
     // Attendre que le userRole soit bien défini (évite la redirection prématurée)
     if (requiredRole || (requiredRoles && requiredRoles.length > 0)) {
@@ -90,11 +90,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
       if (requiredRoles && requiredRoles.length > 0) {
         const hasValidRole = requiredRoles.includes(authStore.userRole || '')
+        console.log(
+          `[AUTH] Middleware - rôles requis: ${requiredRoles.join(', ')}, rôle utilisateur: ${authStore.userRole}, accès autorisé: ${hasValidRole}`,
+        )
         if (!hasValidRole) {
-          console.log(
-            `[AUTH] Middleware - rôles requis: ${requiredRoles.join(', ')}, rôle utilisateur: ${authStore.userRole}`,
-          )
-          return navigateTo('/login')
+          console.log('[AUTH] Middleware - accès refusé, redirection vers /')
+          return navigateTo('/')
         }
       }
     }

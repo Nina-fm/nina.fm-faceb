@@ -8,8 +8,8 @@
   const { params } = useRoute()
   const id = params.id as string
   const { currentUserId } = useAuthApi()
-  const { getUserById, deleteUser } = useUserApi()
-  const { data } = await useAsyncData('user', () => getUserById(id))
+  const { getUser, deleteUser } = useUserApi()
+  const { data } = getUser(id)
 
   const openConfirm = ref(false)
   const user = computed(() => data.value)
@@ -22,7 +22,7 @@
         label: 'Utilisateurs',
       },
       {
-        label: user.value?.name ?? "Détails de l'utilisateur",
+        label: user.value?.profile?.nickname ?? "Détails de l'utilisateur",
       },
     ],
   })
@@ -41,7 +41,7 @@
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteUser(id)
+      await deleteUser.mutateAsync(id)
       await navigateTo('/users')
     } catch (error) {
       toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")

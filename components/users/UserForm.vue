@@ -5,24 +5,27 @@
   import * as z from 'zod'
 
   const formSchema = z.object({
-    name: z.string().nullable().optional(),
+    nickname: z.string().min(2, 'Le nom doit faire au moins 2 caractères').max(255),
     email: z.string().email('Email invalide').min(1, 'Email requis'),
+    description: z.string().max(1000).nullable().optional(),
     avatar: z
       .object({
+        id: z.string().optional(),
         filename: z.string().optional(),
         file: z.instanceof(File).optional(),
         alt: z.string().nullable().optional(),
         bucket: z.string().nullable().optional(),
         url: z.string().optional(),
       })
+      .nullable()
       .optional(),
-    roles: z.array(z.enum([Role.ADMIN, Role.USER])).optional(),
+    role: z.enum([Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER]).optional(),
   })
 
   type Data = z.infer<typeof formSchema>
 
   const props = defineProps<{
-    user: Data
+    user: User
     teleportTo?: string
     canEditRoles: boolean
     pending?: boolean
@@ -33,20 +36,35 @@
     submit: [data: Data]
   }>()
 
+  const roleOptions = [
+    { label: 'Administrateur', value: Role.ADMIN },
+    { label: 'Gestionnaire', value: Role.MANAGER },
+    { label: 'Contributeur', value: Role.CONTRIBUTOR },
+    { label: 'Observateur', value: Role.VIEWER },
+  ]
+
+  // Filtrer le rôle PUBLIC qui n'est pas applicable aux utilisateurs
+  const getUserRole = (role: string) => {
+    if (role === 'PUBLIC') return Role.VIEWER
+    return role as (typeof roleOptions)[number]['value']
+  }
+
   const form = useForm({
     validationSchema: toTypedSchema(formSchema),
     initialValues: {
-      name: props.user.name || '',
+      nickname: props.user.profile?.nickname || '',
       email: props.user.email,
-      avatar: props.user.avatar
+      description: props.user.profile?.description || '',
+      avatar: props.user.profile?.avatar
         ? {
-            bucket: props.user.avatar.bucket,
-            filename: props.user.avatar.filename,
-            url: props.user.avatar.url,
-            alt: props.user.avatar.alt,
+            id: props.user.profile.avatar.id,
+            bucket: props.user.profile.avatar.bucket,
+            filename: props.user.profile.avatar.originalName,
+            url: props.user.profile.avatar.uri,
+            alt: props.user.profile.avatar.originalName,
           }
-        : undefined,
-      roles: props.user.roles,
+        : null,
+      role: getUserRole(props.user.role),
     },
   })
 
@@ -55,17 +73,19 @@
     (user) => {
       form.resetForm({
         values: {
-          name: user.name || '',
+          nickname: user.profile?.nickname || '',
           email: user.email,
-          avatar: user.avatar
+          description: user.profile?.description || '',
+          avatar: user.profile?.avatar
             ? {
-                bucket: user.avatar.bucket,
-                filename: user.avatar.filename,
-                url: user.avatar.url,
-                alt: user.avatar.alt,
+                id: user.profile.avatar.id,
+                bucket: user.profile.avatar.bucket,
+                filename: user.profile.avatar.originalName,
+                url: user.profile.avatar.uri,
+                alt: user.profile.avatar.originalName,
               }
-            : undefined,
-          roles: user.roles,
+            : null,
+          role: getUserRole(user.role),
         },
       })
     },
@@ -86,14 +106,15 @@
 <template>
   <div class="py-10">
     <SafeForm :form="form" @submit="handleSubmit">
-      <Card class="bg-foreground/3 @container/mixtapeform border-none">
+      <Card class="bg-foreground/3 @container/userform border-none">
         <CardContent>
           <div class="flex items-start gap-5">
             <ImageField name="avatar" bucket="avatars" label="Avatar" class="w-1/4" />
             <div class="flex w-3/4 flex-col gap-5">
-              <TextField name="name" label="Nom" />
+              <TextField name="nickname" label="Nom d'affichage" />
               <TextField name="email" label="Email" readonly />
-              <BadgesField v-if="canEditRoles" name="roles" label="Rôles" :options="[Role.ADMIN, Role.USER]" />
+              <TextareaField name="description" label="Description" />
+              <SelectField v-if="canEditRoles" name="role" label="Rôle" :options="roleOptions" />
             </div>
           </div>
         </CardContent>

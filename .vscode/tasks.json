@@ -2,11 +2,11 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "dev - Start Development Server",
+      "label": "Face B - Start Development Server",
       "type": "shell",
       "command": "pnpm",
       "args": ["dev"],
-      "group": "serve",
+      "group": "none",
       "isBackground": true,
       "problemMatcher": []
     }

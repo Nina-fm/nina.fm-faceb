@@ -14,7 +14,7 @@
 
 <template>
   <Tooltiped :text="tooltip">
-    <Badge :variant="variant" class="m-0 size-5 p-0">
+    <Badge :variant="variant" class="m-0 h-5">
       <slot />
     </Badge>
   </Tooltiped>

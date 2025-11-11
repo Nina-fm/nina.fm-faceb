@@ -177,56 +177,37 @@ jobs:
             EOF
 
             chmod 600 /var/nina/faceb/.env.prod
-            cd /var/nina/faceb/deploy
 
             # S'assurer que le réseau existe
             docker network create nina-network 2>/dev/null || echo "Réseau nina-network existe déjà"
 
-            # Créer le docker-compose.yml
-            cat > docker-compose.yml << 'COMPOSE_EOF'
-            services:
-              faceb:
-                image: ghcr.io/nina-fm/nina.fm-faceb:latest
-                container_name: nina-faceb
-                restart: unless-stopped
-                environment:
-                  - NODE_ENV=production
-                  - PORT=3002
-                  - HOST=0.0.0.0
-                  - SITE_URL=${SITE_URL}
-                  - SUPABASE_URL=${SUPABASE_URL}
-                  - SUPABASE_KEY=${SUPABASE_KEY}
-                  - STREAM_API_URL=${STREAM_API_URL}
-                  - STREAM_API_URL_FALLBACK=${STREAM_API_URL_FALLBACK}
-                ports:
-                  - "127.0.0.1:3002:3002"
-                networks:
-                  - nina-network
-                healthcheck:
-                  test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
-                  interval: 30s
-                  timeout: 3s
-                  retries: 3
-                  start_period: 40s
-                logging:
-                  driver: "json-file"
-                  options:
-                    max-size: "10m"
-                    max-file: "3"
+      - name: Copy docker-compose file
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/var/nina/faceb/deploy/"
+          strip_components: 0
 
-            networks:
-              nina-network:
-                name: nina-network
-                external: true
-            COMPOSE_EOF
+      - name: Start containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 5m
+          script: |
+            cd /var/nina/faceb/deploy
 
             # Arrêter conteneur existant
             docker stop nina-faceb 2>/dev/null || true
             docker rm nina-faceb 2>/dev/null || true
 
-            # Déployer
+            # Déployer avec le docker-compose.prod.yml
             echo "🚀 Démarrage conteneur Face B..."
-            docker compose --env-file /var/nina/faceb/.env.prod up -d --wait
+            docker compose -f docker-compose.prod.yml --env-file /var/nina/faceb/.env.prod up -d --wait
 
             echo "✅ Déploiement Face B terminé"
             docker ps | grep nina-faceb

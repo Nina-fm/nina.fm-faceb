@@ -6,7 +6,7 @@ export interface ItemBase {
 }
 </script>
 <script lang="ts" setup>
-import { formatAuthorNames } from "~~/supabase/functions/_shared/utils"
+import { formatAuthorNames } from "~~/utils/formatAuthors"
 
 interface Data {
   text: string | null

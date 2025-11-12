@@ -1,13 +1,14 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
-  import type { Dj } from '~/stores/djs'
+  import type { Dj } from '~/types/api/djs.types'
+  import type { Mixtape } from '~/types/api/mixtapes.types'
 
   const DjTableActions = resolveComponent('DjTableActions')
   const Badge = resolveComponent('Badge')
 
-  const props = withDefaults(
+  withDefaults(
     defineProps<{
-      data: Dj[]
+      data?: Dj[]
       loading?: boolean
     }>(),
     {
@@ -26,7 +27,7 @@
 
   const defaultSorting = ref<SortingState>([
     {
-      id: 'since',
+      id: 'createdAt',
       desc: true,
     },
   ])
@@ -47,7 +48,7 @@
       },
     },
     {
-      accessorKey: 'since',
+      accessorKey: 'createdAt',
       header: 'Depuis',
       size: 150,
       cell: ({ cell }) => {
@@ -56,12 +57,12 @@
       },
     },
     {
-      accessorKey: 'mixtapesCount',
+      accessorKey: 'mixtapes',
       header: 'Mixtapes',
       size: 60,
       cell: ({ cell }) => {
-        const mixtapesCount = cell.getValue() as number
-        const name = cell.row.original.name
+        const mixtapes = cell.getValue() as Mixtape[]
+        const mixtapesCount = mixtapes?.length || 0
         return h(
           'span',
           { class: 'flex gap-2' },

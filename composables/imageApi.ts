@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { API_ENDPOINTS } from '~/types/api-config'
 import type { components } from '~/types/api/globals.types'
 import { HttpMethod, useApi } from './api'
 import {
@@ -34,7 +35,7 @@ export const useImageApi = () => {
       queryKey: computed(() => queryKeys.images.detail(unref(imageId))),
       queryFn: async (): Promise<ImageFile> => {
         const id = unref(imageId)
-        return call<ImageFile>(`/files/images/metadata/${id}`, {
+        return call<ImageFile>(API_ENDPOINTS.IMAGES.METADATA(id), {
           method: HttpMethod.GET,
           requireAuth: true,
         })
@@ -61,7 +62,7 @@ export const useImageApi = () => {
 
       const formData = createFileFormData(file, { bucket })
 
-      return call<ImageFile>('/files/images/upload', {
+      return call<ImageFile>(API_ENDPOINTS.IMAGES.UPLOAD, {
         method: HttpMethod.POST,
         body: formData,
         requireAuth: true,
@@ -80,7 +81,7 @@ export const useImageApi = () => {
    */
   const deleteImage = useMutation({
     mutationFn: async (imageId: string): Promise<{ success: boolean }> => {
-      return call<{ success: boolean }>(`/files/images/${imageId}`, {
+      return call<{ success: boolean }>(API_ENDPOINTS.IMAGES.BY_ID(imageId), {
         method: HttpMethod.DELETE,
         requireAuth: true,
       })

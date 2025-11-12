@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { API_ENDPOINTS } from '~/types/api-config'
 import type { components } from '~/types/api/globals.types'
 import { HttpMethod, useApi } from './api'
 import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
@@ -33,7 +34,7 @@ export const useUserApi = () => {
       }),
       queryFn: async (): Promise<UsersListResponseDto> => {
         const resolvedParams = unref(params)
-        const endpoint = buildEndpoint('/users', resolvedParams)
+        const endpoint = buildEndpoint(API_ENDPOINTS.USERS.BASE, resolvedParams)
 
         return call<UsersListResponseDto>(endpoint, {
           method: HttpMethod.GET,
@@ -53,7 +54,7 @@ export const useUserApi = () => {
       queryKey: computed(() => queryKeys.users.detail(unref(userId))),
       queryFn: async (): Promise<User> => {
         const id = unref(userId)
-        return call<User>(`/users/${id}`, {
+        return call<User>(API_ENDPOINTS.USERS.BY_ID(id), {
           method: HttpMethod.GET,
           requireAuth: true,
         })
@@ -69,7 +70,7 @@ export const useUserApi = () => {
    */
   const createUser = useMutation({
     mutationFn: async (payload: CreateUserDto): Promise<User> => {
-      return call<User>('/users', {
+      return call<User>(API_ENDPOINTS.USERS.BASE, {
         method: HttpMethod.POST,
         body: payload,
         requireAuth: true,
@@ -88,7 +89,7 @@ export const useUserApi = () => {
    */
   const updateUser = useMutation({
     mutationFn: async ({ userId, payload }: { userId: string; payload: UpdateUserDto }): Promise<User> => {
-      return call<User>(`/users/${userId}`, {
+      return call<User>(API_ENDPOINTS.USERS.BY_ID(userId), {
         method: HttpMethod.PATCH,
         body: payload,
         requireAuth: true,
@@ -114,7 +115,7 @@ export const useUserApi = () => {
       userId: string
       payload: UpdateUserProfileDto
     }): Promise<UserProfile> => {
-      return call<UserProfile>(`/users/${userId}/profile`, {
+      return call<UserProfile>(API_ENDPOINTS.USERS.PROFILE(userId), {
         method: HttpMethod.PATCH,
         body: payload,
         requireAuth: true,
@@ -142,21 +143,21 @@ export const useUserApi = () => {
       formData.append('file', file)
       formData.append('bucket', 'avatars')
 
-      const uploadedImage = await call<{ id: string }>('/files/images/upload', {
+      const uploadedImage = await call<{ id: string }>(API_ENDPOINTS.IMAGES.UPLOAD, {
         method: HttpMethod.POST,
         body: formData,
         requireAuth: true,
       })
 
       // Étape 2 : Mise à jour du profil avec l'avatarId
-      await call<UserProfile>(`/users/${userId}/profile`, {
+      await call<UserProfile>(API_ENDPOINTS.USERS.PROFILE(userId), {
         method: HttpMethod.PATCH,
         body: { avatarId: uploadedImage.id },
         requireAuth: true,
       })
 
       // Retourner l'utilisateur complet mis à jour
-      return call<User>(`/users/${userId}`, {
+      return call<User>(API_ENDPOINTS.USERS.BY_ID(userId), {
         method: HttpMethod.GET,
         requireAuth: true,
       })
@@ -177,7 +178,7 @@ export const useUserApi = () => {
    */
   const deleteUser = useMutation({
     mutationFn: async (userId: string): Promise<{ success: boolean }> => {
-      return call<{ success: boolean }>(`/users/${userId}`, {
+      return call<{ success: boolean }>(API_ENDPOINTS.USERS.BY_ID(userId), {
         method: HttpMethod.DELETE,
         requireAuth: true,
       })

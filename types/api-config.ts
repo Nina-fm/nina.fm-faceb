@@ -31,6 +31,14 @@ export const API_ENDPOINTS = {
     MIXTAPES: (id: string) => `/tags/${id}/mixtapes`,
   },
 
+  // Invitations
+  INVITATIONS: {
+    BASE: '/invitations',
+    SEND: '/invitations/send',
+    VALIDATE: '/invitations/validate',
+    BY_ID: (id: string) => `/invitations/${id}`,
+  },
+
   // Mixtapes
   MIXTAPES: {
     BASE: '/mixtapes',

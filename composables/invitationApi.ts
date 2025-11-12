@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { API_ENDPOINTS } from '~/types/api-config'
 import type { components } from '~/types/api/globals.types'
 import { HttpMethod, useApi } from './api'
 import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
@@ -28,7 +29,7 @@ export const useInvitationApi = () => {
    */
   const sendInvitation = useMutation({
     mutationFn: async (payload: SendInvitationDto): Promise<Invitation> => {
-      return call<Invitation>('/invitations/send', {
+      return call<Invitation>(API_ENDPOINTS.INVITATIONS.SEND, {
         method: HttpMethod.POST,
         body: payload,
         requireAuth: true,
@@ -53,7 +54,7 @@ export const useInvitationApi = () => {
       }),
       queryFn: async (): Promise<InvitationsListResponseDto> => {
         const resolvedParams = unref(params)
-        const endpoint = buildEndpoint('/invitations', resolvedParams)
+        const endpoint = buildEndpoint(API_ENDPOINTS.INVITATIONS.BASE, resolvedParams)
 
         return call<InvitationsListResponseDto>(endpoint, {
           method: HttpMethod.GET,
@@ -70,10 +71,13 @@ export const useInvitationApi = () => {
    */
   const validateInvitationToken = useMutation({
     mutationFn: async ({ token }: ValidateTokenParams): Promise<ValidateInvitationTokenResponseDto> => {
-      return call<ValidateInvitationTokenResponseDto>(`/invitations/validate?token=${encodeURIComponent(token)}`, {
-        method: HttpMethod.GET,
-        requireAuth: false,
-      })
+      return call<ValidateInvitationTokenResponseDto>(
+        `${API_ENDPOINTS.INVITATIONS.VALIDATE}?token=${encodeURIComponent(token)}`,
+        {
+          method: HttpMethod.GET,
+          requireAuth: false,
+        },
+      )
     },
     onError: createErrorHandler('la validation du token'),
   })
@@ -84,7 +88,7 @@ export const useInvitationApi = () => {
    */
   const cancelInvitation = useMutation({
     mutationFn: async (invitationId: string): Promise<{ success: boolean }> => {
-      return call<{ success: boolean }>(`/invitations/${invitationId}`, {
+      return call<{ success: boolean }>(API_ENDPOINTS.INVITATIONS.BY_ID(invitationId), {
         method: HttpMethod.DELETE,
         requireAuth: true,
       })

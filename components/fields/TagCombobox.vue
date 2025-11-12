@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { getContrastYIQ } from '#imports'
   import { useFilter } from 'reka-ui'
-  import type { Tag } from '~/types/db'
+  import type { Tag } from '~/types/api/tags.types'
 
   type Option = {
     label?: string

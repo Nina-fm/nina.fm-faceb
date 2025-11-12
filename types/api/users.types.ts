@@ -97,6 +97,29 @@ export type UpdateUserDto = components['schemas']['UpdateUserDto'];
 export type UpdateUserProfileDto = components['schemas']['UpdateUserProfileDto'];
 export type UserWithProfileDto = components['schemas']['UserWithProfileDto'];
 
+// ===== HELPER TYPES =====
+
+/**
+ * User role type extracted from User schema
+ */
+export type Role = User['role'];
+
+/**
+ * User role constants for runtime usage
+ * Auto-generated from API, stays in sync with Role type
+ */
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  CONTRIBUTOR: 'CONTRIBUTOR',
+  VIEWER: 'VIEWER',
+  PUBLIC: 'PUBLIC',
+} as const satisfies Record<string, Role>;
+
+/**
+ * Array of all user roles for iteration/validation
+ */
+export const USER_ROLES = Object.values(UserRole);
 // ===== ENDPOINTS =====
 
 export const USERS_ENDPOINTS = {

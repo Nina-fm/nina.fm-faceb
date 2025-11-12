@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  // Types globaux depuis api.d.ts - Role est disponible
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
+  import type { User } from '~/types/api/users.types'
 
   const UserRoundIcon = await import('lucide-vue-next').then((module) => module.UserRoundIcon)
   const ShieldUserIcon = await import('lucide-vue-next').then((module) => module.ShieldUserIcon)

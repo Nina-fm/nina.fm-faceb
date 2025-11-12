@@ -4,7 +4,7 @@
   import { computed } from 'vue'
   import SaveButton from '~/components/common/SaveButton.vue'
   import { mixtapeFormSchema, mixtapeFormSetValues } from '~/components/mixtapes/mixtape.schema'
-  import type { Tag } from '~/types/db'
+  import type { Tag } from '~/types/api/tags.types'
   import type { MixtapeFormData } from './mixtape.schema'
 
   const props = defineProps<{
@@ -18,8 +18,8 @@
     submit: [data: MixtapeFormData]
   }>()
 
-  const { fetchTags } = useTagApi()
-  const { data } = await useAsyncData('tags', () => fetchTags())
+  const { getTags } = useTagApi()
+  const { data: tagsData } = getTags()
 
   const form = useForm({
     validationSchema: toTypedSchema(mixtapeFormSchema),
@@ -30,12 +30,11 @@
 
   const dirty = computed(() => form.meta.value.dirty)
   const valid = computed(() => form.meta.value.valid)
-  const tags = computed(() => data.value.results || [])
+  const tags = computed(() => tagsData.value?.data || [])
   const tagsOptions = computed(() =>
     tags.value.map((tag: Tag) => ({
-      id: tag.id,
-      name: tag.name,
-      color: tag.color,
+      value: tag,
+      label: tag.name,
     })),
   )
 

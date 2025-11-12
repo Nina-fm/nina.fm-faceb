@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
+  import type { Role } from '~/types/api/users.types'
 
   definePageMeta({
     requiresRoles: ['ADMIN'],

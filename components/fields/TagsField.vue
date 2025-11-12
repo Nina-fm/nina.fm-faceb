@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import type { Tag } from '~/types/db'
+  import type { Tag } from '~/types/api/tags.types'
 
   type Option = {
     label?: string

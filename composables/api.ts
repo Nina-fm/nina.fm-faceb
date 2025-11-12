@@ -1,5 +1,6 @@
 import type { FetchOptions } from 'ofetch'
 import { API_CONFIG, API_ENDPOINTS } from '~/types/api-config'
+import type { ImageFile } from '~/types/api/globals.types'
 
 export enum HttpMethod {
   GET = 'GET',
@@ -134,7 +135,7 @@ export const useApi = () => {
     const formData = new FormData()
     formData.append('file', file)
 
-    return await call<FileUploadResponse>(endpoint, {
+    return await call<ImageFile>(endpoint, {
       method: HttpMethod.POST,
       body: formData,
       headers: {}, // Ne pas définir Content-Type pour FormData

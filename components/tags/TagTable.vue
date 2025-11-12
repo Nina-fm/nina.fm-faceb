@@ -1,20 +1,22 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
-  import type { Mixtape, Tag } from '~/types/db'
+  import type { Mixtape } from '~/types/api/mixtapes.types'
+  import type { Tag } from '~/types/api/tags.types'
 
   const Badge = resolveComponent('Badge')
   const TagBadge = resolveComponent('TagBadge')
   const TagTableActions = resolveComponent('TagTableActions')
 
-  const props = withDefaults(
+  withDefaults(
     defineProps<{
-      data: Tag[]
+      data?: Tag[]
       searchValue?: string | number
       loading?: boolean
     }>(),
     {
       data: () => [],
+      searchValue: undefined,
       loading: false,
     },
   )
@@ -112,7 +114,7 @@
     if (idToDelete.value) {
       try {
         emit('rowDelete', idToDelete.value)
-      } catch (error) {
+      } catch {
         toast.error('Une erreur est survenue lors de la suppression du Tag.')
       } finally {
         openConfirm.value = false

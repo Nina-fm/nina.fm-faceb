@@ -332,6 +332,30 @@ export type ${safeDomainName}Operations = ${Array.from(operations).map(op => `"$
       content += `export type ${schema} = components['schemas']['${schema}'];\n`;
     });
     content += '\n';
+    
+    // === HELPER TYPES pour le domaine 'users' ===
+    if (domain === 'users') {
+      content += '// ===== HELPER TYPES =====\n\n';
+      content += '/**\n';
+      content += ' * User role type extracted from User schema\n';
+      content += ' */\n';
+      content += "export type Role = User['role'];\n\n";
+      content += '/**\n';
+      content += ' * User role constants for runtime usage\n';
+      content += ' * Auto-generated from API, stays in sync with Role type\n';
+      content += ' */\n';
+      content += 'export const UserRole = {\n';
+      content += "  ADMIN: 'ADMIN',\n";
+      content += "  MANAGER: 'MANAGER',\n";
+      content += "  CONTRIBUTOR: 'CONTRIBUTOR',\n";
+      content += "  VIEWER: 'VIEWER',\n";
+      content += "  PUBLIC: 'PUBLIC',\n";
+      content += '} as const satisfies Record<string, Role>;\n\n';
+      content += '/**\n';
+      content += ' * Array of all user roles for iteration/validation\n';
+      content += ' */\n';
+      content += 'export const USER_ROLES = Object.values(UserRole);\n';
+    }
   }
 
   // === ENDPOINTS ===

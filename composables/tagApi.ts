@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import type { TagsQueryDto } from '~/types/api'
 import { API_ENDPOINTS, type PaginatedResponse } from '~/types/api-config'
-import type { Mixtape, Tag } from '~/types/api/tags.types'
+import type { Mixtape } from '~/types/api/mixtapes.types'
+import type { Tag, TagsQueryDto } from '~/types/api/tags.types'
 import { HttpMethod, useApi } from './api'
 import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
 import { queryKeys } from './query-keys'
@@ -20,11 +20,11 @@ export const useTagApi = () => {
   /**
    * Liste paginée des tags avec filtres optionnels
    */
-  const getTags = (params: MaybeRef<TagsQueryDto> = {}) =>
+  const getTags = (params?: MaybeRef<Partial<TagsQueryDto>>) =>
     useQuery({
-      queryKey: computed(() => queryKeys.tags.list(unref(params))),
+      queryKey: computed(() => queryKeys.tags.list(unref(params) || {})),
       queryFn: async () => {
-        const endpoint = buildEndpoint(API_ENDPOINTS.TAGS.BASE, unref(params))
+        const endpoint = buildEndpoint(API_ENDPOINTS.TAGS.BASE, unref(params) || {})
         return call<PaginatedResponse<Tag>>(endpoint, {
           method: HttpMethod.GET,
           requireAuth: true,
@@ -122,22 +122,23 @@ export const useTagApi = () => {
   /**
    * Vérifier si l'utilisateur peut gérer les tags
    */
-  const canManageTags = computed(() => {
-    const { hasPermission } = usePermissions()
-    return hasPermission('CREATE_TAG') || hasPermission('UPDATE_ANY_TAG') || hasPermission('DELETE_ANY_TAG')
+  const canManageTagsPermission = computed(() => {
+    const { canManageTags } = usePermissions()
+    return canManageTags.value
   })
 
   /**
    * Vérifier si l'utilisateur peut éditer un tag spécifique
    */
   const canEditTag = (tagId: string, createdById?: string) => {
-    const { hasPermission, user } = usePermissions()
+    const { isAdmin, canManageTags } = usePermissions()
+    const authStore = useAuthStore()
 
-    // Admin peut tout faire
-    if (hasPermission('UPDATE_ANY_TAG')) return true
+    // Admin/Manager peuvent tout faire
+    if (isAdmin.value || canManageTags.value) return true
 
     // L'utilisateur peut éditer ses propres tags
-    if (hasPermission('UPDATE_OWN_TAG') && createdById === user.value?.id) return true
+    if (createdById === authStore.user?.id) return true
 
     return false
   }
@@ -146,13 +147,14 @@ export const useTagApi = () => {
    * Vérifier si l'utilisateur peut supprimer un tag spécifique
    */
   const canDeleteTag = (tagId: string, createdById?: string) => {
-    const { hasPermission, user } = usePermissions()
+    const { isAdmin, canManageTags } = usePermissions()
+    const authStore = useAuthStore()
 
-    // Admin peut tout faire
-    if (hasPermission('DELETE_ANY_TAG')) return true
+    // Admin/Manager peuvent tout faire
+    if (isAdmin.value || canManageTags.value) return true
 
     // L'utilisateur peut supprimer ses propres tags
-    if (hasPermission('DELETE_OWN_TAG') && createdById === user.value?.id) return true
+    if (createdById === authStore.user?.id) return true
 
     return false
   }
@@ -169,7 +171,7 @@ export const useTagApi = () => {
     deleteTag,
 
     // Utilitaires
-    canManageTags,
+    canManageTags: canManageTagsPermission,
     canEditTag,
     canDeleteTag,
   }

@@ -1,5 +1,4 @@
 import tailwindcss from '@tailwindcss/vite'
-import vue from '@vitejs/plugin-vue'
 
 const sitename = 'Face B • Nina.fm'
 
@@ -65,12 +64,6 @@ export default defineNuxtConfig({
 
   devServer: {
     port: Number(process.env.FRONT_OUTPUT_PORT) || 3000,
-  },
-
-  nitro: {
-    rollupConfig: {
-      plugins: [vue()],
-    },
   },
 
   typescript: {

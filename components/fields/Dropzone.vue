@@ -31,6 +31,19 @@
   const file = ref<File | null>(null)
   const fileSrc = ref<string | null>(modelValue.value?.url ?? null)
 
+  // Watch modelValue pour synchroniser fileSrc quand l'avatar change
+  watch(
+    modelValue,
+    (newValue) => {
+      if (newValue?.url && !newValue.file) {
+        fileSrc.value = newValue.url
+      } else if (!newValue) {
+        fileSrc.value = null
+      }
+    },
+    { immediate: true },
+  )
+
   const handleChange = () => {
     file.value = fileRef.value?.files?.[0] || null
     if (fileRef.value?.files?.[0]) {

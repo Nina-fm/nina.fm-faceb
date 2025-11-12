@@ -4,7 +4,8 @@
   import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
-  import type { Mixtape, Tag, Track } from '~/types/db'
+  import type { Mixtape } from '~/types/api/mixtapes.types'
+  import type { Tag } from '~/types/api/tags.types'
 
   const ImageIcon = await import('lucide-vue-next').then((module) => module.ImageIcon)
 

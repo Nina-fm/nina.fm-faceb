@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-  // Types globaux depuis api.d.ts - Role est disponible
   import { toTypedSchema } from '@vee-validate/zod'
   import { SaveIcon } from 'lucide-vue-next'
   import * as z from 'zod'
+  import type { User } from '~/types/api/users.types'
 
   const formSchema = z.object({
     nickname: z.string().min(2, 'Le nom doit faire au moins 2 caractères').max(255),
@@ -36,6 +36,8 @@
     submit: [data: Data]
   }>()
 
+  const { getImageUrl } = useImageApi()
+
   const roleOptions = [
     { label: 'Administrateur', value: Role.ADMIN },
     { label: 'Gestionnaire', value: Role.MANAGER },
@@ -60,7 +62,7 @@
             id: props.user.profile.avatar.id,
             bucket: props.user.profile.avatar.bucket,
             filename: props.user.profile.avatar.originalName,
-            url: props.user.profile.avatar.uri,
+            url: getImageUrl(props.user.profile.avatar) || undefined,
             alt: props.user.profile.avatar.originalName,
           }
         : null,
@@ -81,7 +83,7 @@
                 id: user.profile.avatar.id,
                 bucket: user.profile.avatar.bucket,
                 filename: user.profile.avatar.originalName,
-                url: user.profile.avatar.uri,
+                url: getImageUrl(user.profile.avatar) || undefined,
                 alt: user.profile.avatar.originalName,
               }
             : null,

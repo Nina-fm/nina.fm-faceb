@@ -130,7 +130,7 @@ export const useApi = () => {
     call<T>(endpoint, { ...options, method: HttpMethod.DELETE })
 
   // Upload de fichiers
-  const upload = async (file: File, endpoint: string = API_ENDPOINTS.IMAGES.UPLOAD) => {
+  const upload = async (file: File, endpoint: string = API_ENDPOINTS.IMAGE_FILES.UPLOAD) => {
     const formData = new FormData()
     formData.append('file', file)
 

@@ -301,6 +301,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/files/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get images by bucket
+         * @description Retrieve all images from a specific bucket. The bucket parameter is required.
+         */
+        get: operations["ImageFilesController_findByBucket"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/files/images/metadata/{id}": {
         parameters: {
             query?: never;
@@ -2276,6 +2296,52 @@ export interface components {
             data: components["schemas"]["Tag"];
         };
         UpdateTagDto: Record<string, never>;
+        BaseQueryDto: {
+            /**
+             * @description Numéro de page (commence à 1)
+             * @default 1
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Nombre d'éléments par page
+             * @default 10
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Champ de tri
+             * @example createdAt
+             */
+            sortBy?: string;
+            /**
+             * @description Ordre de tri
+             * @default DESC
+             * @example DESC
+             * @enum {string}
+             */
+            sortOrder: "ASC" | "DESC";
+            /**
+             * @description Recherche textuelle globale
+             * @example house music
+             */
+            search?: string;
+        };
+        BaseResponseDto: {
+            /** @description Pagination metadata */
+            pagination: {
+                page?: number;
+                limit?: number;
+                total?: number;
+                totalPages?: number;
+                hasNext?: boolean;
+                hasPrev?: boolean;
+            };
+            /** @description Applied filters */
+            filters: {
+                [key: string]: unknown;
+            };
+        };
     };
     responses: never;
     parameters: never;
@@ -2999,6 +3065,42 @@ export interface operations {
                 };
             };
             /** @description Bad request - No file or invalid file type */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - Invalid or missing token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ImageFilesController_findByBucket: {
+        parameters: {
+            query: {
+                bucket: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Images retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageFile"][];
+                };
+            };
+            /** @description Bad Request - Bucket parameter is required */
             400: {
                 headers: {
                     [name: string]: unknown;

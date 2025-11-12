@@ -1,7 +1,7 @@
 // Domain: sessions
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface SessionsPaths {
     "/sessions/{sessionId}/tracks": {
@@ -113,10 +113,12 @@ export interface SessionsPaths {
 // Operations for this domain
 export type SessionsOperations = "TracksController_findAll" | "TracksController_upload" | "TracksController_reorder" | "TracksController_findOne" | "TracksController_remove" | "TracksController_stream";
 
-// Re-export individual operations  
-export type TracksfindAll = operations["TracksController_findAll"];
-export type Tracksupload = operations["TracksController_upload"];
-export type Tracksreorder = operations["TracksController_reorder"];
-export type TracksfindOne = operations["TracksController_findOne"];
-export type Tracksremove = operations["TracksController_remove"];
-export type Tracksstream = operations["TracksController_stream"];
+// ===== ENDPOINTS =====
+
+export const SESSIONS_ENDPOINTS = {
+  TRACKS: (sessionId: string) => `/sessions/${sessionId}/tracks`,
+  TRACKS_UPLOAD: (sessionId: string) => `/sessions/${sessionId}/tracks/upload`,
+  TRACKS_REORDER: (sessionId: string) => `/sessions/${sessionId}/tracks/reorder`,
+  TRACKS_WITH_ID: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}`,
+  TRACKS__STREAM: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}/stream`,
+} as const;

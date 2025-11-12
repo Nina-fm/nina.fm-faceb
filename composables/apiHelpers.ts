@@ -1,31 +1,13 @@
 /**
  * Helpers partagés pour les composables API
- * Factorisation du code commun
+ * Factorisation du code commun - Fonctions utilitaires uniquement
+ * Pour les types, voir ~/types/api-config
  */
 
-interface PaginationParams {
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-  search?: string
+import type { BaseQueryDto } from '~/types/api-config'
+
+interface PaginationParams extends Partial<BaseQueryDto> {
   [key: string]: unknown
-}
-
-/**
- * Structure de réponse paginée standard de l'API
- */
-export interface PaginatedResponse<T> {
-  data: T[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasNext?: boolean
-    hasPrev?: boolean
-  }
-  filters?: Record<string, unknown>
 }
 
 /**
@@ -121,26 +103,4 @@ export function formatFileSize(sizeInBytes: number): string {
  */
 export const createErrorHandler = (operation: string) => (error: unknown) => {
   console.error(`Erreur lors de ${operation}:`, error)
-}
-
-/**
- * Types génériques pour les réponses de listes
- */
-export interface BaseListResponse<T> {
-  data: T[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
-
-/**
- * Types génériques pour les paramètres de query
- */
-export interface BaseQueryParams extends PaginationParams {
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'ASC' | 'DESC'
-  search?: string
 }

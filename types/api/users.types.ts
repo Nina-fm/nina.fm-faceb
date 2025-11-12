@@ -1,7 +1,7 @@
 // Domain: users
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface UsersPaths {
     "/users": {
@@ -85,11 +85,22 @@ export interface UsersPaths {
 // Operations for this domain
 export type UsersOperations = "UsersController_findAll" | "UsersController_create" | "UsersController_findOne" | "UsersController_remove" | "UsersController_update" | "UsersController_createProfile" | "UsersController_updateProfile";
 
-// Re-export individual operations  
-export type UsersfindAll = operations["UsersController_findAll"];
-export type Userscreate = operations["UsersController_create"];
-export type UsersfindOne = operations["UsersController_findOne"];
-export type Usersremove = operations["UsersController_remove"];
-export type Usersupdate = operations["UsersController_update"];
-export type UserscreateProfile = operations["UsersController_createProfile"];
-export type UsersupdateProfile = operations["UsersController_updateProfile"];
+// ===== TYPES =====
+
+export type User = components['schemas']['User'];
+export type Profile = components['schemas']['Profile'];
+export type UsersQueryDto = components['schemas']['UsersQueryDto'];
+export type UsersListResponseDto = components['schemas']['UsersListResponseDto'];
+export type UserResponseDto = components['schemas']['UserResponseDto'];
+export type CreateUserDto = components['schemas']['CreateUserDto'];
+export type UpdateUserDto = components['schemas']['UpdateUserDto'];
+export type UpdateUserProfileDto = components['schemas']['UpdateUserProfileDto'];
+export type UserWithProfileDto = components['schemas']['UserWithProfileDto'];
+
+// ===== ENDPOINTS =====
+
+export const USERS_ENDPOINTS = {
+  BASE: '/users',
+  BY_ID: (id: string) => `/users/${id}`,
+  PROFILE: (id: string) => `/users/${id}/profile`,
+} as const;

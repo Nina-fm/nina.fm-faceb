@@ -1,7 +1,7 @@
 // Domain: djs
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface DjsPaths {
     "/djs": {
@@ -81,10 +81,17 @@ export interface DjsPaths {
 // Operations for this domain
 export type DjsOperations = "DjsController_findAll" | "DjsController_create" | "DjsController_findOne" | "DjsController_remove" | "DjsController_update" | "DjsController_getDjMixtapes";
 
-// Re-export individual operations  
-export type DjsfindAll = operations["DjsController_findAll"];
-export type Djscreate = operations["DjsController_create"];
-export type DjsfindOne = operations["DjsController_findOne"];
-export type Djsremove = operations["DjsController_remove"];
-export type Djsupdate = operations["DjsController_update"];
-export type DjsgetDjMixtapes = operations["DjsController_getDjMixtapes"];
+// ===== TYPES =====
+
+export type DjsQueryDto = components['schemas']['DjsQueryDto'];
+export type Dj = components['schemas']['Dj'];
+export type DjsListResponseDto = components['schemas']['DjsListResponseDto'];
+export type DjResponseDto = components['schemas']['DjResponseDto'];
+
+// ===== ENDPOINTS =====
+
+export const DJS_ENDPOINTS = {
+  BASE: '/djs',
+  BY_ID: (id: string) => `/djs/${id}`,
+  MIXTAPES: (id: string) => `/djs/${id}/mixtapes`,
+} as const;

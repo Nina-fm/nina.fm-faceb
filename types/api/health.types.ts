@@ -1,7 +1,7 @@
 // Domain: health
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface HealthPaths {
     "/health": {
@@ -26,5 +26,8 @@ export interface HealthPaths {
 // Operations for this domain
 export type HealthOperations = "HealthController_healthCheck";
 
-// Re-export individual operations  
-export type HealthhealthCheck = operations["HealthController_healthCheck"];
+// ===== ENDPOINTS =====
+
+export const HEALTH_ENDPOINTS = {
+  BASE: '/health',
+} as const;

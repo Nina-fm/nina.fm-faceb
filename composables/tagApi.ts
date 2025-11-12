@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { TagsQueryDto } from '~/types/api'
-import { API_ENDPOINTS } from '~/types/api-config'
-import type { Mixtape, Tag } from '~/types/db'
+import { API_ENDPOINTS, type PaginatedResponse } from '~/types/api-config'
+import type { Mixtape, Tag } from '~/types/api/tags.types'
 import { HttpMethod, useApi } from './api'
-import { buildEndpoint, createErrorHandler, getListQueryConfig, type PaginatedResponse } from './apiHelpers'
+import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
 import { queryKeys } from './query-keys'
 
 /**

@@ -143,7 +143,7 @@ export const useUserApi = () => {
       formData.append('file', file)
       formData.append('bucket', 'avatars')
 
-      const uploadedImage = await call<{ id: string }>(API_ENDPOINTS.IMAGES.UPLOAD, {
+      const uploadedImage = await call<{ id: string }>(API_ENDPOINTS.IMAGE_FILES.UPLOAD, {
         method: HttpMethod.POST,
         body: formData,
         requireAuth: true,

@@ -1,86 +1,25 @@
-// API Configuration and Constants
+// API Configuration - Manual front-end configuration
+// This file contains manual configuration for the front-end application.
+// Edit this file as needed for your application settings.
 
-export const API_ENDPOINTS = {
-  // Authentication
-  AUTH: {
-    SIGN_UP: '/auth/register',
-    SIGN_IN: '/auth/login',
-    REFRESH: '/auth/refresh',
-    LOGOUT: '/auth/logout',
-    PROFILE: '/auth/profile',
-  },
+// ============================================================================
+// AUTO-GENERATED RE-EXPORTS
+// ============================================================================
 
-  // Users
-  USERS: {
-    BASE: '/users',
-    BY_ID: (id: string) => `/users/${id}`,
-    PROFILE: (id: string) => `/users/${id}/profile`,
-  },
+// Re-export API_ENDPOINTS from the auto-generated file
+export { API_ENDPOINTS } from './api/endpoints'
+export type { ApiEndpoints } from './api/endpoints'
 
-  // DJs
-  DJS: {
-    BASE: '/djs',
-    BY_ID: (id: string) => `/djs/${id}`,
-    MIXTAPES: (id: string) => `/djs/${id}/mixtapes`,
-  },
+// Re-export base types from the API (auto-generated)
+export type { BaseQueryDto, BaseResponseDto, PaginatedResponse } from './api/base.types'
 
-  // Tags
-  TAGS: {
-    BASE: '/tags',
-    BY_ID: (id: string) => `/tags/${id}`,
-    MIXTAPES: (id: string) => `/tags/${id}/mixtapes`,
-  },
+// ============================================================================
+// MANUAL FRONT-END CONFIGURATION
+// ============================================================================
 
-  // Invitations
-  INVITATIONS: {
-    BASE: '/invitations',
-    SEND: '/invitations/send',
-    VALIDATE: '/invitations/validate',
-    BY_ID: (id: string) => `/invitations/${id}`,
-  },
-
-  // Mixtapes
-  MIXTAPES: {
-    BASE: '/mixtapes',
-    BY_ID: (id: string) => `/mixtapes/${id}`,
-    COVER: (id: string) => `/mixtapes/${id}/cover`,
-    COVER_WITH_IMAGE: (id: string, imageId: string) => `/mixtapes/${id}/cover/${imageId}`,
-    TAGS: (id: string) => `/mixtapes/${id}/tags`,
-    TAG: (id: string, tagId: string) => `/mixtapes/${id}/tags/${tagId}`,
-    DJS: (id: string) => `/mixtapes/${id}/djs`,
-    DJ: (id: string, djId: string) => `/mixtapes/${id}/djs/${djId}`,
-  },
-
-  // Images
-  IMAGES: {
-    BASE: '/files/images',
-    UPLOAD: '/files/images/upload',
-    BY_ID: (id: string) => `/files/images/${id}`,
-    METADATA: (id: string) => `/files/images/metadata/${id}`,
-    THUMBNAIL: (id: string) => `/files/images/${id}/thumbnail`,
-    PUBLIC: (bucket: string, filename: string) => `/files/images/images/${bucket}/${filename}`,
-    THUMB: (bucket: string, filename: string) => `/files/images/images/${bucket}/thumb/${filename}`,
-  },
-
-  // Stream
-  STREAM: {
-    EVENTS: '/stream/events',
-    LISTENERS: '/stream/listeners',
-    PROGRESS: '/stream/progress',
-    DEBUG: {
-      ALL: '/stream/debug/all',
-      EVENTS: '/stream/debug/events',
-      LISTENERS: '/stream/debug/listeners',
-      PROGRESS: '/stream/debug/progress',
-    },
-  },
-
-  // Health
-  HEALTH: {
-    CHECK: '/health',
-  },
-} as const
-
+/**
+ * Front-end API configuration
+ */
 export const API_CONFIG = {
   DEFAULT_PAGINATION: {
     page: 1,
@@ -97,6 +36,9 @@ export const API_CONFIG = {
   REQUEST_TIMEOUT: 30000, // 30 seconds
 } as const
 
+/**
+ * HTTP status codes
+ */
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
@@ -110,6 +52,38 @@ export const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,
 } as const
 
-export type ApiEndpoint = typeof API_ENDPOINTS
 export type ApiConfig = typeof API_CONFIG
 export type HttpStatus = typeof HTTP_STATUS
+
+// ============================================================================
+// FRONT-END HELPER TYPES
+// ============================================================================
+// These types don't exist in the API - they're front-end wrappers
+
+/**
+ * API success response wrapper
+ * Used for wrapping successful API responses
+ */
+export interface ApiSuccessResponse<T = unknown> {
+  success: true
+  data?: T
+  message?: string
+}
+
+/**
+ * API error response wrapper
+ * Used for wrapping API error responses
+ */
+export interface ApiErrorResponse {
+  success: false
+  error: {
+    statusCode: number
+    message: string
+    timestamp: string
+  }
+}
+
+/**
+ * Union type of all possible API responses
+ */
+export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse

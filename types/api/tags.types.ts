@@ -1,7 +1,7 @@
 // Domain: tags
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface TagsPaths {
     "/tags": {
@@ -81,10 +81,17 @@ export interface TagsPaths {
 // Operations for this domain
 export type TagsOperations = "TagsController_findAll" | "TagsController_create" | "TagsController_findOne" | "TagsController_remove" | "TagsController_update" | "TagsController_getTagMixtapes";
 
-// Re-export individual operations  
-export type TagsfindAll = operations["TagsController_findAll"];
-export type Tagscreate = operations["TagsController_create"];
-export type TagsfindOne = operations["TagsController_findOne"];
-export type Tagsremove = operations["TagsController_remove"];
-export type Tagsupdate = operations["TagsController_update"];
-export type TagsgetTagMixtapes = operations["TagsController_getTagMixtapes"];
+// ===== TYPES =====
+
+export type Tag = components['schemas']['Tag'];
+export type TagsQueryDto = components['schemas']['TagsQueryDto'];
+export type TagsListResponseDto = components['schemas']['TagsListResponseDto'];
+export type TagResponseDto = components['schemas']['TagResponseDto'];
+
+// ===== ENDPOINTS =====
+
+export const TAGS_ENDPOINTS = {
+  BASE: '/tags',
+  BY_ID: (id: string) => `/tags/${id}`,
+  MIXTAPES: (id: string) => `/tags/${id}/mixtapes`,
+} as const;

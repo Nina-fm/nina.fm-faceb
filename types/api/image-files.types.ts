@@ -1,7 +1,7 @@
 // Domain: image-files
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface ImageFilesPaths {
     "/files/images/upload": {
@@ -18,6 +18,26 @@ export interface ImageFilesPaths {
          * @description Upload an image file with automatic processing and thumbnail generation.
          */
         post: operations["ImageFilesController_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get images by bucket
+         * @description Retrieve all images from a specific bucket. The bucket parameter is required.
+         */
+        get: operations["ImageFilesController_findByBucket"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -131,13 +151,20 @@ export interface ImageFilesPaths {
 }
 
 // Operations for this domain
-export type ImageFilesOperations = "ImageFilesController_upload" | "ImageFilesController_findOne" | "ImageFilesController_serveImageById" | "ImageFilesController_remove" | "ImageFilesController_serveThumbnailById" | "ImageFilesController_serveByUri" | "ImageFilesController_serveThumbnailByUri";
+export type ImageFilesOperations = "ImageFilesController_upload" | "ImageFilesController_findByBucket" | "ImageFilesController_findOne" | "ImageFilesController_serveImageById" | "ImageFilesController_remove" | "ImageFilesController_serveThumbnailById" | "ImageFilesController_serveByUri" | "ImageFilesController_serveThumbnailByUri";
 
-// Re-export individual operations  
-export type ImageFilesupload = operations["ImageFilesController_upload"];
-export type ImageFilesfindOne = operations["ImageFilesController_findOne"];
-export type ImageFilesserveImageById = operations["ImageFilesController_serveImageById"];
-export type ImageFilesremove = operations["ImageFilesController_remove"];
-export type ImageFilesserveThumbnailById = operations["ImageFilesController_serveThumbnailById"];
-export type ImageFilesserveByUri = operations["ImageFilesController_serveByUri"];
-export type ImageFilesserveThumbnailByUri = operations["ImageFilesController_serveThumbnailByUri"];
+// ===== TYPES =====
+
+export type ImageFile = components['schemas']['ImageFile'];
+
+// ===== ENDPOINTS =====
+
+export const IMAGE_FILES_ENDPOINTS = {
+  UPLOAD: '/files/images/upload',
+  BASE: '/files/images',
+  METADATA: (id: string) => `/files/images/metadata/${id}`,
+  BY_ID: (id: string) => `/files/images/${id}`,
+  THUMBNAIL: (id: string) => `/files/images/${id}/thumbnail`,
+  PUBLIC: (bucket: string, filename: string) => `/files/images/images/${bucket}/${filename}`,
+  THUMB: (bucket: string, filename: string) => `/files/images/images/${bucket}/thumb/${filename}`,
+} as const;

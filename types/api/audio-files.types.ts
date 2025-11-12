@@ -1,7 +1,7 @@
 // Domain: audio-files
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface AudioFilesPaths {
     "/files/audio": {
@@ -93,9 +93,15 @@ export interface AudioFilesPaths {
 // Operations for this domain
 export type AudioFilesOperations = "AudioFilesController_findAll" | "AudioFilesController_upload" | "AudioFilesController_findOne" | "AudioFilesController_remove" | "AudioFilesController_stream";
 
-// Re-export individual operations  
-export type AudioFilesfindAll = operations["AudioFilesController_findAll"];
-export type AudioFilesupload = operations["AudioFilesController_upload"];
-export type AudioFilesfindOne = operations["AudioFilesController_findOne"];
-export type AudioFilesremove = operations["AudioFilesController_remove"];
-export type AudioFilesstream = operations["AudioFilesController_stream"];
+// ===== TYPES =====
+
+export type AudioFile = components['schemas']['AudioFile'];
+
+// ===== ENDPOINTS =====
+
+export const AUDIO_FILES_ENDPOINTS = {
+  BASE: '/files/audio',
+  UPLOAD: '/files/audio/upload',
+  BY_ID: (id: string) => `/files/audio/${id}`,
+  BASE_DETAIL: (id: string) => `/files/audio/${id}/stream`,
+} as const;

@@ -1,7 +1,7 @@
 // Domain: mixtapes
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface MixtapesPaths {
     "/mixtapes": {
@@ -189,17 +189,27 @@ export interface MixtapesPaths {
 // Operations for this domain
 export type MixtapesOperations = "MixtapesController_findAll" | "MixtapesController_create" | "MixtapesController_findOne" | "MixtapesController_remove" | "MixtapesController_update" | "MixtapesController_updateCover" | "MixtapesController_removeCover" | "MixtapesController_getMixtapeTags" | "MixtapesController_addTagsToMixtape" | "MixtapesController_removeTagFromMixtape" | "MixtapesController_getMixtapeDjs" | "MixtapesController_addDjsToMixtape" | "MixtapesController_removeDjFromMixtape";
 
-// Re-export individual operations  
-export type MixtapesfindAll = operations["MixtapesController_findAll"];
-export type Mixtapescreate = operations["MixtapesController_create"];
-export type MixtapesfindOne = operations["MixtapesController_findOne"];
-export type Mixtapesremove = operations["MixtapesController_remove"];
-export type Mixtapesupdate = operations["MixtapesController_update"];
-export type MixtapesupdateCover = operations["MixtapesController_updateCover"];
-export type MixtapesremoveCover = operations["MixtapesController_removeCover"];
-export type MixtapesgetMixtapeTags = operations["MixtapesController_getMixtapeTags"];
-export type MixtapesaddTagsToMixtape = operations["MixtapesController_addTagsToMixtape"];
-export type MixtapesremoveTagFromMixtape = operations["MixtapesController_removeTagFromMixtape"];
-export type MixtapesgetMixtapeDjs = operations["MixtapesController_getMixtapeDjs"];
-export type MixtapesaddDjsToMixtape = operations["MixtapesController_addDjsToMixtape"];
-export type MixtapesremoveDjFromMixtape = operations["MixtapesController_removeDjFromMixtape"];
+// ===== TYPES =====
+
+export type Mixtape = components['schemas']['Mixtape'];
+export type DjWithMixtapesCount = components['schemas']['DjWithMixtapesCount'];
+export type MixtapesQueryDto = components['schemas']['MixtapesQueryDto'];
+export type MixtapesListResponseDto = components['schemas']['MixtapesListResponseDto'];
+export type MixtapeResponseDto = components['schemas']['MixtapeResponseDto'];
+export type CreateMixtapeDto = components['schemas']['CreateMixtapeDto'];
+export type UpdateMixtapeDto = components['schemas']['UpdateMixtapeDto'];
+export type AddTagsToMixtapeDto = components['schemas']['AddTagsToMixtapeDto'];
+export type AddDjsToMixtapeDto = components['schemas']['AddDjsToMixtapeDto'];
+
+// ===== ENDPOINTS =====
+
+export const MIXTAPES_ENDPOINTS = {
+  BASE: '/mixtapes',
+  BY_ID: (id: string) => `/mixtapes/${id}`,
+  COVER: (id: string, imageId: string) => `/mixtapes/${id}/cover/${imageId}`,
+  COVER_DETAIL: (id: string) => `/mixtapes/${id}/cover`,
+  TAGS: (id: string) => `/mixtapes/${id}/tags`,
+  TAGS_WITH_TAGID: (id: string, tagId: string) => `/mixtapes/${id}/tags/${tagId}`,
+  DJS: (id: string) => `/mixtapes/${id}/djs`,
+  DJS_WITH_DJID: (id: string, djId: string) => `/mixtapes/${id}/djs/${djId}`,
+} as const;

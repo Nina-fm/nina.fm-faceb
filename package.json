@@ -22,7 +22,7 @@
     "types:generate": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum",
     "types:generate-safe": "openapi-typescript http://localhost:4000/docs-json -o types/api-generated.d.ts --make-paths-enum --additional-properties",
     "types:extract": "NODE_NO_WARNINGS=1 node --loader ts-node/esm scripts/extract-globals.ts",
-    "types:sync": "./scripts/generate-types.sh",
+    "types:sync": "./scripts/generate-types-enhanced.sh",
     "types:sync:old": "pnpm types:generate && pnpm types:extract && echo '✅ Types API synchronisés depuis Swagger'"
   },
   "dependencies": {

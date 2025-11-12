@@ -1,7 +1,7 @@
 // Domain: invitations
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface InvitationsPaths {
     "/invitations/send": {
@@ -77,8 +77,20 @@ export interface InvitationsPaths {
 // Operations for this domain
 export type InvitationsOperations = "InvitationsController_sendInvitation" | "InvitationsController_findAll" | "InvitationsController_validateToken" | "InvitationsController_cancelInvitation";
 
-// Re-export individual operations  
-export type InvitationssendInvitation = operations["InvitationsController_sendInvitation"];
-export type InvitationsfindAll = operations["InvitationsController_findAll"];
-export type InvitationsvalidateToken = operations["InvitationsController_validateToken"];
-export type InvitationscancelInvitation = operations["InvitationsController_cancelInvitation"];
+// ===== TYPES =====
+
+export type Invitation = components['schemas']['Invitation'];
+export type InvitationsQueryDto = components['schemas']['InvitationsQueryDto'];
+export type ValidateInvitationTokenResponseDto = components['schemas']['ValidateInvitationTokenResponseDto'];
+export type SendInvitationDto = components['schemas']['SendInvitationDto'];
+export type InvitationDto = components['schemas']['InvitationDto'];
+export type InvitationsListResponseDto = components['schemas']['InvitationsListResponseDto'];
+
+// ===== ENDPOINTS =====
+
+export const INVITATIONS_ENDPOINTS = {
+  SEND: '/invitations/send',
+  BASE: '/invitations',
+  VALIDATE: '/invitations/validate',
+  BY_ID: (id: string) => `/invitations/${id}`,
+} as const;

@@ -1,7 +1,7 @@
 // Domain: auth
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface AuthPaths {
     "/auth/login": {
@@ -128,11 +128,22 @@ export interface AuthPaths {
 // Operations for this domain
 export type AuthOperations = "AuthController_signIn" | "AuthController_signUp" | "AuthController_refreshTokens" | "AuthController_signOut" | "AuthController_getProfile" | "AuthController_forgotPassword" | "AuthController_resetPassword";
 
-// Re-export individual operations  
-export type AuthsignIn = operations["AuthController_signIn"];
-export type AuthsignUp = operations["AuthController_signUp"];
-export type AuthrefreshTokens = operations["AuthController_refreshTokens"];
-export type AuthsignOut = operations["AuthController_signOut"];
-export type AuthgetProfile = operations["AuthController_getProfile"];
-export type AuthforgotPassword = operations["AuthController_forgotPassword"];
-export type AuthresetPassword = operations["AuthController_resetPassword"];
+// ===== TYPES =====
+
+export type SignInDto = components['schemas']['SignInDto'];
+export type AuthTokensResponseDto = components['schemas']['AuthTokensResponseDto'];
+export type SignUpDto = components['schemas']['SignUpDto'];
+export type ForgotPasswordDto = components['schemas']['ForgotPasswordDto'];
+export type ResetPasswordDto = components['schemas']['ResetPasswordDto'];
+
+// ===== ENDPOINTS =====
+
+export const AUTH_ENDPOINTS = {
+  LOGIN: '/auth/login',
+  REGISTER: '/auth/register',
+  REFRESH: '/auth/refresh',
+  LOGOUT: '/auth/logout',
+  PROFILE: '/auth/profile',
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  RESET_PASSWORD: '/auth/reset-password',
+} as const;

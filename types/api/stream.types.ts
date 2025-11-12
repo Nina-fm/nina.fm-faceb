@@ -1,7 +1,7 @@
 // Domain: stream
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface StreamPaths {
     "/stream/debug/listeners": {
@@ -149,11 +149,23 @@ export interface StreamPaths {
 // Operations for this domain
 export type StreamOperations = "StreamController_debugListeners" | "StreamController_debugProgress" | "StreamController_debugEvents" | "StreamController_debugAll" | "StreamController_events" | "StreamController_listeners" | "StreamController_progress";
 
-// Re-export individual operations  
-export type StreamdebugListeners = operations["StreamController_debugListeners"];
-export type StreamdebugProgress = operations["StreamController_debugProgress"];
-export type StreamdebugEvents = operations["StreamController_debugEvents"];
-export type StreamdebugAll = operations["StreamController_debugAll"];
-export type Streamevents = operations["StreamController_events"];
-export type Streamlisteners = operations["StreamController_listeners"];
-export type Streamprogress = operations["StreamController_progress"];
+// ===== TYPES =====
+
+export type IceCastDataDto = components['schemas']['IceCastDataDto'];
+export type AirTimeDataDto = components['schemas']['AirTimeDataDto'];
+export type EventsDataDto = components['schemas']['EventsDataDto'];
+export type EventsResponseDto = components['schemas']['EventsResponseDto'];
+export type ListenersResponseDto = components['schemas']['ListenersResponseDto'];
+export type ProgressResponseDto = components['schemas']['ProgressResponseDto'];
+
+// ===== ENDPOINTS =====
+
+export const STREAM_ENDPOINTS = {
+  DEBUG_LISTENERS: '/stream/debug/listeners',
+  DEBUG_PROGRESS: '/stream/debug/progress',
+  DEBUG_EVENTS: '/stream/debug/events',
+  DEBUG_ALL: '/stream/debug/all',
+  EVENTS: '/stream/events',
+  LISTENERS: '/stream/listeners',
+  PROGRESS: '/stream/progress',
+} as const;

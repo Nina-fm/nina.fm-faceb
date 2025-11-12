@@ -35,7 +35,7 @@ export const useImageApi = () => {
       queryKey: computed(() => queryKeys.images.detail(unref(imageId))),
       queryFn: async (): Promise<ImageFile> => {
         const id = unref(imageId)
-        return call<ImageFile>(API_ENDPOINTS.IMAGES.METADATA(id), {
+        return call<ImageFile>(API_ENDPOINTS.IMAGE_FILES.METADATA(id), {
           method: HttpMethod.GET,
           requireAuth: true,
         })
@@ -62,7 +62,7 @@ export const useImageApi = () => {
 
       const formData = createFileFormData(file, { bucket })
 
-      return call<ImageFile>(API_ENDPOINTS.IMAGES.UPLOAD, {
+      return call<ImageFile>(API_ENDPOINTS.IMAGE_FILES.UPLOAD, {
         method: HttpMethod.POST,
         body: formData,
         requireAuth: true,
@@ -81,7 +81,7 @@ export const useImageApi = () => {
    */
   const deleteImage = useMutation({
     mutationFn: async (imageId: string): Promise<{ success: boolean }> => {
-      return call<{ success: boolean }>(API_ENDPOINTS.IMAGES.BY_ID(imageId), {
+      return call<{ success: boolean }>(API_ENDPOINTS.IMAGE_FILES.BY_ID(imageId), {
         method: HttpMethod.DELETE,
         requireAuth: true,
       })

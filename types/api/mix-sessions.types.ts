@@ -1,7 +1,7 @@
 // Domain: mix-sessions
 // Auto-generated from API structure analysis
 
-import type { operations } from './globals.types';
+import type { components, operations } from './globals.types';
 
 export interface MixSessionsPaths {
     "/mix-sessions": {
@@ -80,11 +80,18 @@ export interface MixSessionsPaths {
 // Operations for this domain
 export type MixSessionsOperations = "MixSessionsController_findAll" | "MixSessionsController_create" | "MixSessionsController_findOne" | "MixSessionsController_remove" | "MixSessionsController_update" | "MixSessionsController_export" | "MixSessionsController_download";
 
-// Re-export individual operations  
-export type MixSessionsfindAll = operations["MixSessionsController_findAll"];
-export type MixSessionscreate = operations["MixSessionsController_create"];
-export type MixSessionsfindOne = operations["MixSessionsController_findOne"];
-export type MixSessionsremove = operations["MixSessionsController_remove"];
-export type MixSessionsupdate = operations["MixSessionsController_update"];
-export type MixSessionsexport = operations["MixSessionsController_export"];
-export type MixSessionsdownload = operations["MixSessionsController_download"];
+// ===== TYPES =====
+
+export type SessionTrack = components['schemas']['SessionTrack'];
+export type MixSession = components['schemas']['MixSession'];
+export type CreateMixSessionDto = components['schemas']['CreateMixSessionDto'];
+export type UpdateMixSessionDto = components['schemas']['UpdateMixSessionDto'];
+
+// ===== ENDPOINTS =====
+
+export const MIX_SESSIONS_ENDPOINTS = {
+  BASE: '/mix-sessions',
+  BY_ID: (id: string) => `/mix-sessions/${id}`,
+  EXPORT: (id: string) => `/mix-sessions/${id}/export`,
+  DOWNLOAD: (id: string) => `/mix-sessions/${id}/download`,
+} as const;

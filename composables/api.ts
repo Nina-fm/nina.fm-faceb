@@ -1,6 +1,8 @@
 import type { FetchOptions } from 'ofetch'
+import type { components } from '~/types/api'
 import { API_CONFIG, API_ENDPOINTS } from '~/types/api-config'
-import type { ImageFile } from '~/types/api/globals.types'
+
+type ImageFile = components['schemas']['ImageFile']
 
 export enum HttpMethod {
   GET = 'GET',
@@ -62,10 +64,10 @@ export const useApi = () => {
         baseURL,
         headers: requestHeaders,
         timeout,
-        onRequest(context: { request: RequestInfo }) {
+        onRequest() {
           // Log des requêtes en développement
           if (import.meta.dev) {
-            console.log(`[API] ${method} ${context.request}`)
+            console.log(`[API] ${method} ${endpoint}`)
           }
         },
         onRequestError(context: { error: unknown }) {

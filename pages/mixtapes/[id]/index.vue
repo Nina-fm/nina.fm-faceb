@@ -11,7 +11,7 @@
   const { data: mixtapeData } = getMixtape(id)
 
   const openConfirm = ref(false)
-  // ✅ L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
+  // L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
   const mixtape = computed(() => mixtapeData.value?.data)
 
   useBreadcrumbItems({

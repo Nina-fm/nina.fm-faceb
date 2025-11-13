@@ -44,7 +44,9 @@
           v-bind="props"
           :options="options"
           :model-value="modelValueAsOptions(componentField.modelValue || [])"
-          @update:model-value="(value: Option[]) => componentField['onUpdate:modelValue']?.(handleUpdateModelValue(value))"
+          @update:model-value="
+            (value: Option[]) => componentField['onUpdate:modelValue']?.(handleUpdateModelValue(value))
+          "
         />
       </FormControl>
       <FormDescription v-if="description" class="text-muted-foreground/60">{{ description }}</FormDescription>

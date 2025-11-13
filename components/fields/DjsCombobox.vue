@@ -66,10 +66,13 @@
     ),
   )
 
-  const handleSelect = (event: { detail: { value?: Option | string | null } }) => {
-    const selectedValue = event.detail.value
+  const handleSelect = (event: unknown) => {
+    const evt = event as Record<string, unknown>
+    const detail = evt.detail as Record<string, unknown>
+    const selectedValue = detail?.value
     if (!selectedValue || selectedValue === null) return
-    const selectedName = typeof selectedValue === 'string' ? selectedValue : getOptionValue(selectedValue)
+    const selectedName =
+      typeof selectedValue === 'string' ? selectedValue : getOptionValue(selectedValue as Record<string, unknown>)
     if (!props.modelValue.includes(selectedName)) {
       emit('update:modelValue', [...props.modelValue, selectedName])
     }

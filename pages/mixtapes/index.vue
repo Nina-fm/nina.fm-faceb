@@ -20,7 +20,7 @@
     if (isPending.value) return 'primaryMuted'
     return 'outline'
   })
-  
+
   const pending = isPending
 
   watch(error, (value) => {

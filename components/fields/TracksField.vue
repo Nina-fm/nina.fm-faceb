@@ -24,7 +24,8 @@
 
   // https://regex101.com/r/48Pf9u/1
   // [<position>]<artist> <separator: [:•-]> <title>[ (<start_at: 00:00:00>)]
-  const trackPattern = /(?<position>\d+\s)?(?<artist>.+?)\s+[:\-•]\s+(?<title>.*?)(?=$|\s\((?<start_at>\d{2}:\d{2}:\d{2})\))/
+  const trackPattern =
+    /(?<position>\d+\s)?(?<artist>.+?)\s+[:\-•]\s+(?<title>.*?)(?=$|\s\((?<start_at>\d{2}:\d{2}:\d{2})\))/
 
   const parsedText = computed<Track[]>(() =>
     textValue.value

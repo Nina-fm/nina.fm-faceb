@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-  import { XIcon } from 'lucide-vue-next'
+  import { LoaderCircleIcon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
   import type { MixtapeFormData } from '~/components/mixtapes/mixtape.schema'
-  import type { UpdateMixtapeDto } from '~/types/api/mixtapes.types'
+  import type { Mixtape, UpdateMixtapeDto } from '~/types/api/mixtapes.types'
   import { Role } from '~/utils/roles'
   import { parseTracks, serializeTracks } from '~/utils/tracks'
 
@@ -13,13 +13,14 @@
   const { getMixtape, updateMixtape } = useMixtapeApi()
 
   // Fetch mixtape
-  const { data: mixtapeData } = getMixtape(id)
+  const { data: mixtapeData, isPending: isLoading, error } = getMixtape(id)
   const pending = computed(() => updateMixtape.isPending.value)
 
   // Transform API Mixtape → Form Data
   const mixtape = computed((): MixtapeFormData | undefined => {
-    const m = mixtapeData.value?.data
-    if (!m) return undefined
+    // L'API peut retourner soit { data: Mixtape } soit directement Mixtape
+    const m = (mixtapeData.value?.data as unknown as Mixtape) || (mixtapeData.value as unknown as Mixtape)
+    if (!m || typeof m !== 'object' || !('name' in m)) return undefined
 
     return {
       name: m.name,
@@ -44,7 +45,7 @@
       undefined,
       undefined,
       {
-        label: mixtapeData.value?.data?.name ?? 'Modification de la mixtape',
+        label: mixtape.value?.name ?? 'Modification de la mixtape',
       },
       {
         label: 'Modifier',
@@ -95,12 +96,38 @@
       </Button>
     </template>
   </PageHeader>
+
+  <div v-if="isLoading" class="py-10">
+    <Card class="bg-foreground/3 border-none">
+      <CardContent class="flex items-center justify-center p-20">
+        <LoaderCircleIcon class="size-8 animate-spin" />
+      </CardContent>
+    </Card>
+  </div>
+
+  <div v-else-if="error" class="py-10">
+    <Card class="bg-foreground/3 border-none">
+      <CardContent class="p-20">
+        <p class="text-destructive">Erreur lors du chargement de la mixtape</p>
+        <pre class="mt-4 text-xs">{{ error }}</pre>
+      </CardContent>
+    </Card>
+  </div>
+
   <MixtapeForm
-    v-if="mixtape"
+    v-else-if="mixtape"
     :mixtape="mixtape"
     :pending="pending"
     teleport-to="page-header-actions"
     @cancel="handleCancel"
     @submit="handleSubmit"
   />
+
+  <div v-else class="py-10">
+    <Card class="bg-foreground/3 border-none">
+      <CardContent class="p-20">
+        <p class="text-muted-foreground">Mixtape non trouvée</p>
+      </CardContent>
+    </Card>
+  </div>
 </template>

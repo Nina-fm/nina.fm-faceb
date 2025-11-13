@@ -1,6 +1,5 @@
-import { defineStore, storeToRefs } from 'pinia'
+import { acceptHMRUpdate, defineStore, storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
-import { acceptHMRUpdate } from 'pinia'
 import type { Profile, Role } from '~/types/api/users.types'
 
 // @deprecated - Ce store n'est plus utilisé. L'authentification est gérée par useAuthStore

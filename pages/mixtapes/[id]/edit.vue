@@ -19,7 +19,7 @@
 
   // Transform API Mixtape → Form Data
   const mixtape = computed((): MixtapeFormData | undefined => {
-    // ✅ L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
+    // L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
     const m = mixtapeData.value?.data
     if (!m || typeof m !== 'object' || !('name' in m)) return undefined
 
@@ -72,7 +72,7 @@
       }
       // Sinon, conserver la cover existante (ne pas envoyer coverId = undefined qui supprimerait la cover)
 
-      // ✅ Protection robuste: filtrer les tags invalides et s'assurer qu'on a des noms valides
+      // Protection robuste: filtrer les tags invalides et s'assurer qu'on a des noms valides
       const validTags = (values.tags || []).filter((tag) => tag && tag.name)
       const tagNames = validTags.map((tag) => tag.name)
 
@@ -90,9 +90,9 @@
                   start_at: t.start_at ?? null,
                 })),
               )
-            : undefined,
+            : '', // Envoyer chaîne vide pour supprimer les tracks, pas undefined
         comment: values.comment || undefined,
-        // ✅ Envoyer coverId seulement si un nouveau fichier a été uploadé
+        // Envoyer coverId seulement si un nouveau fichier a été uploadé
         ...(coverId && { coverId }),
         defaultTagColor: '#6B7280',
       }

@@ -63,9 +63,9 @@
                   start_at: t.start_at ?? null,
                 })),
               )
-            : undefined,
+            : '', // Envoyer chaîne vide pour cohérence
         comment: values.comment || undefined,
-        coverId, // ✅ Utiliser l'ID de la cover uploadée
+        coverId, // Utiliser l'ID de la cover uploadée
         defaultTagColor: '#6B7280',
       }
 

@@ -272,19 +272,34 @@ export const resourceFormSetValues = (data?: ResourceFormData) => ({
 
 ### 4. Gestion des réponses API
 
-**⚠️ Problème actuel** : Incohérence des formats de retour API
+**✅ Format unifié** : Tous les endpoints retournent maintenant un format cohérent
 
-- Endpoints de liste: `{ data: T[], meta: {...} }`
-- Endpoints de détail: **Parfois** `{ data: T }`, **parfois** `T` directement
+- **Endpoints de liste**: `{ data: T[], meta: {...} }`
+- **Endpoints de détail**: `{ data: T }`
+- **Mutations (POST/PATCH)**: `{ data: T }`
 
-**Workaround temporaire dans les pages** :
+**Pattern standard dans les composables** :
 
 ```typescript
-// Gère les deux formats
-const resource = computed(() => (data.value?.data as unknown as Resource) || (data.value as unknown as Resource))
+const getResource = (id: MaybeRef<string>) =>
+  useQuery({
+    queryKey: computed(() => queryKeys.resources.detail(unref(id))),
+    queryFn: async () => {
+      return call<{ data: Resource }>(API_ENDPOINTS.RESOURCES.BY_ID(unref(id)), {
+        method: HttpMethod.GET,
+        requireAuth: true,
+      })
+    },
+    enabled: computed(() => !!unref(id)),
+  })
 ```
 
-**TODO** : Harmoniser les retours API (voir docs/API_RESPONSE_FORMATS.md)
+**Usage dans les pages** :
+
+```typescript
+const { data } = getResource(id)
+const resource = computed(() => data.value?.data)
+```
 
 ### 5. TypeScript - Gestion des types stricts
 
@@ -312,34 +327,33 @@ const handler = (event: unknown) => {
 - Utiliser `@ts-ignore` pour les incompatibilités de lib tierces
 - Ne PAS utiliser pour masquer des erreurs de code
 
-## Problèmes connus et solutions
+## Problèmes résolus et bonnes pratiques
 
-### 1. Freeze du navigateur avec Combobox
+### 1. ✅ Combobox reka-ui - Pattern validé
 
-**Cause** : Utilisation incorrecte de reka-ui Combobox  
-**Solution** : Voir pattern Combobox ci-dessus  
+**Solution** : Toujours utiliser `v-model` sur le Combobox (voir section 3)  
 **Référence** : shadcn-vue TagsInputComboboxDemo
 
-### 2. API response format inconsistency
+### 2. ✅ API response format - Harmonisé
 
-**Statut** : En cours d'investigation  
-**Workaround** : Cast double dans les pages (voir section 4)  
-**TODO** : Harmoniser tous les endpoints API
+**Tous les endpoints retournent maintenant** : `{ data: T }` ou `{ data: T[], meta: {...} }`  
+**Plus besoin** de cast double ou de workarounds
 
-### 3. Cover upload pour Mixtapes
+### 3. ✅ Cover upload pour Mixtapes - Implémenté
 
-**Statut** : Non implémenté  
-**TODO** :
+**Fonctionnel** :
 
-- Créer ImageUploadField
-- Gérer l'upload via imageApi
-- Connecter coverId dans create/update DTO
+- ImageUploadField dans les formulaires
+- Upload via imageApi
+- coverId connecté dans les DTOs create/update
 
-### 4. Profile store obsolète
+### 4. ✅ TypeORM updates - Pattern établi
 
-**Statut** : Deprecated mais conservé  
-**Raison** : useAuthStore gère maintenant le profil  
-**Action** : Ne pas utiliser, sera supprimé plus tard
+**Règle importante** : Pour vider un champ optionnel, envoyer une valeur explicite
+
+- ❌ `undefined` → Le champ n'est PAS mis à jour
+- ✅ `''` (string vide) ou `null` → Le champ est vidé
+- Exemple : `tracksAsText: values.tracks?.length > 0 ? serialize(values.tracks) : ''`
 
 ## Checklist pour nouvelles features
 

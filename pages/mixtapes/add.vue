@@ -9,6 +9,7 @@
   definePageMeta({ roles: [Role.ADMIN] })
 
   const { createMixtape } = useMixtapeApi()
+  const { uploadImage } = useImageApi()
   const isSubmitting = ref(false)
   const pending = computed(() => createMixtape.isPending.value || isSubmitting.value)
 
@@ -29,30 +30,45 @@
   const handleSubmit = async (values: MixtapeFormData) => {
     if (isSubmitting.value) return // Prevent double submission
 
-    // Transform form data to API payload
-    const payload: CreateMixtapeDto = {
-      name: values.name,
-      year: parseInt(values.year, 10),
-      djNames: values.djNames,
-      tagNames: values.tags?.map((tag) => tag.name) || [],
-      tracksAsText:
-        values.tracks && values.tracks.length > 0
-          ? serializeTracks(
-              values.tracks.map((t) => ({
-                ...t,
-                start_at: t.start_at ?? null,
-              })),
-            )
-          : undefined,
-      comment: values.comment || undefined,
-      coverId: undefined, // TODO: Handle cover upload
-      defaultTagColor: '#6B7280',
-    }
-
     isSubmitting.value = true
     const toastId = toast.loading('Création en cours...')
 
     try {
+      let coverId: string | undefined
+
+      // Étape 1 : Upload de la cover si un fichier a été fourni
+      if (values.cover?.file instanceof File) {
+        toast.loading('Upload de la cover...', { id: toastId })
+        const uploadResult = await uploadImage.mutateAsync({
+          file: values.cover.file,
+          bucket: 'covers',
+        })
+        coverId = uploadResult.id
+      }
+
+      // Étape 2 : Créer la mixtape
+      toast.loading('Création de la mixtape...', { id: toastId })
+
+      // Transform form data to API payload
+      const payload: CreateMixtapeDto = {
+        name: values.name,
+        year: parseInt(values.year, 10),
+        djNames: values.djNames,
+        tagNames: values.tags?.map((tag) => tag.name) || [],
+        tracksAsText:
+          values.tracks && values.tracks.length > 0
+            ? serializeTracks(
+                values.tracks.map((t) => ({
+                  ...t,
+                  start_at: t.start_at ?? null,
+                })),
+              )
+            : undefined,
+        comment: values.comment || undefined,
+        coverId, // ✅ Utiliser l'ID de la cover uploadée
+        defaultTagColor: '#6B7280',
+      }
+
       const result = await createMixtape.mutateAsync(payload)
 
       // L'API retourne directement la mixtape, pas { data: mixtape }

@@ -56,6 +56,7 @@
         values: mixtapeFormSetValues(mixtape),
       })
     },
+    { deep: true },
   )
 
   const handleCancel = () => {

@@ -2,7 +2,7 @@
   import { LoaderCircleIcon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
   import type { MixtapeFormData } from '~/components/mixtapes/mixtape.schema'
-  import type { Mixtape, UpdateMixtapeDto } from '~/types/api/mixtapes.types'
+  import type { UpdateMixtapeDto } from '~/types/api/mixtapes.types'
   import { Role } from '~/utils/roles'
   import { parseTracks, serializeTracks } from '~/utils/tracks'
 
@@ -11,6 +11,7 @@
   const route = useRoute()
   const id = route.params.id as string
   const { getMixtape, updateMixtape } = useMixtapeApi()
+  const { uploadImage, getImageUrl } = useImageApi()
 
   // Fetch mixtape
   const { data: mixtapeData, isPending: isLoading, error } = getMixtape(id)
@@ -18,8 +19,8 @@
 
   // Transform API Mixtape → Form Data
   const mixtape = computed((): MixtapeFormData | undefined => {
-    // L'API peut retourner soit { data: Mixtape } soit directement Mixtape
-    const m = (mixtapeData.value?.data as unknown as Mixtape) || (mixtapeData.value as unknown as Mixtape)
+    // ✅ L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
+    const m = mixtapeData.value?.data
     if (!m || typeof m !== 'object' || !('name' in m)) return undefined
 
     return {
@@ -34,7 +35,7 @@
         ? {
             filename: m.cover.originalName,
             bucket: m.cover.bucket,
-            url: m.cover.uri,
+            url: getImageUrl(m.cover) || undefined,
           }
         : undefined,
     }
@@ -59,12 +60,28 @@
 
   const handleSubmit = async (values: MixtapeFormData) => {
     try {
+      let coverId: string | undefined
+
+      // Étape 1 : Upload de la cover si un nouveau fichier a été fourni
+      if (values.cover?.file instanceof File) {
+        const uploadResult = await uploadImage.mutateAsync({
+          file: values.cover.file,
+          bucket: 'covers',
+        })
+        coverId = uploadResult.id
+      }
+      // Sinon, conserver la cover existante (ne pas envoyer coverId = undefined qui supprimerait la cover)
+
+      // ✅ Protection robuste: filtrer les tags invalides et s'assurer qu'on a des noms valides
+      const validTags = (values.tags || []).filter((tag) => tag && tag.name)
+      const tagNames = validTags.map((tag) => tag.name)
+
       // Transform form data to API payload
       const payload: UpdateMixtapeDto = {
         name: values.name,
         year: parseInt(values.year, 10),
         djNames: values.djNames,
-        tagNames: values.tags?.map((tag) => tag.name) || [],
+        tagNames, // Utiliser la version filtrée et validée
         tracksAsText:
           values.tracks && values.tracks.length > 0
             ? serializeTracks(
@@ -75,7 +92,8 @@
               )
             : undefined,
         comment: values.comment || undefined,
-        coverId: undefined, // TODO: Handle cover upload
+        // ✅ Envoyer coverId seulement si un nouveau fichier a été uploadé
+        ...(coverId && { coverId }),
         defaultTagColor: '#6B7280',
       }
 

@@ -2,7 +2,6 @@
   // Types globaux depuis api.d.ts - Role est disponible
   import { PencilIcon, Trash2Icon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
-  import type { Mixtape } from '~/types/api/mixtapes.types'
 
   definePageMeta({ roles: [Role.ADMIN] })
 
@@ -12,10 +11,8 @@
   const { data: mixtapeData } = getMixtape(id)
 
   const openConfirm = ref(false)
-  // L'API peut retourner soit { data: Mixtape } soit directement Mixtape
-  const mixtape = computed(
-    () => (mixtapeData.value?.data as unknown as Mixtape) || (mixtapeData.value as unknown as Mixtape),
-  )
+  // ✅ L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
+  const mixtape = computed(() => mixtapeData.value?.data)
 
   useBreadcrumbItems({
     overrides: [

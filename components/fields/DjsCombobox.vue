@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-  import { getContrastYIQ } from '#imports'
   import { useFilter } from 'reka-ui'
-  import type { Tag } from '~/types/api/tags.types'
+  import type { Dj } from '~/types/api/djs.types'
 
   type Option = {
     label?: string
-    value: Tag
+    value: Dj | { name: string }
     [key: string]: unknown
   }
 
   const props = withDefaults(
     defineProps<{
-      modelValue?: Option[]
+      modelValue?: string[]
       name: string
       placeholder?: string
       readonly?: boolean
@@ -26,7 +25,7 @@
   )
 
   const emit = defineEmits<{
-    (e: 'update:modelValue', value: Option[]): void
+    (e: 'update:modelValue', value: string[]): void
   }>()
 
   const open = ref(false)
@@ -40,39 +39,40 @@
 
   const { contains } = useFilter({ sensitivity: 'base' })
 
-  const getOptionValue = (option: string | Record<string, unknown>) =>
-    (typeof option === 'object' && option?.value) ?? option
-
-  const getOptionLabel = (option: string | Record<string, unknown>) => {
-    if (typeof option === 'string') return option
-    if (typeof option === 'object') {
-      // Si on a une structure Option { value: Tag, label: string }
-      if (option?.label) return option.label as string
-      // Si on a directement un Tag { name: string }
-      if (option?.value && (option.value as Tag)?.name) return (option.value as Tag).name
-      // Fallback sur optionLabelKey
-      if (props.optionLabelKey && option?.[props.optionLabelKey]) {
-        return option[props.optionLabelKey] as string
-      }
+  const getOptionValue = (option: string | Record<string, unknown>) => {
+    if (typeof option === 'object' && option?.value) {
+      const value = option.value as Dj | { name: string }
+      return value.name
     }
-    return String(option)
+    return option as string
   }
 
-  const isInModelValue = (option: Option) => {
-    return props.modelValue.some((item) => getOptionLabel(item) === getOptionLabel(option))
+  const getOptionLabel = (option: string | Record<string, unknown>) => {
+    if (typeof option === 'object' && props.optionLabelKey) {
+      return (option?.[props.optionLabelKey] as string) ?? ''
+    }
+    return option as string
+  }
+
+  const isInModelValue = (optionName: string) => {
+    return props.modelValue.includes(optionName)
   }
 
   const filteredOptions = computed(() =>
     props.options.filter(
       (option) =>
-        !isInModelValue(option) &&
-        (searchTerm.value ? contains((getOptionValue(option) as Tag).name, searchTerm.value) : true),
+        !isInModelValue(getOptionValue(option)) &&
+        (searchTerm.value ? contains(getOptionValue(option), searchTerm.value) : true),
     ),
   )
 
-  const handleSelect = (event: { detail: { value?: unknown } }) => {
-    if (!event.detail.value) return
-    emit('update:modelValue', [...props.modelValue, event.detail.value as Option])
+  const handleSelect = (event: { detail: { value?: Option | string | null } }) => {
+    const selectedValue = event.detail.value
+    if (!selectedValue || selectedValue === null) return
+    const selectedName = typeof selectedValue === 'string' ? selectedValue : getOptionValue(selectedValue)
+    if (!props.modelValue.includes(selectedName)) {
+      emit('update:modelValue', [...props.modelValue, selectedName])
+    }
     searchTerm.value = ''
 
     if (filteredOptions.value.length === 0) {
@@ -80,35 +80,50 @@
     }
   }
 
-  const handleEnterKey = (_event: KeyboardEvent) => {
+  /**
+   * Parse texte collé pour extraire plusieurs DJs
+   * Format accepté: "A, B & C" ou "A and B" → ["A", "B", "C"]
+   */
+  const parseDjNames = (text: string): string[] => {
+    return text
+      .split(/[,&]|\s+and\s+/gi)
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0)
+  }
+
+  const handleEnterKey = () => {
     const search = searchTerm.value.trim()
     if (search) {
       if (filteredOptions.value.length > 0) {
-        handleSelect({ detail: { value: filteredOptions.value[0] } })
-      } else {
-        const newOption: Option = {
-          value: { name: search } as Tag,
-          label: search,
+        // Sélectionner la première option filtrée
+        const firstOption = filteredOptions.value[0]
+        if (firstOption) {
+          handleSelect({ detail: { value: firstOption } })
         }
-        if (!props.modelValue.find((item) => getOptionLabel(item) === search)) {
-          emit('update:modelValue', [...props.modelValue, newOption])
+      } else {
+        // Créer nouveau DJ (supporte paste parsing)
+        const djNames = parseDjNames(search)
+        const newDjs = djNames.filter((name) => !props.modelValue.includes(name))
+        if (newDjs.length > 0) {
+          emit('update:modelValue', [...props.modelValue, ...newDjs])
           searchTerm.value = ''
         }
       }
     }
   }
 
-  const convertOptionValue = (value: unknown, key?: string) => {
-    const record = value as Record<string, unknown>
-    if (typeof value === 'object' && value && record.value && key && record[key]) {
-      return record[key]
-    } else if (typeof value === 'object' && value && record.value) {
-      return record.value
+  const convertOptionValue = (value: unknown): string => {
+    if (typeof value === 'string') {
+      return value
     }
-    return value
+    if (typeof value === 'object' && value !== null) {
+      return getOptionValue(value as Record<string, unknown>)
+    }
+    return String(value)
   }
 
-  const delimiter = /[\t\n\r]+/
+  // Support paste parsing: "A, B & C" → ["A", "B", "C"]
+  const delimiter = /[\t\n\r,&]|\s+and\s+/gi
 </script>
 
 <template>
@@ -117,23 +132,14 @@
       <TagsInput
         :model-value="modelValue"
         :delimiter="delimiter"
-        :display-value="getOptionLabel"
+        :convert-value="convertOptionValue"
         add-on-paste
         add-on-tab
         class="bg-input/30 flex h-9 w-full px-2 py-0"
-        @update:model-value="(value) => $emit('update:modelValue', value as Option[])"
+        @update:model-value="(value) => $emit('update:modelValue', value as string[])"
       >
         <div class="flex flex-wrap items-center gap-2">
-          <TagsInputItem
-            v-for="item in modelValue"
-            :key="item.value.name"
-            :value="item"
-            :style="{
-              ...(item.value?.color
-                ? { backgroundColor: item.value.color, color: getContrastYIQ(item.value.color) }
-                : {}),
-            }"
-          >
+          <TagsInputItem v-for="djName in modelValue" :key="djName" :value="djName">
             <TagsInputItemText />
             <TagsInputItemDelete />
           </TagsInputItem>
@@ -151,7 +157,7 @@
       <ComboboxList position="popper" side="bottom" align="start">
         <ComboboxItem
           v-if="searchTerm && !filteredOptions.length"
-          :value="{ value: { name: searchTerm }, label: searchTerm }"
+          :value="searchTerm"
           class="h-auto px-3 pt-2 pb-1"
           @select.prevent="
             // @ts-ignore - reka-ui type mismatch
@@ -164,7 +170,7 @@
           <ComboboxItem
             v-for="(option, i) in filteredOptions"
             :key="`option-${i}`"
-            :value="option"
+            :value="getOptionValue(option)"
             @select.prevent="
               // @ts-ignore - reka-ui type mismatch
               handleSelect

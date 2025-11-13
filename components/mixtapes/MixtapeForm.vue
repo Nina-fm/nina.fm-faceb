@@ -4,6 +4,7 @@
   import { computed } from 'vue'
   import SaveButton from '~/components/common/SaveButton.vue'
   import { mixtapeFormSchema, mixtapeFormSetValues } from '~/components/mixtapes/mixtape.schema'
+  import type { Dj } from '~/types/api/djs.types'
   import type { Tag } from '~/types/api/tags.types'
   import type { MixtapeFormData } from './mixtape.schema'
 
@@ -21,6 +22,9 @@
   const { getTags } = useTagApi()
   const { data: tagsData } = getTags()
 
+  const { getDjs } = useDjApi()
+  const { data: djsData } = getDjs()
+
   const form = useForm({
     validationSchema: toTypedSchema(mixtapeFormSchema),
     initialValues: mixtapeFormSetValues(props?.mixtape),
@@ -37,6 +41,13 @@
       label: tag.name,
     })),
   )
+  const djs = computed(() => djsData.value?.data || [])
+  const djsOptions = computed(() =>
+    djs.value.map((dj: Dj) => ({
+      value: dj,
+      label: dj.name,
+    })),
+  )
 
   watch(
     () => props.mixtape,
@@ -45,16 +56,6 @@
         values: mixtapeFormSetValues(mixtape),
       })
     },
-  )
-
-  watch(
-    () => form,
-    (values) => {
-      console.log('Form changed')
-      console.log('values', values.values.tracks)
-      console.log('meta', values.meta)
-    },
-    { deep: true },
   )
 
   const handleCancel = () => {
@@ -81,25 +82,23 @@
               >
                 <TextField name="name" label="Nom" :description="hint" />
                 <div class="flex w-full items-start gap-5">
-                  <TextField name="djsAsText" label="Djs" :description="hint" class="w-full" />
+                  <DjsField
+                    name="djNames"
+                    label="DJs"
+                    option-label-key="label"
+                    :options="djsOptions"
+                    description="Vous pouvez coller plusieurs DJs séparés par , & ou 'and'"
+                    class="w-full"
+                  />
                   <SelectField name="year" label="Année" :options="yearsOptions" class="w-1/4 min-w-24" />
                 </div>
-                <TagsField name="tags" label="Tags" option-label-key="name" :options="tagsOptions" tag-as="TagBadge" />
+                <TagsField name="tags" label="Tags" option-label-key="label" :options="tagsOptions" tag-as="TagBadge" />
               </div>
               <div class="aspect-square w-full @xl/mixtapeform:w-1/2 @2xl/mixtapeform:w-1/3 @4xl/mixtapeform:w-1/4">
                 <ImageField name="cover" bucket="covers" label="Cover" description="Taille recommandée : 1600x1600px" />
               </div>
             </div>
-            <!-- <TracksField name="tracks" label="Pistes" /> -->
-            <ObjectsField
-              name="tracks"
-              label="Pistes"
-              :object-fields="[
-                { name: 'artist', type: 'text', label: 'Artiste' },
-                { name: 'title', type: 'text', label: 'Titre' },
-                { name: 'start_at', type: 'time', label: 'Début', class: 'w-32' },
-              ]"
-            />
+            <TracksField name="tracks" label="Pistes" />
             <TextField name="comment" label="Commentaire" multiline />
           </div>
         </CardContent>

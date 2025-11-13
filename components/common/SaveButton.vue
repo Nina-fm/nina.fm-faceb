@@ -18,7 +18,7 @@
     return 'muted'
   })
 
-  const disabled = computed(() => !props.dirty || props.pending || !props.success)
+  const disabled = computed(() => !props.dirty || props.pending)
 </script>
 
 <template>

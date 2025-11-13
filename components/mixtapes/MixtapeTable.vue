@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
-  import { kebabCase } from 'lodash-es'
   import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
@@ -18,14 +17,16 @@
 
   const props = withDefaults(
     defineProps<{
-      data: Mixtape[]
+      data?: Mixtape[]
       searchValue?: string | number
       loading?: boolean
       currentUserId?: string
     }>(),
     {
       data: () => [],
+      searchValue: undefined,
       loading: false,
+      currentUserId: undefined,
     },
   )
 
@@ -38,46 +39,56 @@
 
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
-  const { parseMixtapesDjs } = useMixtapesDjs()
-  const { parseMixtapesTags } = useMixtapesTags()
 
+  // Extract unique DJs from mixtapes
   const djsFilterOptions = computed(() => {
-    return parseMixtapesDjs(props.data).reduce(
-      (acc, dj) => {
-        return acc.concat({
-          label: dj,
-          value: dj,
-        })
-      },
-      [] as FilterDef['options'],
-    )
+    const djsMap = new Map<string, string>()
+    props.data.forEach((mixtape) => {
+      mixtape.djs?.forEach((dj) => {
+        if (!djsMap.has(dj.id)) {
+          djsMap.set(dj.id, dj.name)
+        }
+      })
+    })
+    return Array.from(djsMap.values())
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({
+        label: name,
+        value: name,
+      }))
   })
 
   const yearsFilterOptions = computed(() => {
     const years = props.data.map((m) => m.year).filter((y) => y)
-    const uniqueYears = Array.from(new Set(years)).sort((a, b) => b.localeCompare(a))
+    const uniqueYears = Array.from(new Set(years)).sort((a, b) => b - a)
     return uniqueYears.map((year) => ({
-      label: year,
-      value: year,
+      label: String(year),
+      value: String(year),
     }))
   })
 
+  // Extract unique tags from mixtapes
   const tagsFilterOptions = computed(() => {
-    return parseMixtapesTags(props.data).reduce(
-      (acc, tag) => {
-        return acc.concat({
-          label: tag.name,
-          renderLabel: h(TagBadge, { color: tag?.color ?? '' }),
-          value: tag.id,
-        })
-      },
-      [] as FilterDef['options'],
-    )
+    const tagsMap = new Map<string, Tag>()
+    props.data.forEach((mixtape) => {
+      mixtape.tags?.forEach((tag) => {
+        if (!tagsMap.has(tag.id)) {
+          tagsMap.set(tag.id, tag)
+        }
+      })
+    })
+    return Array.from(tagsMap.values())
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((tag) => ({
+        label: tag.name,
+        renderLabel: h(TagBadge, { color: tag?.color ?? '' }),
+        value: tag.id,
+      }))
   })
 
   const filters: FilterDef[] = [
     {
-      id: 'djsAsText',
+      id: 'djs',
       label: "Dj's",
       options: djsFilterOptions.value,
       multiple: true,
@@ -111,6 +122,7 @@
       cell: ({ cell }) => {
         const name = cell.getValue() as string
         const cover = cell.row.original.cover
+        const { getImageUrl } = useImageApi()
         return h(
           'span',
           { class: 'flex gap-3 items-center' },
@@ -124,8 +136,8 @@
                     ...(cover
                       ? [
                           h(AvatarImage, {
-                            src: cover.url,
-                            alt: cover.alt,
+                            src: getImageUrl(cover),
+                            alt: cover.originalName,
                           }),
                         ]
                       : []),
@@ -144,13 +156,18 @@
       },
     },
     {
-      accessorKey: 'djsAsText',
+      accessorKey: 'djs',
       header: 'Par',
       filterFn: (row, columnId, filterValue) => {
-        const djs = row.getValue<string>(columnId)
+        const djs = row.getValue<{ id: string; name: string }[]>(columnId)
         if (!djs || !filterValue || filterValue.length === 0) return true
-        const slugifiedDjs = parseDjs(djs).map(({ slug }) => slug)
-        return filterValue.every((dj: string) => slugifiedDjs.some((slug) => slug === kebabCase(dj)))
+        const djNames = djs.map((dj) => dj.name)
+        return filterValue.some((filterDj: string) => djNames.includes(filterDj))
+      },
+      cell: ({ cell }) => {
+        const djs = cell.getValue() as { name: string }[] | undefined
+        const djNames = djs?.map((dj) => dj.name).join(', ') || '-'
+        return h('span', {}, { default: () => [djNames] })
       },
     },
     {
@@ -167,13 +184,13 @@
       header: 'Pistes',
       size: 30,
       cell: ({ cell }) => {
-        const tracks = cell.getValue() as Track[] | undefined
-        const tracksCount = tracks?.length ?? 0
+        const tracksAsText = cell.row.original.tracksAsText
+        const tracksCount = tracksAsText ? tracksAsText.split('\n').filter((l) => l.trim()).length : 0
         return h(
           TooltipedBadge,
           {
             variant: tracksCount ? 'successMuted' : 'destructiveMuted',
-            tooltip: `${tracksCount} piste${tracksCount > 1 ? 's' : ''}` || 'Aucune piste',
+            tooltip: tracksCount ? `${tracksCount} piste${tracksCount > 1 ? 's' : ''}` : 'Aucune piste',
           },
           {
             default: () => [tracksCount],
@@ -246,7 +263,7 @@
     if (idToDelete.value) {
       try {
         emit('rowDelete', idToDelete.value)
-      } catch (error) {
+      } catch {
         toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
       } finally {
         openConfirm.value = false

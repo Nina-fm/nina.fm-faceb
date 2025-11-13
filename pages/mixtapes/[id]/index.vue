@@ -5,13 +5,13 @@
 
   definePageMeta({ roles: [Role.ADMIN] })
 
-  const { params } = useRoute()
-  const id = params.id as string
-  const { getMixtapeById, deleteMixtape } = useMixtapeApi()
-  const { data } = await useAsyncData('mixtape', () => getMixtapeById(id))
+  const route = useRoute()
+  const id = route.params.id as string
+  const { getMixtape, deleteMixtape } = useMixtapeApi()
+  const { data: mixtapeData } = getMixtape(id)
 
   const openConfirm = ref(false)
-  const mixtape = computed(() => data.value)
+  const mixtape = computed(() => mixtapeData.value?.data)
 
   useBreadcrumbItems({
     overrides: [
@@ -37,9 +37,9 @@
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteMixtape(id)
+      await deleteMixtape.mutateAsync(id)
       await navigateTo('/mixtapes')
-    } catch (error) {
+    } catch {
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
     } finally {
       openConfirm.value = false

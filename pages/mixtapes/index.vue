@@ -5,15 +5,23 @@
   definePageMeta({ roles: ['ADMIN'] })
 
   const route = useRoute()
-  const { pending, fetchMixtapes, deleteMixtape } = useMixtapeApi()
-  const { data, error, refresh } = await useAsyncData('mixtapes', () => fetchMixtapes())
+  const { getMixtapes, deleteMixtape } = useMixtapeApi()
 
-  const mixtapes = computed(() => data.value?.results || [])
+  // Get query params for filtering
+  const queryParams = computed(() => ({
+    search: route.query.name?.toString(),
+  }))
+
+  const { data, isPending, error, refetch } = getMixtapes(queryParams)
+
+  const mixtapes = computed(() => data.value?.data || [])
 
   const variant = computed(() => {
-    if (pending.value) return 'primaryMuted'
+    if (isPending.value) return 'primaryMuted'
     return 'outline'
   })
+  
+  const pending = isPending
 
   watch(error, (value) => {
     if (value) {
@@ -22,7 +30,7 @@
   })
 
   const handleRefresh = async () => {
-    await refresh()
+    await refetch()
   }
 
   const handleRowShow = (id: string) => {
@@ -39,8 +47,7 @@
 
   const handleRowDelete = async (id: string) => {
     try {
-      await deleteMixtape(id)
-      await refresh()
+      await deleteMixtape.mutateAsync(id)
       toast.success('Mixtape supprimée !')
     } catch {
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import { useFieldArray } from 'vee-validate'
+
   type Track = {
     position?: number
     artist: string
@@ -13,19 +15,16 @@
   }>()
 
   const emit = defineEmits<{
-    (e: 'save'): void
-    (e: 'import'): void
+    (e: 'save' | 'import'): void
   }>()
 
-  const { value, setValue } = useField<Track[]>(() => props.name)
+  // Use useFieldArray to properly manage array fields
+  const { replace } = useFieldArray<Track>(() => props.name)
   const { value: textValue, setValue: setTextValue, setErrors } = useField<string>(() => `${props.name}AsText`)
-
-  console.log('TracksField', value.value, textValue.value)
 
   // https://regex101.com/r/48Pf9u/1
   // [<position>]<artist> <separator: [:•-]> <title>[ (<start_at: 00:00:00>)]
-  const trackPattern =
-    /(?<position>\d+\s)?(?<artist>.+?)\s+[\:\-\•]\s+(?<title>.*?)(?=$|\s\((?<start_at>\d{2}\:\d{2}:\d{2})\))/
+  const trackPattern = /(?<position>\d+\s)?(?<artist>.+?)\s+[:\-•]\s+(?<title>.*?)(?=$|\s\((?<start_at>\d{2}:\d{2}:\d{2})\))/
 
   const parsedText = computed<Track[]>(() =>
     textValue.value
@@ -38,8 +37,8 @@
         const [, position, artist, title, startAt] = match
         return {
           position: position ? parseInt(position, 10) : undefined,
-          artist: artist.trim(),
-          title: title.trim(),
+          artist: artist?.trim() || 'Unknown',
+          title: title?.trim() || 'Untitled',
           start_at: startAt || null,
         }
       })
@@ -48,27 +47,9 @@
 
   const isImportable = computed(() => parsedText.value.length > 0)
 
-  const handleAddTrack = () => {
-    const currentTracks = value.value || []
-    setValue([
-      ...value.value,
-      {
-        position: currentTracks.length + 1,
-        artist: '',
-        title: '',
-        start_at: '',
-      },
-    ])
-  }
-
-  const handleDeleteTrack = (index: number) => {
-    const newTracks = [...value.value]
-    newTracks.splice(index, 1)
-    setValue(newTracks)
-  }
-
+  // Note: delete and clear are handled by ObjectsField's FieldArray
+  // We only need to reset the text field when clearing
   const handleClear = () => {
-    setValue([])
     setTextValue('')
   }
 
@@ -78,7 +59,7 @@
 
   const handleImportTracks = () => {
     if (parsedText.value.length > 0) {
-      setValue(parsedText.value)
+      replace(parsedText.value)
       setTextValue('')
       emit('import')
     } else {
@@ -97,7 +78,7 @@
       { type: 'text', label: 'Titre', name: 'title' },
       { type: 'time', label: 'Début', hint: '(hh:mm:ss)', name: 'start_at', class: 'min-w-30 max-w-30' },
     ]"
-    @delete-row="handleDeleteTrack"
+    @clear-all="handleClear"
   >
     <template #actions>
       <Tooltiped text="Importer les pistes depuis un texte">

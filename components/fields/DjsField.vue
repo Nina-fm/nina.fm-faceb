@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-  import type { Tag } from '~/types/api/tags.types'
+  import type { Dj } from '~/types/api/djs.types'
 
   type Option = {
     label?: string
-    value: Tag
+    value: Dj | { name: string }
     [key: string]: unknown
   }
 
@@ -14,25 +14,10 @@
     placeholder?: string
     optionLabelKey?: string
     options: Option[]
-    createOptionLabel?: string
   }>()
 
   const canCreate = computed(() => getCurrentInstance()?.vnode.props?.['create'] ?? false)
   const options = computed(() => (canCreate.value ? ([...props.options] as Option[]) : props.options))
-
-  // Transform Option[] to Tag[] for form validation
-  const handleUpdateModelValue = (options: Option[]) => {
-    const tags = options.map((option) => option.value)
-    return tags
-  }
-
-  // Transform Tag[] to Option[] for display
-  const modelValueAsOptions = (tags: Tag[]): Option[] => {
-    return tags.map((tag) => ({
-      value: tag,
-      label: tag.name,
-    }))
-  }
 </script>
 
 <template>
@@ -40,11 +25,11 @@
     <FormItem v-bind="$attrs">
       <FormLabel v-if="label">{{ label }}</FormLabel>
       <FormControl>
-        <TagCombobox
+        <DjsCombobox
           v-bind="props"
           :options="options"
-          :model-value="modelValueAsOptions(componentField.modelValue || [])"
-          @update:model-value="(value: Option[]) => componentField['onUpdate:modelValue']?.(handleUpdateModelValue(value))"
+          :model-value="componentField.modelValue"
+          @update:model-value="componentField['onUpdate:modelValue']"
         />
       </FormControl>
       <FormDescription v-if="description" class="text-muted-foreground/60">{{ description }}</FormDescription>

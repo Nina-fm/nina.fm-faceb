@@ -12,7 +12,7 @@ export const mixtapeFormSchema = z.object({
       url: z.string().optional(),
     })
     .optional(),
-  djsAsText: z.string().min(1, 'Djs requis'),
+  djNames: z.array(z.string()).min(1, 'Au moins un DJ requis'),
   tracksAsText: z.string().nullable().optional(),
   tracks: z
     .array(
@@ -55,7 +55,7 @@ export const mixtapeFormSetValues = (data?: MixtapeFormData) => {
           alt: data?.cover?.alt,
         }
       : undefined,
-    djsAsText: data?.djsAsText || '',
+    djNames: data?.djNames || [],
     tracksAsText: data?.tracksAsText || '',
     tracks: data?.tracks || [],
     tags: data?.tags || [],

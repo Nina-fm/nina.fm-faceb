@@ -19,12 +19,12 @@ export const useAuth = () => {
   // Fetch user from API (client-side only)
   const fetchUser = async () => {
     try {
-      const response = await $fetch<User>('/api/auth/profile', {
+      const response = await $fetch<{ user: User; expiresAt: number }>('/api/auth/profile', {
         credentials: 'include',
       })
-      user.value = response
-      expiresAt.value = null // Profile endpoint doesn't return expiresAt
-      return response
+      user.value = response.user
+      expiresAt.value = response.expiresAt
+      return response.user
     } catch {
       user.value = null
       expiresAt.value = null

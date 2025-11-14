@@ -9,6 +9,11 @@ export default defineNuxtRouteMiddleware((to) => {
   // Routes publiques (avec meta.auth = false)
   const isPublicRoute = to.meta.auth === false
 
+  // Si utilisateur authentifié tente d'accéder login/register, redirect home
+  if (isAuthenticated.value && (to.path === '/login' || to.path === '/register')) {
+    return navigateTo('/')
+  }
+
   // Si route publique, laisser passer
   if (isPublicRoute) {
     return

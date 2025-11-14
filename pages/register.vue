@@ -5,7 +5,6 @@
   definePageMeta({ layout: 'naked', auth: false, middleware: ['invitation'] })
 
   const { register } = useAuthActions()
-  const router = useRouter()
   const { invitationToken, tokenValidation } = useInvitationValidation()
   const emailPrefill = ref<string | undefined>(undefined)
   const invitationError = ref<string | null>(null)
@@ -37,7 +36,9 @@
       const token = invitationToken.value || undefined
       await register({ email, name, password, invitationToken: token })
       toast.success('Compte créé avec succès')
-      await router.push('/') // Redirect to home after register
+      
+      // Reload page to trigger SSR + middleware redirect
+      window.location.href = '/'
     } catch (error) {
       const err = error as { status?: number; data?: { message?: string } }
       if (err?.status === 409 || err?.status === 500) {

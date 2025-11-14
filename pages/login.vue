@@ -5,7 +5,6 @@
   definePageMeta({ layout: 'naked', auth: false })
 
   const { login } = useAuthActions()
-  const router = useRouter()
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
@@ -21,7 +20,9 @@
       }
       await login(email, password)
       toast.success('Connexion réussie')
-      await router.push('/') // Redirect to home after login
+      
+      // Reload page to trigger SSR + middleware redirect
+      window.location.href = '/'
     } catch (error) {
       if ((error as { status?: number }).status === 401) {
         toast.error('Email ou mot de passe incorrect')

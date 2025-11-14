@@ -40,5 +40,6 @@
       </Button>
     </template>
   </PageHeader>
+  <!-- @ts-expect-error: OpenAPI generated types are readonly, User type is mutable -->
   <UserDetails v-if="user" :user="user" />
 </template>

@@ -8,11 +8,11 @@
   const { getThumbnailUrl } = useImageApi()
 
   const currentUser = computed(() => ({
-    name: user.value?.profile?.nickname || user.value?.name || 'Utilisateur',
+    name: user.value?.profile?.nickname || 'Utilisateur',
     email: user.value?.email || '',
     avatar: user.value?.profile?.avatar
       ? {
-          url: getThumbnailUrl(user.value.profile.avatar),
+          url: getThumbnailUrl(user.value.profile.avatar as never),
           alt: user.value?.profile?.nickname || 'Avatar',
         }
       : undefined,

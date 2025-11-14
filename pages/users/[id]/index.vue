@@ -44,7 +44,7 @@
     try {
       await deleteUser.mutateAsync(id)
       await navigateTo('/users')
-    } catch (error) {
+    } catch {
       toast.error("Une erreur est survenue lors de la suppression de l'utilisateur.")
     } finally {
       openConfirm.value = false

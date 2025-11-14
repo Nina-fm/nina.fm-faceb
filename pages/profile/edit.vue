@@ -5,7 +5,8 @@
 
   definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
-  const { currentUserId, refreshSession, hasRole } = useAuthApi()
+  const { currentUserId, refreshSession } = useAuthApi()
+  const { isViewer, isAdmin } = usePermissions()
   const { getUser, updateUser, uploadUserAvatar, updateUserProfile } = useUserApi()
 
   // S'assurer que currentUserId est défini avant de récupérer l'utilisateur
@@ -23,8 +24,8 @@
     user,
     (userData) => {
       console.log('[PROFILE/EDIT] watch user - Debug:', {
-        hasViewerRole: hasRole(Role.VIEWER),
-        hasAdminRole: hasRole(Role.ADMIN),
+        hasViewerRole: isViewer.value,
+        hasAdminRole: isAdmin.value,
         userId: userData?.id,
         currentUserId: currentUserId.value,
         areEqual: userData?.id === currentUserId.value,
@@ -32,7 +33,7 @@
       })
 
       // Si on a les données utilisateur et que c'est un VIEWER qui tente de modifier un autre profil
-      if (userData && hasRole(Role.VIEWER) && userData.id !== currentUserId.value) {
+      if (userData && isViewer.value && userData.id !== currentUserId.value) {
         console.log('[PROFILE/EDIT] Redirection vers / - utilisateur VIEWER tentant de modifier un autre profil')
         return navigateTo('/')
       }

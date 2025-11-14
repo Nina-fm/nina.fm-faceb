@@ -1,11 +1,16 @@
 <script lang="ts" setup>
   // Types globaux depuis api.d.ts - Role est disponible
   import { PencilIcon, XIcon } from 'lucide-vue-next'
+  import type { User } from '~/types/api/users.types'
 
   definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
   const { user } = useAuth()
   const { checkRole } = usePermissions()
+
+  // Cast user to mutable type for UserDetails component
+  // OpenAPI generated types are readonly, User type is mutable
+  const userForDisplay = computed(() => user.value as unknown as User | null)
 
   onBeforeMount(() => {
     if (checkRole(Role.VIEWER) && user.value?.id !== user.value?.id) {
@@ -40,6 +45,5 @@
       </Button>
     </template>
   </PageHeader>
-  <!-- @ts-expect-error: OpenAPI generated types are readonly, User type is mutable -->
-  <UserDetails v-if="user" :user="user" />
+  <UserDetails v-if="userForDisplay" :user="userForDisplay" />
 </template>

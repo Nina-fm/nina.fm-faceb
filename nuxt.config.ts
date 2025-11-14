@@ -29,8 +29,9 @@ export default defineNuxtConfig({
     {
       path: '~/components/',
       pathPrefix: false,
-      // Ignorer les fichiers index.ts dans components/ui pour éviter les doublons
-      ignore: ['**/ui/**/index.ts'],
+      extensions: ['.vue'],
+      // Ignorer les fichiers qui ne sont pas des composants
+      // ignore: ['**/index.ts'],
     },
   ],
 
@@ -80,6 +81,13 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     shim: false,
+  },
+
+  // Disable SSR for auth-related pages to avoid flash
+  routeRules: {
+    '/': { ssr: false },
+    '/login': { ssr: false },
+    '/register': { ssr: false },
   },
 
   shadcn: {

@@ -1,17 +1,17 @@
 /**
  * Composable pour la gestion des permissions utilisateur
- * Intégré avec le store auth et la logique de rôles
+ * Intégré avec useAuth et la logique de rôles
  */
 export const usePermissions = () => {
-  const authStore = useAuthStore()
+  const { user, userRole } = useAuth()
   const { hasRole, hasAnyRole } = useRoles()
 
   // États réactifs des permissions
-  const isAdmin = computed(() => hasRole(authStore.userRole || '', 'ADMIN'))
-  const isManager = computed(() => hasRole(authStore.userRole || '', 'MANAGER'))
-  const isContributor = computed(() => hasRole(authStore.userRole || '', 'CONTRIBUTOR'))
-  const isViewer = computed(() => hasRole(authStore.userRole || '', 'VIEWER'))
-  const isGuest = computed(() => !authStore.user || !authStore.userRole)
+  const isAdmin = computed(() => hasRole(userRole.value || '', 'ADMIN'))
+  const isManager = computed(() => hasRole(userRole.value || '', 'MANAGER'))
+  const isContributor = computed(() => hasRole(userRole.value || '', 'CONTRIBUTOR'))
+  const isViewer = computed(() => hasRole(userRole.value || '', 'VIEWER'))
+  const isGuest = computed(() => !user.value || !userRole.value)
 
   // Permissions granulaires
   const canManageUsers = computed(() => isAdmin.value)
@@ -23,11 +23,11 @@ export const usePermissions = () => {
 
   // Fonctions utilitaires
   const checkRole = (requiredRole: string): boolean => {
-    return hasRole(authStore.userRole || '', requiredRole)
+    return hasRole(userRole.value || '', requiredRole)
   }
 
   const checkAnyRole = (requiredRoles: string[]): boolean => {
-    return hasAnyRole(authStore.userRole || '', requiredRoles)
+    return hasAnyRole(userRole.value || '', requiredRoles)
   }
 
   const requireRole = (requiredRole: string, errorMessage?: string): void => {
@@ -55,7 +55,7 @@ export const usePermissions = () => {
       return 'Vous devez être connecté pour effectuer cette action'
     }
 
-    switch (authStore.userRole) {
+    switch (userRole.value) {
       case 'VIEWER':
         return `Action non autorisée - Permissions insuffisantes pour : ${action}`
       case 'CONTRIBUTOR':
@@ -91,6 +91,6 @@ export const usePermissions = () => {
 
     // Utilitaires
     getPermissionErrorMessage,
-    currentRole: computed(() => authStore.userRole),
+    currentRole: userRole,
   }
 }

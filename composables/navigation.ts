@@ -4,14 +4,14 @@
  */
 export const useNavigation = () => {
   const { navigation } = useAppConfig()
-  const { checkAnyRole, canViewBackoffice } = usePermissions()
+  const permissions = usePermissions()
   const routes = useRouter().getRoutes()
 
   const getRouteByPath = (path: string) => routes.find((route) => route.path === path)
 
   const allowedNavigation = computed(() => {
     // Si l'utilisateur ne peut pas voir le backoffice, ne rien afficher
-    if (!canViewBackoffice.value) {
+    if (!permissions.canViewBackoffice.value) {
       return []
     }
 
@@ -29,11 +29,11 @@ export const useNavigation = () => {
 
           // Vérifier les rôles selon les métadonnées
           if (page.meta?.roles) {
-            return checkAnyRole(page.meta.roles as string[])
+            return permissions.checkAnyRole(page.meta.roles as string[])
           }
 
           if (page.meta?.requiresRoles) {
-            return checkAnyRole(page.meta.requiresRoles as string[])
+            return permissions.checkAnyRole(page.meta.requiresRoles as string[])
           }
 
           return true

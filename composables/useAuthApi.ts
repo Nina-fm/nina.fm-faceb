@@ -5,7 +5,7 @@
  */
 export const useAuthApi = () => {
   const { user } = useAuth()
-  const { resetPassword: resetPasswordAction } = useAuthActions()
+  const { resetPassword: resetPasswordAction, logout: logoutAction } = useAuthActions()
   const config = useRuntimeConfig()
 
   // currentUserId: ID de l'utilisateur connecté
@@ -32,10 +32,17 @@ export const useAuthApi = () => {
     return resetPasswordAction(token, password)
   }
 
+  // logout: Déconnexion
+  const logout = async () => {
+    await logoutAction()
+  }
+
   return {
+    user, // Expose user for legacy components
     currentUserId,
     refreshSession,
     forgotPassword,
     resetPassword,
+    logout,
   }
 }

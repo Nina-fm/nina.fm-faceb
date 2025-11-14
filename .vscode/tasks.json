@@ -29,7 +29,16 @@
       "label": "🚀 Démarrer le développement (front)",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev"],
+      "args": ["run", "dev"],
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "🚀 Démarrer le développement (API)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "dev:api"],
       "group": "none",
       "isBackground": true,
       "problemMatcher": []

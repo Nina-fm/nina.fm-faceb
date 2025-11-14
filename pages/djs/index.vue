@@ -46,7 +46,7 @@
   }
 
   const handleShowMixtapes = (name: string) => {
-    return navigateTo({ path: '/mixtapes', query: { dj: name } })
+    return navigateTo({ path: '/mixtapes', query: { djs: [name] } })
   }
 </script>
 

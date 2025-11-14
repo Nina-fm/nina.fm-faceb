@@ -68,6 +68,10 @@
 
   const mixtapes = computed(() => data.value?.data || [])
 
+  const hasActiveFilters = computed(() => {
+    return !!(route.query.name || route.query.djs || route.query.tags || route.query.year)
+  })
+
   const variant = computed(() => {
     if (isPending.value) return 'primaryMuted'
     return 'outline'
@@ -97,22 +101,28 @@
     return navigateTo('/mixtapes')
   }
 
+  // Debounce filter changes to avoid multiple rapid navigations
+  let filterTimeout: ReturnType<typeof setTimeout> | null = null
   const handleFiltersChange = (filters: Record<string, string[]>) => {
-    const query: Record<string, string | string[]> = {}
+    if (filterTimeout) clearTimeout(filterTimeout)
 
-    // Keep search if exists
-    if (route.query.name) {
-      query.name = route.query.name.toString()
-    }
+    filterTimeout = setTimeout(() => {
+      const query: Record<string, string | string[]> = {}
 
-    // Add filters to query
-    Object.entries(filters).forEach(([key, values]) => {
-      if (values && values.length > 0) {
-        query[key] = values
+      // Keep search if exists
+      if (route.query.name) {
+        query.name = route.query.name.toString()
       }
-    })
 
-    return navigateTo({ path: '/mixtapes', query })
+      // Add filters to query (unwrap any reactive proxies)
+      Object.entries(filters).forEach(([key, values]) => {
+        if (values && values.length > 0) {
+          query[key] = Array.isArray(values) ? [...values] : values
+        }
+      })
+
+      navigateTo({ path: '/mixtapes', query })
+    }, 300) // 300ms debounce
   }
 
   const handleRowDelete = async (id: string) => {
@@ -143,6 +153,7 @@
     :data="mixtapes"
     :all-djs="allDjs"
     :all-tags="allTags"
+    :has-active-filters="hasActiveFilters"
     :search-value="route.query.name?.toString()"
     @clear-search="handleClearSearch"
     @filters-change="handleFiltersChange"

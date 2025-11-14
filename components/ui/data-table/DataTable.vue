@@ -44,7 +44,11 @@
     return values.reduce((res: boolean, value: string) => roles.includes(value) || res, false)
   }
 
-  const overrideFilterFn = (column: { filterFn: any; accessorKey: string }) => {
+  const overrideFilterFn = (column: { filterFn: any; accessorKey: string; enableColumnFilter?: boolean }) => {
+    // Si le filtrage de colonne est explicitement désactivé, ne pas ajouter de filterFn
+    if (column.enableColumnFilter === false) {
+      return undefined
+    }
     if (column.filterFn) {
       return column.filterFn
     }

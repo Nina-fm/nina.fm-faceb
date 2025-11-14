@@ -21,17 +21,21 @@
       data?: Mixtape[]
       allDjs?: Dj[]
       allTags?: Tag[]
+      hasActiveFilters?: boolean
       searchValue?: string | number
       loading?: boolean
       currentUserId?: string
+      activeFilters?: Record<string, string[]>
     }>(),
     {
       data: () => [],
       allDjs: () => [],
       allTags: () => [],
+      hasActiveFilters: false,
       searchValue: undefined,
       loading: false,
       currentUserId: undefined,
+      activeFilters: () => ({}),
     },
   )
 
@@ -148,12 +152,7 @@
     {
       accessorKey: 'djs',
       header: 'Par',
-      filterFn: (row, columnId, filterValue) => {
-        const djs = row.getValue<{ id: string; name: string; slug: string }[]>(columnId)
-        if (!djs || !filterValue || filterValue.length === 0) return true
-        const djSlugs = djs.map((dj) => dj.slug)
-        return filterValue.some((filterSlug: string) => djSlugs.includes(filterSlug))
-      },
+      enableColumnFilter: false,
       cell: ({ cell }) => {
         const djs = cell.getValue() as { name: string }[] | undefined
         const djNames = djs?.map((dj) => dj.name).join(', ') || '-'
@@ -164,6 +163,7 @@
       accessorKey: 'year',
       header: 'Création',
       size: 30,
+      enableColumnFilter: false,
       cell: ({ cell }) => {
         const year = cell.getValue() as string
         return h('span', {}, { default: () => [year] })
@@ -192,11 +192,7 @@
       accessorKey: 'tags',
       header: 'Tags',
       size: 30,
-      filterFn: (row, columnId, filterValue) => {
-        const tags = row.getValue<Tag[]>(columnId)
-        if (!tags || !filterValue || filterValue.length === 0) return true
-        return filterValue.every((tagSlug: string) => tags.some((tag) => tag.slug === tagSlug))
-      },
+      enableColumnFilter: false,
       cell: ({ cell }) => {
         const tags = cell.getValue() as Tag[] | undefined
         const tagsCount = tags?.length ?? 0
@@ -240,13 +236,14 @@
     emit('clearSearch')
   }
 
-  const handleFiltersChange = (filters: { id: string; value: unknown }[]) => {
+  const handleFiltersChange = (filters: ColumnFiltersState) => {
     // Convert TanStack ColumnFiltersState to simple object for URL query params
     const filterObj: Record<string, string[]> = {}
 
     filters.forEach((filter) => {
       if (Array.isArray(filter.value)) {
-        filterObj[filter.id] = filter.value as string[]
+        // Unwrap reactive proxy to plain array
+        filterObj[filter.id] = [...(filter.value as string[])]
       } else if (filter.value) {
         filterObj[filter.id] = [String(filter.value)]
       }
@@ -280,7 +277,7 @@
 <template>
   <div class="py-10">
     <DataTable
-      v-if="data.length"
+      v-if="data.length || hasActiveFilters"
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"

@@ -37,25 +37,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     debug: false,
-    nina: {
-      auth: {
-        name: 'nuxt-session',
-        password: process.env.AUTH_SECRET,
-        defaultProtected: true,
-      },
-      roles: {
-        defaultRolesRequired: false,
-      },
-    },
     public: {
       sitename,
-      siteurl: process.env.SITE_URL,
-      apiUrl: process.env.API_URL || 'http://localhost:4000',
-      apiFileStoragePublicEndpoint: process.env.API_FILESTORAGE_PUBLIC_ENDPOINT || 'images',
-      streamApiUrl: process.env.STREAM_API_URL,
-      streamApiUrlFallback: process.env.STREAM_API_URL_FALLBACK,
-      filestorageUrl: process.env.FILESTORAGE_URL,
-      filestoragePublicEndpoint: process.env.FILESTORAGE_PUBLIC_ENDPOINT,
+      apiUrl: process.env.API_URL || '/api',
     },
   },
 
@@ -67,11 +51,11 @@ export default defineNuxtConfig({
     port: Number(process.env.FRONT_OUTPUT_PORT) || 3000,
   },
 
-  // Proxy dev pour éviter CORS avec cookies
+  // Proxy dev pour éviter CORS et simplifier les URLs
   nitro: {
     devProxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: process.env.API_DEV_TARGET || 'http://localhost:4000',
         changeOrigin: true,
         prependPath: true,
       },

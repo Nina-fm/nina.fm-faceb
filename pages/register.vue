@@ -4,7 +4,8 @@
 
   definePageMeta({ layout: 'naked', auth: false, middleware: ['invitation'] })
 
-  const { register } = useAuthApi()
+  const { register } = useAuthActions()
+  const router = useRouter()
   const { invitationToken, tokenValidation } = useInvitationValidation()
   const emailPrefill = ref<string | undefined>(undefined)
   const invitationError = ref<string | null>(null)
@@ -21,24 +22,6 @@
       path: ['confirm'],
     })
 
-  const handleError = (error: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const err = error as any
-    if (err?.response?.status === 409 || err?.response?.status === 500) {
-      // Erreur 409 Conflict ou 500 avec duplicate key
-      const message = err?.response?.data?.message || err?.message || ''
-      if (message.includes('duplicate') || message.includes('already exists')) {
-        toast.error('Cet email est déjà utilisé')
-      } else {
-        toast.error("Une erreur est survenue lors de l'inscription")
-      }
-    } else if (err?.response?.status === 401) {
-      toast.error('Email ou mot de passe incorrect')
-    } else {
-      toast.error('Une erreur est survenue')
-    }
-  }
-
   const handleSubmit = async ({
     email,
     name,
@@ -53,10 +36,22 @@
       // invitationToken doit être string | undefined
       const token = invitationToken.value || undefined
       await register({ email, name, password, invitationToken: token })
-      // Redirection seulement si l'inscription réussit
-      await navigateTo('/')
+      toast.success('Compte créé avec succès')
+      await router.push('/') // Redirect to home after register
     } catch (error) {
-      handleError(error)
+      const err = error as { status?: number; data?: { message?: string } }
+      if (err?.status === 409 || err?.status === 500) {
+        const message = err?.data?.message || ''
+        if (message.includes('duplicate') || message.includes('already exists')) {
+          toast.error('Cet email est déjà utilisé')
+        } else {
+          toast.error("Une erreur est survenue lors de l'inscription")
+        }
+      } else if (err?.status === 401) {
+        toast.error('Email ou mot de passe incorrect')
+      } else {
+        toast.error('Une erreur est survenue')
+      }
     }
   }
 
@@ -80,8 +75,8 @@
           emailPrefill.value = data?.email || undefined
         }
       } catch (err) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        invitationError.value = (err as any)?.response?.data?.message || "Lien d'invitation invalide ou expiré."
+        invitationError.value =
+          (err as { data?: { message?: string } })?.data?.message || "Lien d'invitation invalide ou expiré."
         if (invitationError.value) toast.error(invitationError.value)
       }
     }

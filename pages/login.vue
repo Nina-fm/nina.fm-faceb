@@ -1,28 +1,34 @@
 <script lang="ts" setup>
-  import { useAuthApi } from '#imports'
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { login } = useAuthApi()
+  const { login } = useAuthActions()
+  const router = useRouter()
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
     password: z.string().min(1, 'Mot de passe requis'),
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleError = (error: any) => {
-    if (error?.response?.status === 401) {
-      toast.error('Email ou mot de passe incorrect')
-    } else {
-      toast.error('Une erreur est survenue')
+  const handleSubmit = async (values: Record<string, string>) => {
+    try {
+      const { email, password } = values
+      if (!email || !password) {
+        toast.error('Email et mot de passe requis')
+        return
+      }
+      await login(email, password)
+      toast.success('Connexion réussie')
+      await router.push('/') // Redirect to home after login
+    } catch (error) {
+      if ((error as { status?: number }).status === 401) {
+        toast.error('Email ou mot de passe incorrect')
+      } else {
+        toast.error('Une erreur est survenue')
+      }
     }
-  }
-
-  const handleSubmit = async ({ email, password }: Record<string, string>) => {
-    await login(email, password).catch(handleError)
   }
 
   onMounted(() => {

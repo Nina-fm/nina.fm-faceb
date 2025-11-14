@@ -1,17 +1,17 @@
 declare global {
   interface NavigationItem {
     label: string
-    icon: any
+    icon: unknown
     to: string
     action?: {
-      icon: any
+      icon: unknown
       to: string
     }
   }
 
   interface NavigationGroup {
     label: string
-    icon: any
+    icon: unknown
     children: NavigationItem[]
   }
 

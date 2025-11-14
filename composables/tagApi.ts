@@ -40,7 +40,7 @@ export const useTagApi = () => {
     useQuery({
       queryKey: computed(() => queryKeys.tags.detail(unref(tagId))),
       queryFn: async () => {
-        return call<Tag>(API_ENDPOINTS.TAGS.BY_ID(unref(tagId)), {
+        return call<{ data: Tag }>(API_ENDPOINTS.TAGS.BY_ID(unref(tagId)), {
           method: HttpMethod.GET,
           requireAuth: true,
         })

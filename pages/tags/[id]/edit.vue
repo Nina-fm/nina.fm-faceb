@@ -8,7 +8,8 @@
   const { params } = useRoute()
   const id = params.id as string
   const { getTag, updateTag } = useTagApi()
-  const { data: tag, isPending, error } = getTag(id)
+  const { data, isPending, error } = getTag(id)
+  const tag = computed(() => data.value?.data)
 
   useBreadcrumbItems({
     overrides: [

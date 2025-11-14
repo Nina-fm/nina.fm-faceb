@@ -8,7 +8,8 @@
   const { params } = useRoute()
   const id = params.id as string
   const { getTag, deleteTag } = useTagApi()
-  const { data: tag } = getTag(id)
+  const { data } = getTag(id)
+  const tag = computed(() => data.value?.data)
 
   const openConfirm = ref(false)
 

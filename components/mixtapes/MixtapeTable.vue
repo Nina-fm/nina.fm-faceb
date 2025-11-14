@@ -35,26 +35,27 @@
     rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
+    filtersChange: [filters: Record<string, string[]>]
   }>()
 
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
 
-  // Extract unique DJs from mixtapes
+  // Load all DJs and Tags for filter options
+  const { getDjs } = useDjApi()
+  const { getTags } = useTagApi()
+
+  const { data: djsData } = getDjs()
+  const { data: tagsData } = getTags()
+
+  // Extract unique DJs from API
   const djsFilterOptions = computed(() => {
-    const djsMap = new Map<string, string>()
-    props.data.forEach((mixtape) => {
-      mixtape.djs?.forEach((dj) => {
-        if (!djsMap.has(dj.id)) {
-          djsMap.set(dj.id, dj.name)
-        }
-      })
-    })
-    return Array.from(djsMap.values())
-      .sort((a, b) => a.localeCompare(b))
-      .map((name) => ({
-        label: name,
-        value: name,
+    const djs = djsData.value?.data || []
+    return djs
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((dj) => ({
+        label: dj.name,
+        value: dj.slug,
       }))
   })
 
@@ -67,22 +68,15 @@
     }))
   })
 
-  // Extract unique tags from mixtapes
+  // Extract unique tags from API
   const tagsFilterOptions = computed(() => {
-    const tagsMap = new Map<string, Tag>()
-    props.data.forEach((mixtape) => {
-      mixtape.tags?.forEach((tag) => {
-        if (!tagsMap.has(tag.id)) {
-          tagsMap.set(tag.id, tag)
-        }
-      })
-    })
-    return Array.from(tagsMap.values())
+    const tags = tagsData.value?.data || []
+    return tags
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((tag) => ({
         label: tag.name,
         renderLabel: h(TagBadge, { color: tag?.color ?? '' }),
-        value: tag.id,
+        value: tag.slug,
       }))
   })
 
@@ -159,10 +153,10 @@
       accessorKey: 'djs',
       header: 'Par',
       filterFn: (row, columnId, filterValue) => {
-        const djs = row.getValue<{ id: string; name: string }[]>(columnId)
+        const djs = row.getValue<{ id: string; name: string; slug: string }[]>(columnId)
         if (!djs || !filterValue || filterValue.length === 0) return true
-        const djNames = djs.map((dj) => dj.name)
-        return filterValue.some((filterDj: string) => djNames.includes(filterDj))
+        const djSlugs = djs.map((dj) => dj.slug)
+        return filterValue.some((filterSlug: string) => djSlugs.includes(filterSlug))
       },
       cell: ({ cell }) => {
         const djs = cell.getValue() as { name: string }[] | undefined
@@ -205,7 +199,7 @@
       filterFn: (row, columnId, filterValue) => {
         const tags = row.getValue<Tag[]>(columnId)
         if (!tags || !filterValue || filterValue.length === 0) return true
-        return filterValue.every((tagId: string) => tags.some((tag) => tag.id === tagId))
+        return filterValue.every((tagSlug: string) => tags.some((tag) => tag.slug === tagSlug))
       },
       cell: ({ cell }) => {
         const tags = cell.getValue() as Tag[] | undefined
@@ -250,6 +244,21 @@
     emit('clearSearch')
   }
 
+  const handleFiltersChange = (filters: { id: string; value: unknown }[]) => {
+    // Convert TanStack ColumnFiltersState to simple object for URL query params
+    const filterObj: Record<string, string[]> = {}
+
+    filters.forEach((filter) => {
+      if (Array.isArray(filter.value)) {
+        filterObj[filter.id] = filter.value as string[]
+      } else if (filter.value) {
+        filterObj[filter.id] = [String(filter.value)]
+      }
+    })
+
+    emit('filtersChange', filterObj)
+  }
+
   const handleRowDelete = (id: string) => {
     idToDelete.value = id
     openConfirm.value = true
@@ -286,6 +295,7 @@
       background
       @row-click="handleRowShow"
       @clear-search="handleClearSearch"
+      @filter-change="handleFiltersChange"
     />
     <EmptyBlock v-else title="Aucune mixtape actuellement.">
       <Button variant="secondary" as-child>

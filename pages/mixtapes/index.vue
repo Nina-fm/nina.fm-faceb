@@ -7,10 +7,53 @@
   const route = useRoute()
   const { getMixtapes, deleteMixtape } = useMixtapeApi()
 
-  // Get query params for filtering
-  const queryParams = computed(() => ({
-    search: route.query.name?.toString(),
-  }))
+  // Helper to normalize query params (string | string[] | null → string[])
+  const normalizeQueryParam = (param: unknown): string[] => {
+    if (Array.isArray(param)) {
+      return param.filter((v): v is string => typeof v === 'string')
+    }
+    if (typeof param === 'string') {
+      return [param]
+    }
+    return []
+  }
+
+  // Parse query params for API filters
+  const queryParams = computed(() => {
+    const params: Record<string, string | string[]> = {}
+
+    // Search
+    if (route.query.name && typeof route.query.name === 'string') {
+      params.search = route.query.name
+    }
+
+    // DJs filter
+    const djs = normalizeQueryParam(route.query.djs)
+    if (djs.length > 0) {
+      params.djs = djs
+    }
+
+    // Tags filter
+    const tags = normalizeQueryParam(route.query.tags)
+    if (tags.length > 0) {
+      params.tags = tags
+    }
+
+    // Year filter (exact or range)
+    const years = normalizeQueryParam(route.query.year)
+    if (years.length === 1 && years[0]) {
+      params.year = years[0]
+    } else if (years.length > 1) {
+      // Multiple years: use range from min to max
+      const yearNumbers = years.map(Number).filter((y) => !isNaN(y))
+      if (yearNumbers.length > 0) {
+        params.yearFrom = Math.min(...yearNumbers).toString()
+        params.yearTo = Math.max(...yearNumbers).toString()
+      }
+    }
+
+    return params
+  })
 
   const { data, isPending, error, refetch } = getMixtapes(queryParams)
 
@@ -45,6 +88,24 @@
     return navigateTo('/mixtapes')
   }
 
+  const handleFiltersChange = (filters: Record<string, string[]>) => {
+    const query: Record<string, string | string[]> = {}
+
+    // Keep search if exists
+    if (route.query.name) {
+      query.name = route.query.name.toString()
+    }
+
+    // Add filters to query
+    Object.entries(filters).forEach(([key, values]) => {
+      if (values && values.length > 0) {
+        query[key] = values
+      }
+    })
+
+    return navigateTo({ path: '/mixtapes', query })
+  }
+
   const handleRowDelete = async (id: string) => {
     try {
       await deleteMixtape.mutateAsync(id)
@@ -73,6 +134,7 @@
     :data="mixtapes"
     :search-value="route.query.name?.toString()"
     @clear-search="handleClearSearch"
+    @filters-change="handleFiltersChange"
     @row-show="handleRowShow"
     @row-edit="handleRowEdit"
     @row-delete="handleRowDelete"

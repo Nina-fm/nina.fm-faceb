@@ -66,6 +66,17 @@ export default defineNuxtConfig({
     port: Number(process.env.FRONT_OUTPUT_PORT) || 3000,
   },
 
+  // Proxy dev pour éviter CORS avec cookies
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        prependPath: true,
+      },
+    },
+  },
+
   typescript: {
     strict: true,
     shim: false,

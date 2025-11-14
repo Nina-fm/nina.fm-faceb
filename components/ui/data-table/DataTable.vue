@@ -39,12 +39,16 @@
     return !!getCurrentInstance()?.vnode.props?.['onRowClick']
   })
 
-  const multiValuesFilterFn = (row: { getValue: (arg0: any) => string[] }, columnId: any, values: any[]) => {
+  const multiValuesFilterFn = (
+    row: { getValue: (columnId: string) => string[] },
+    columnId: string,
+    values: string[],
+  ) => {
     const roles = row.getValue(columnId) as string[]
     return values.reduce((res: boolean, value: string) => roles.includes(value) || res, false)
   }
 
-  const overrideFilterFn = (column: { filterFn: any; accessorKey: string; enableColumnFilter?: boolean }) => {
+  const overrideFilterFn = (column: { filterFn: unknown; accessorKey: string; enableColumnFilter?: boolean }) => {
     // Si le filtrage de colonne est explicitement désactivé, ne pas ajouter de filterFn
     if (column.enableColumnFilter === false) {
       return undefined
@@ -62,9 +66,9 @@
     return props.columns.map((column) => {
       return {
         ...column,
-        filterFn: overrideFilterFn(column as { filterFn: any; accessorKey: string }),
+        filterFn: overrideFilterFn(column as { filterFn: unknown; accessorKey: string }),
       }
-    })
+    }) as ColumnDef<TData & { id: string | number }, TValue>[]
   })
 
   const sorting = ref<SortingState>(props.sorting ?? [])
@@ -117,7 +121,7 @@
       return [
         ...res,
         ...(Array.isArray(filter.value)
-          ? filter.value?.map((value) => {
+          ? (filter.value?.map((value) => {
               const filterDef = props.filters?.find((f) => f.id === filter.id)
               const filterOptionDef = filterDef?.options.find((o) => o.value === value)
               return {
@@ -128,7 +132,7 @@
                 optionLabel: filterOptionDef?.label,
                 optionRenderLabel: filterOptionDef?.renderLabel,
               }
-            })
+            }) ?? [])
           : [filter]),
       ]
     }, []),
@@ -186,7 +190,7 @@
       </div>
       <div class="flex items-center justify-end gap-2">
         <template v-if="props.filters?.length">
-          <template v-for="filter in props.filters">
+          <template v-for="filter in props.filters" :key="filter.id">
             <DataTableMultiFilter
               v-if="filter.multiple"
               :id="filter.id"

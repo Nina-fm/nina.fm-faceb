@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { ColumnDef, SortingState } from '@tanstack/vue-table'
+  import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
   import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
@@ -240,7 +240,7 @@
     // Convert TanStack ColumnFiltersState to simple object for URL query params
     const filterObj: Record<string, string[]> = {}
 
-    filters.forEach((filter) => {
+    filters.forEach((filter: { id: string; value: unknown }) => {
       if (Array.isArray(filter.value)) {
         // Unwrap reactive proxy to plain array
         filterObj[filter.id] = [...(filter.value as string[])]

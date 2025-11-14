@@ -194,16 +194,16 @@ export const useUserApi = () => {
    * Utility: Vérifier si l'utilisateur actuel peut gérer les utilisateurs
    */
   const canManageUsers = computed(() => {
-    const authStore = useAuthStore()
-    return authStore.userRole === 'ADMIN'
+    const { userRole } = useAuth()
+    return userRole.value === 'ADMIN'
   })
 
   /**
    * Utility: Vérifier si l'utilisateur actuel peut éditer un utilisateur spécifique
    */
   const canEditUser = (userId: string) => {
-    const authStore = useAuthStore()
-    return authStore.userRole === 'ADMIN' || authStore.user?.id === userId
+    const { userRole, user } = useAuth()
+    return userRole.value === 'ADMIN' || user.value?.id === userId
   }
 
   /**

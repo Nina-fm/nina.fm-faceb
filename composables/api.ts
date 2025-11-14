@@ -29,8 +29,6 @@ export interface ApiError extends Error {
 export const useApi = () => {
   const config = useRuntimeConfig()
 
-  // Récupération du token depuis le store auth
-  const authStore = useAuthStore()
   const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
 
   /**
@@ -39,7 +37,7 @@ export const useApi = () => {
   const call = async <T = unknown>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
     const {
       method = HttpMethod.GET,
-      requireAuth = true,
+      requireAuth: _requireAuth = true, // Conservé pour compatibilité API, mais non utilisé (cookies auto)
       timeout = API_CONFIG.REQUEST_TIMEOUT,
       headers = {},
       ...fetchOptions
@@ -52,10 +50,8 @@ export const useApi = () => {
       ...headers,
     }
 
-    // Ajout du token d'authentification si requis
-    if (requireAuth && authStore.accessToken) {
-      ;(requestHeaders as Record<string, string>).Authorization = `Bearer ${authStore.accessToken}`
-    }
+    // Note: Pas besoin d'ajouter Authorization header manuellement
+    // Les cookies httpOnly sont automatiquement envoyés avec credentials: 'include'
 
     try {
       const fetchConfig: Record<string, unknown> = {
@@ -64,6 +60,7 @@ export const useApi = () => {
         baseURL,
         headers: requestHeaders,
         timeout,
+        credentials: 'include', // Important: envoyer les cookies avec chaque requête
         onRequest() {
           // Log des requêtes en développement
           if (import.meta.dev) {
@@ -77,11 +74,11 @@ export const useApi = () => {
           console.error('[API] Response Error:', context.response.status, context.response._data)
 
           // Gestion des erreurs d'authentification
-          // Attention: Ne pas déclencher le refresh pour les endpoints d'auth eux-mêmes
           if (context.response.status === 401 && !endpoint.includes('/auth/')) {
-            console.log('[API] Token expiré détecté sur:', endpoint, '- déclenchement handleTokenExpired')
-            // Token expiré, tentative de refresh
-            authStore.handleTokenExpired()
+            console.log('[API] Token expiré détecté - redirection vers /login')
+            // Token expiré, rediriger vers login
+            // Note: Le refresh sera géré par Phase 4
+            navigateTo('/login')
           }
         },
       }

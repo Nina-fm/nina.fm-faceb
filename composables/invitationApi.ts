@@ -118,8 +118,8 @@ export const useInvitationApi = () => {
    * Utility: Vérifier si l'utilisateur actuel peut gérer les invitations
    */
   const canManageInvitations = computed(() => {
-    const authStore = useAuthStore()
-    return authStore.userRole === 'ADMIN'
+    const { userRole } = useAuth()
+    return userRole.value === 'ADMIN'
   })
 
   /**

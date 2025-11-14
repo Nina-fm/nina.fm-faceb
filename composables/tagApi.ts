@@ -132,13 +132,13 @@ export const useTagApi = () => {
    */
   const canEditTag = (tagId: string, createdById?: string) => {
     const { isAdmin, canManageTags } = usePermissions()
-    const authStore = useAuthStore()
+    const { user } = useAuth()
 
     // Admin/Manager peuvent tout faire
     if (isAdmin.value || canManageTags.value) return true
 
     // L'utilisateur peut éditer ses propres tags
-    if (createdById === authStore.user?.id) return true
+    if (createdById === user.value?.id) return true
 
     return false
   }
@@ -148,13 +148,13 @@ export const useTagApi = () => {
    */
   const canDeleteTag = (tagId: string, createdById?: string) => {
     const { isAdmin, canManageTags } = usePermissions()
-    const authStore = useAuthStore()
+    const { user } = useAuth()
 
     // Admin/Manager peuvent tout faire
     if (isAdmin.value || canManageTags.value) return true
 
     // L'utilisateur peut supprimer ses propres tags
-    if (createdById === authStore.user?.id) return true
+    if (createdById === user.value?.id) return true
 
     return false
   }

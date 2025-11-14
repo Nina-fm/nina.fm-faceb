@@ -1,19 +1,10 @@
 <script setup lang="ts">
-  import { storeToRefs } from 'pinia'
-  import { useAuthStore } from '~/stores/auth'
-
-  const authStore = useAuthStore()
-  const { isLoading, isAuthChecking } = storeToRefs(authStore)
+  // GlobalLoader simplifié - plus besoin de tracker isAuthChecking
+  // L'auth est maintenant chargée en SSR via server/middleware/auth.ts
+  // Chaque query/mutation a son propre isPending avec TanStack Query
 </script>
 
 <template>
-  <ClientOnly>
-    <!-- Une fois hydraté côté client, utilise tes flags Pinia -->
-    <LoadingFullscreen :active="isLoading || isAuthChecking" />
-
-    <!-- Pendant l'hydratation SSR->Client, affiche toujours le loader -->
-    <template #fallback>
-      <LoadingFullscreen :active="true" />
-    </template>
-  </ClientOnly>
+  <!-- Loader désactivé - auth géré en SSR, queries ont leur propre loading -->
+  <div />
 </template>

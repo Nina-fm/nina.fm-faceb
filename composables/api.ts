@@ -38,7 +38,7 @@ export const useApi = () => {
   /**
    * Fonction générique pour effectuer des appels API
    */
-  const call = async <T = unknown>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> => {
+  const call = async <T = unknown>(endpoint: string, options: ApiRequestOptions = {}, isRetry = false): Promise<T> => {
     const {
       method = HttpMethod.GET,
       requireAuth: _requireAuth = true, // Conservé pour compatibilité API, mais non utilisé (cookies auto)
@@ -68,45 +68,11 @@ export const useApi = () => {
         onRequest() {
           // Log des requêtes en développement
           if (import.meta.dev) {
-            console.log(`[API] ${method} ${endpoint}`)
+            console.log(`[API] ${method} ${endpoint}${isRetry ? ' (retry)' : ''}`)
           }
         },
         onRequestError(context: { error: unknown }) {
           console.error('[API] Request Error:', context.error)
-        },
-        async onResponseError(context: { response: { status: number; _data: unknown } }) {
-          console.error('[API] Response Error:', context.response.status, context.response._data)
-
-          // Gestion des erreurs d'authentification (401)
-          if (context.response.status === 401 && !endpoint.includes('/auth/')) {
-            // Éviter les boucles infinies si le refresh échoue
-            if (isRefreshing) {
-              console.log('[API] Refresh déjà en cours - redirection vers /login')
-              navigateTo('/login')
-              return
-            }
-
-            console.log('[API] 401 Unauthorized - tentative de refresh du token')
-            isRefreshing = true
-
-            try {
-              const refreshSuccess = await refreshToken()
-              isRefreshing = false
-
-              if (refreshSuccess) {
-                console.log('[API] Token refreshed - vous pouvez réessayer la requête')
-                // Note: L'utilisateur devra réessayer manuellement l'action
-                // Une amélioration future pourrait être de retry automatiquement
-              } else {
-                console.log('[API] Refresh échoué - redirection vers /login')
-                navigateTo('/login')
-              }
-            } catch (error) {
-              isRefreshing = false
-              console.error('[API] Erreur lors du refresh:', error)
-              navigateTo('/login')
-            }
-          }
         },
       }
 
@@ -117,14 +83,49 @@ export const useApi = () => {
       )
       return response
     } catch (error: unknown) {
-      // Transformation de l'erreur pour l'interface utilisateur
       const errorObj = error as Record<string, unknown>
+      const status = (errorObj?.status || errorObj?.statusCode) as number
+
+      // Gestion du 401 : tentative de refresh puis retry
+      if (status === 401 && !endpoint.includes('/auth/') && !isRetry) {
+        // Éviter les boucles infinies
+        if (isRefreshing) {
+          console.log('[API] Refresh déjà en cours - redirection vers /login')
+          await navigateTo('/login')
+          throw error
+        }
+
+        console.log('[API] 401 Unauthorized - tentative de refresh du token')
+        isRefreshing = true
+
+        try {
+          const refreshSuccess = await refreshToken()
+          isRefreshing = false
+
+          if (refreshSuccess) {
+            console.log('[API] Token refreshed - retry de la requête...')
+            // Retry la requête originale avec le nouveau token
+            return await call<T>(endpoint, options, true)
+          } else {
+            console.log('[API] Refresh échoué - redirection vers /login')
+            await navigateTo('/login')
+            throw error
+          }
+        } catch (refreshError) {
+          isRefreshing = false
+          console.error('[API] Erreur lors du refresh:', refreshError)
+          await navigateTo('/login')
+          throw error
+        }
+      }
+
+      // Transformation de l'erreur pour l'interface utilisateur
       const apiError: ApiError = new Error(
         ((errorObj?.data as Record<string, unknown>)?.message as string) ||
           (errorObj?.message as string) ||
           'Une erreur est survenue',
       )
-      apiError.statusCode = (errorObj?.status || errorObj?.statusCode) as number
+      apiError.statusCode = status
       apiError.data = errorObj?.data
 
       throw apiError

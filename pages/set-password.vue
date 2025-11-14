@@ -5,7 +5,7 @@
   definePageMeta({ layout: 'naked', auth: false })
 
   const route = useRoute()
-  const { resetPassword } = useAuthApi()
+  const { resetPassword } = useAuthActions()
 
   // Récupérer le token depuis l'URL (query parameter 'token')
   const token = route.query.token as string

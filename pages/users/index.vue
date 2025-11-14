@@ -7,7 +7,8 @@
     requiresRoles: ['ADMIN'],
   })
 
-  const { currentUserId } = useAuthApi()
+  const { user } = useAuth()
+  const currentUserId = computed(() => user.value?.id || null)
   const { getUsers, deleteUser } = useUserApi()
   const { sendInvitation } = useInvitationApi()
 

@@ -3,7 +3,8 @@
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
-  const { logout, user } = useAuthApi()
+  const { user } = useAuth()
+  const { logout } = useAuthActions()
   const { getThumbnailUrl } = useImageApi()
 
   const currentUser = computed(() => ({

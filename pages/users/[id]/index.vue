@@ -7,7 +7,8 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { currentUserId } = useAuthApi()
+  const { user: currentUser } = useAuth()
+  const currentUserId = computed(() => currentUser.value?.id || null)
   const { getUser, deleteUser } = useUserApi()
   const { data } = getUser(id)
 

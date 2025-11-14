@@ -4,7 +4,16 @@
 
   definePageMeta({ layout: 'naked', auth: false })
 
-  const { forgotPassword } = useAuthApi()
+  const config = useRuntimeConfig()
+
+  const forgotPassword = async (email: string) => {
+    const response = await $fetch<{ success: boolean }>(`${config.public.apiUrl}/auth/forgot-password`, {
+      method: 'POST',
+      body: { email },
+      credentials: 'include',
+    })
+    return response
+  }
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),

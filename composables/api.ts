@@ -28,8 +28,12 @@ export interface ApiError extends Error {
  */
 export const useApi = () => {
   const config = useRuntimeConfig()
+  const { refreshToken } = useTokenRefresh()
 
   const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
+
+  // Flag pour éviter les boucles infinies de retry
+  let isRefreshing = false
 
   /**
    * Fonction générique pour effectuer des appels API
@@ -70,15 +74,38 @@ export const useApi = () => {
         onRequestError(context: { error: unknown }) {
           console.error('[API] Request Error:', context.error)
         },
-        onResponseError(context: { response: { status: number; _data: unknown } }) {
+        async onResponseError(context: { response: { status: number; _data: unknown } }) {
           console.error('[API] Response Error:', context.response.status, context.response._data)
 
-          // Gestion des erreurs d'authentification
+          // Gestion des erreurs d'authentification (401)
           if (context.response.status === 401 && !endpoint.includes('/auth/')) {
-            console.log('[API] Token expiré détecté - redirection vers /login')
-            // Token expiré, rediriger vers login
-            // Note: Le refresh sera géré par Phase 4
-            navigateTo('/login')
+            // Éviter les boucles infinies si le refresh échoue
+            if (isRefreshing) {
+              console.log('[API] Refresh déjà en cours - redirection vers /login')
+              navigateTo('/login')
+              return
+            }
+
+            console.log('[API] 401 Unauthorized - tentative de refresh du token')
+            isRefreshing = true
+
+            try {
+              const refreshSuccess = await refreshToken()
+              isRefreshing = false
+
+              if (refreshSuccess) {
+                console.log('[API] Token refreshed - vous pouvez réessayer la requête')
+                // Note: L'utilisateur devra réessayer manuellement l'action
+                // Une amélioration future pourrait être de retry automatiquement
+              } else {
+                console.log('[API] Refresh échoué - redirection vers /login')
+                navigateTo('/login')
+              }
+            } catch (error) {
+              isRefreshing = false
+              console.error('[API] Erreur lors du refresh:', error)
+              navigateTo('/login')
+            }
           }
         },
       }

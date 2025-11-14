@@ -6,6 +6,7 @@ import type { User } from '~/types/api/users.types'
  */
 export const useAuthActions = () => {
   const { setUser, clearUser } = useAuth()
+  const { startRefreshTimer, stopRefreshTimer } = useTokenRefresh()
   const router = useRouter()
   const config = useRuntimeConfig()
 
@@ -22,6 +23,9 @@ export const useAuthActions = () => {
 
     // Cookies déjà set par l'API, on stocke juste le user
     setUser(response.user, response.expiresAt)
+
+    // Démarrer le timer de refresh automatique
+    startRefreshTimer()
 
     return response
   }
@@ -40,6 +44,9 @@ export const useAuthActions = () => {
     // Cookies déjà set par l'API
     setUser(response.user, response.expiresAt)
 
+    // Démarrer le timer de refresh automatique
+    startRefreshTimer()
+
     return response
   }
 
@@ -57,6 +64,9 @@ export const useAuthActions = () => {
       // Même si l'API échoue, on clear le state local
       console.warn('[Auth] Logout API error:', error)
     }
+
+    // Arrêter le timer de refresh
+    stopRefreshTimer()
 
     // Clear user state
     clearUser()

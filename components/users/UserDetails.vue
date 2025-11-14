@@ -1,11 +1,12 @@
 <script lang="ts" setup>
   import { UserRoundIcon } from 'lucide-vue-next'
+  import type { User } from '~/types/api/users.types'
 
   const props = defineProps<{
     user: User
   }>()
 
-  const { user: currentUser } = useAuthApi()
+  const { user: currentUser } = useAuth()
   const { getThumbnailUrl } = useImageApi()
 
   const isMe = computed(() => currentUser.value?.id === props.user?.id)

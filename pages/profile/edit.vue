@@ -5,7 +5,8 @@
 
   definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
-  const { currentUserId, refreshSession } = useAuthApi()
+  const { user: currentUser } = useAuth()
+  const currentUserId = computed(() => currentUser.value?.id || null)
   const { isViewer, isAdmin } = usePermissions()
   const { getUser, updateUser, uploadUserAvatar, updateUserProfile } = useUserApi()
 
@@ -96,7 +97,8 @@
         await updateUser.mutateAsync({ userId: user.value.id, payload: userPayload })
       }
 
-      await refreshSession()
+      // Refresh user data
+      window.location.reload()
       toast.success('Profil modifié avec succès.')
     } catch (error) {
       console.error('Error editing user:', error)

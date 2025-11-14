@@ -7,7 +7,7 @@
   }>()
 
   const { getImageUrl } = useImageApi()
-  const djsText = computed(() => props.mixtape.djs?.map((dj) => dj.name).join(', ') || '-')
+  const djsText = computed(() => formatDjs(props.mixtape.djs))
 </script>
 
 <template>
@@ -35,10 +35,7 @@
         </div>
       </CardHeader>
       <CardContent>
-        <!-- <MixtapeTracksTable :data="mixtape.tracks" /> -->
-        <div>
-          <pre class="text-xs leading-5">{{ mixtape?.tracksAsText }}</pre>
-        </div>
+        <MixtapeTracklist :tracks-as-text="mixtape?.tracksAsText" />
       </CardContent>
     </Card>
   </div>

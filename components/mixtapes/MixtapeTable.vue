@@ -155,7 +155,7 @@
       enableColumnFilter: false,
       cell: ({ cell }) => {
         const djs = cell.getValue() as { name: string }[] | undefined
-        const djNames = djs?.map((dj) => dj.name).join(', ') || '-'
+        const djNames = formatDjs(djs)
         return h('span', {}, { default: () => [djNames] })
       },
     },

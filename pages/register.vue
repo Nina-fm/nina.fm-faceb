@@ -36,7 +36,7 @@
       const token = invitationToken.value || undefined
       await register({ email, name, password, invitationToken: token })
       toast.success('Compte créé avec succès')
-      
+
       // Reload page to trigger SSR + middleware redirect
       window.location.href = '/'
     } catch (error) {

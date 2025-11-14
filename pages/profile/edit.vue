@@ -73,7 +73,7 @@
       }
 
       // Étape 2 : Mise à jour du profil (nickname, description)
-      const profilePayload: Record<string, any> = {
+      const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
         description: values.description,
       }
@@ -84,7 +84,7 @@
       })
 
       // Étape 3 : Mise à jour de l'email et du rôle si modifiés
-      const userPayload: Record<string, any> = {}
+      const userPayload: Record<string, unknown> = {}
       if (values.email !== user.value.email) {
         userPayload.email = values.email
       }
@@ -100,7 +100,7 @@
       toast.success('Profil modifié avec succès.')
     } catch (error) {
       console.error('Error editing user:', error)
-      toast.error("Erreur lors de la modification du profil.")
+      toast.error('Erreur lors de la modification du profil.')
     }
   }
 </script>

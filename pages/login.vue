@@ -20,7 +20,7 @@
       }
       await login(email, password)
       toast.success('Connexion réussie')
-      
+
       // Reload page to trigger SSR + middleware redirect
       window.location.href = '/'
     } catch (error) {

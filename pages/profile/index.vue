@@ -5,10 +5,10 @@
   definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
   const { user } = useAuth()
-  const { hasRole } = usePermissions()
+  const { checkRole } = usePermissions()
 
   onBeforeMount(() => {
-    if (hasRole(Role.VIEWER) && user.value?.id !== user.value?.id) {
+    if (checkRole(Role.VIEWER) && user.value?.id !== user.value?.id) {
       return navigateTo('/')
     }
   })

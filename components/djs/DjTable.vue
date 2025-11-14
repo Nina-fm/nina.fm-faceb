@@ -1,7 +1,6 @@
 <script setup lang="ts">
   import type { ColumnDef, SortingState } from '@tanstack/vue-table'
   import type { Dj } from '~/types/api/djs.types'
-  import type { Mixtape } from '~/types/api/mixtapes.types'
 
   const DjTableActions = resolveComponent('DjTableActions')
   const Badge = resolveComponent('Badge')
@@ -57,12 +56,11 @@
       },
     },
     {
-      accessorKey: 'mixtapes',
+      accessorKey: 'mixtapesCount',
       header: 'Mixtapes',
       size: 60,
       cell: ({ cell }) => {
-        const mixtapes = cell.getValue() as Mixtape[]
-        const mixtapesCount = mixtapes?.length || 0
+        const mixtapesCount = cell.getValue()
         return h(
           'span',
           { class: 'flex gap-2' },
@@ -71,7 +69,7 @@
               h(
                 Badge,
                 {
-                  variant: mixtapesCount ? 'primaryMuted' : 'outline',
+                  variant: mixtapesCount ? 'default' : 'outline',
                 },
                 {
                   default: () => [mixtapesCount],

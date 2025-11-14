@@ -6,6 +6,15 @@
 
   const route = useRoute()
   const { getMixtapes, deleteMixtape } = useMixtapeApi()
+  const { getDjs } = useDjApi()
+  const { getTags } = useTagApi()
+
+  // Load all DJs and Tags for filter options
+  const { data: djsData } = getDjs()
+  const { data: tagsData } = getTags()
+
+  const allDjs = computed(() => djsData.value?.data || [])
+  const allTags = computed(() => tagsData.value?.data || [])
 
   // Helper to normalize query params (string | string[] | null → string[])
   const normalizeQueryParam = (param: unknown): string[] => {
@@ -132,6 +141,8 @@
   </PageHeader>
   <MixtapeTable
     :data="mixtapes"
+    :all-djs="allDjs"
+    :all-tags="allTags"
     :search-value="route.query.name?.toString()"
     @clear-search="handleClearSearch"
     @filters-change="handleFiltersChange"

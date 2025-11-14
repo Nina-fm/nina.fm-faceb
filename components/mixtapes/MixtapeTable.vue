@@ -3,6 +3,7 @@
   import { computed, h, resolveComponent } from 'vue'
   import { toast } from 'vue-sonner'
   import type { FilterDef } from '~/components/ui/data-table'
+  import type { Dj } from '~/types/api/djs.types'
   import type { Mixtape } from '~/types/api/mixtapes.types'
   import type { Tag } from '~/types/api/tags.types'
 
@@ -18,12 +19,16 @@
   const props = withDefaults(
     defineProps<{
       data?: Mixtape[]
+      allDjs?: Dj[]
+      allTags?: Tag[]
       searchValue?: string | number
       loading?: boolean
       currentUserId?: string
     }>(),
     {
       data: () => [],
+      allDjs: () => [],
+      allTags: () => [],
       searchValue: undefined,
       loading: false,
       currentUserId: undefined,
@@ -41,17 +46,9 @@
   const openConfirm = ref(false)
   const idToDelete = ref<string>()
 
-  // Load all DJs and Tags for filter options
-  const { getDjs } = useDjApi()
-  const { getTags } = useTagApi()
-
-  const { data: djsData } = getDjs()
-  const { data: tagsData } = getTags()
-
-  // Extract unique DJs from API
+  // Use DJs and Tags from props (loaded in parent page)
   const djsFilterOptions = computed(() => {
-    const djs = djsData.value?.data || []
-    return djs
+    return [...props.allDjs]
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((dj) => ({
         label: dj.name,
@@ -70,8 +67,7 @@
 
   // Extract unique tags from API
   const tagsFilterOptions = computed(() => {
-    const tags = tagsData.value?.data || []
-    return tags
+    return [...props.allTags]
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((tag) => ({
         label: tag.name,
@@ -80,7 +76,7 @@
       }))
   })
 
-  const filters: FilterDef[] = [
+  const filters = computed<FilterDef[]>(() => [
     {
       id: 'djs',
       label: "Dj's",
@@ -100,7 +96,7 @@
       options: tagsFilterOptions.value,
       multiple: true,
     },
-  ]
+  ])
 
   const defaultSorting = ref<SortingState>([
     {

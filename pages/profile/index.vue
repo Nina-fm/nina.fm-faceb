@@ -4,10 +4,11 @@
 
   definePageMeta({ roles: [Role.VIEWER, Role.ADMIN] })
 
-  const { currentUserId, hasRole, user } = useAuthApi()
+  const { user } = useAuth()
+  const { hasRole } = usePermissions()
 
   onBeforeMount(() => {
-    if (hasRole(Role.VIEWER) && user.value?.id !== currentUserId.value) {
+    if (hasRole(Role.VIEWER) && user.value?.id !== user.value?.id) {
       return navigateTo('/')
     }
   })

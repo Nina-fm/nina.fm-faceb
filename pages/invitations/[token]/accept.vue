@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-  import { useAuthApi } from '#imports'
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
   definePageMeta({ layout: 'naked', auth: false })
 
   const { params } = useRoute()
-  const { register, isLoggedIn } = useAuthApi()
-  const { getInvitationByToken } = useInvitationApi()
+  const { register } = useAuthActions()
+  const { isAuthenticated } = useAuth()
 
   const token = ref(Array.isArray(params.token) ? params.token[0] : params.token)
+  const emailPrefill = ref<string | undefined>(undefined)
 
   const formSchema = z
     .object({
@@ -27,38 +27,51 @@
     validationSchema: toTypedSchema(formSchema),
   })
 
-  const handleError = (error: any) => {
-    if (error?.response?.status === 401) {
+  const handleError = (error: unknown) => {
+    const err = error as { status?: number }
+    if (err?.status === 401) {
       toast.error('Email ou mot de passe incorrect')
     } else {
       toast.error('Une erreur est survenue')
     }
   }
 
-  const handleSubmit = async ({ email, name, password }: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const { email, name, password } = values
     try {
-      await register({ email, name, password, invitationToken: token.value })
+      await register({
+        email: email as string,
+        name: name as string | undefined,
+        password: password as string,
+        invitationToken: token.value,
+      })
       form.resetForm()
-      await navigateTo('/')
       toast.success('Votre compte a été créé avec succès !')
+      window.location.href = '/'
     } catch (error) {
       handleError(error)
     }
   }
 
   onBeforeMount(async () => {
-    if (isLoggedIn.value) {
+    if (isAuthenticated.value) {
       await navigateTo('/')
+      return
     }
 
-    const invitation = await getInvitationByToken(token.value)
-
-    if (!invitation) {
+    // Validate token via API
+    try {
+      const response = await $fetch<{ email: string }>(`/api/invitations/validate`, {
+        method: 'POST',
+        body: { token: token.value },
+        credentials: 'include',
+      })
+      emailPrefill.value = response.email
+      form.setFieldValue('email', response.email)
+    } catch {
       toast.error("Cette invitation n'existe pas ou a déjà été utilisée.")
       await navigateTo('/login')
     }
-
-    form.setFieldValue('email', invitation.email)
   })
 </script>
 

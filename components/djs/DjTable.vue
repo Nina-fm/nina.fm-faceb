@@ -26,8 +26,8 @@
 
   const defaultSorting = ref<SortingState>([
     {
-      id: 'createdAt',
-      desc: true,
+      id: 'firstMixtapeYear',
+      desc: false,
     },
   ])
 
@@ -47,12 +47,12 @@
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'firstMixtapeYear',
       header: 'Depuis',
-      size: 150,
+      size: 100,
       cell: ({ cell }) => {
-        const date = new Date(cell.getValue() as string)
-        return h('span', {}, { default: () => [date.toLocaleDateString('fr-FR', { year: 'numeric' })] })
+        const year = cell.getValue() as number | null
+        return h('span', {}, year?.toString() || '–')
       },
     },
     {

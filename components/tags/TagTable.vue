@@ -8,6 +8,8 @@
   const TagBadge = resolveComponent('TagBadge')
   const TagTableActions = resolveComponent('TagTableActions')
 
+  const { canManageTags } = usePermissions()
+
   withDefaults(
     defineProps<{
       data?: Tag[]
@@ -81,6 +83,8 @@
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
         return h(TagTableActions, {
+          editable: canManageTags.value,
+          deletable: canManageTags.value,
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),

@@ -2,7 +2,7 @@
   import { LoaderCircleIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER] })
+  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const route = useRoute()
   const { getTags, deleteTag } = useTagApi()
@@ -65,6 +65,9 @@
       toast.error('Une erreur est survenue lors de la suppression du Tag.')
     }
   }
+
+  // Permissions
+  const { canCreateTag } = usePermissions()
 </script>
 
 <template>
@@ -74,7 +77,7 @@
         <LoaderCircleIcon v-if="pending" class="animate-spin" />
         <RefreshCwIcon v-else />
       </Button>
-      <Button as-child size="fab" variant="outline">
+      <Button v-if="canCreateTag" as-child size="fab" variant="outline">
         <NuxtLink to="/tags/add">
           <PlusIcon />
         </NuxtLink>

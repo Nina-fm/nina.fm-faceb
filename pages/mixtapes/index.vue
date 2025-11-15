@@ -157,7 +157,7 @@
   }
 
   // Permissions
-  const { canManageMixtapes } = usePermissions()
+  const { canCreateMixtape } = usePermissions()
 </script>
 
 <template>
@@ -167,7 +167,7 @@
         <LoaderCircleIcon v-if="pending" class="animate-spin" />
         <RefreshCwIcon v-else />
       </Button>
-      <Button v-if="canManageMixtapes" as-child size="fab" variant="outline">
+      <Button v-if="canCreateMixtape" as-child size="fab" variant="outline">
         <NuxtLink to="/mixtapes/add">
           <PlusIcon />
         </NuxtLink>

@@ -21,6 +21,10 @@ export const usePermissions = () => {
   const canUploadImages = computed(() => isAdmin.value || isManager.value || isContributor.value)
   const canViewBackoffice = computed(() => isAdmin.value || isManager.value || isContributor.value)
 
+  // Permissions de création (incluent CONTRIBUTOR)
+  const canCreateMixtape = computed(() => isAdmin.value || isManager.value || isContributor.value)
+  const canCreateTag = computed(() => isAdmin.value || isManager.value || isContributor.value)
+
   // Fonctions utilitaires
   const checkRole = (requiredRole: string): boolean => {
     return hasRole(userRole.value || '', requiredRole)
@@ -58,6 +62,25 @@ export const usePermissions = () => {
    */
   const canDeleteResource = (ownerId: string | undefined): boolean => {
     return canAccessResource(ownerId, 'MANAGER')
+  }
+
+  /**
+   * Vérifier si l'utilisateur peut éditer/supprimer un autre utilisateur
+   * - ADMIN : peut modifier tous les utilisateurs
+   * - MANAGER : peut modifier uniquement VIEWER et CONTRIBUTOR (pas ADMIN ni MANAGER)
+   */
+  const canEditUser = (targetUserRole: string): boolean => {
+    if (!user.value) return false
+
+    // ADMIN peut tout faire
+    if (isAdmin.value) return true
+
+    // MANAGER peut uniquement modifier VIEWER et CONTRIBUTOR
+    if (isManager.value) {
+      return targetUserRole === 'VIEWER' || targetUserRole === 'CONTRIBUTOR'
+    }
+
+    return false
   }
 
   const requireRole = (requiredRole: string, errorMessage?: string): void => {
@@ -113,6 +136,10 @@ export const usePermissions = () => {
     canUploadImages,
     canViewBackoffice,
 
+    // Permissions de création
+    canCreateMixtape,
+    canCreateTag,
+
     // Fonctions de vérification
     checkRole,
     checkAnyRole,
@@ -123,6 +150,7 @@ export const usePermissions = () => {
     canAccessResource,
     canEditResource,
     canDeleteResource,
+    canEditUser,
 
     // Utilitaires
     getPermissionErrorMessage,

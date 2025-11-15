@@ -119,7 +119,7 @@ export const useInvitationApi = () => {
    */
   const canManageInvitations = computed(() => {
     const { userRole } = useAuth()
-    return userRole.value === 'ADMIN'
+    return userRole.value === 'ADMIN' || userRole.value === 'MANAGER'
   })
 
   /**

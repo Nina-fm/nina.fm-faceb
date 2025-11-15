@@ -4,13 +4,14 @@
   import type { Role } from '~/types/api/users.types'
 
   definePageMeta({
-    requiresRoles: ['ADMIN'],
+    requiresRoles: ['ADMIN', 'MANAGER'],
   })
 
   const { user } = useAuth()
   const currentUserId = computed(() => user.value?.id || null)
   const { getUsers, deleteUser } = useUserApi()
   const { sendInvitation } = useInvitationApi()
+  const { canEditUser } = usePermissions()
 
   // Pagination et filtres
   const currentPage = ref(1)
@@ -29,6 +30,13 @@
   const { data: usersData, error, refetch } = getUsers(queryParams)
 
   const users = computed(() => usersData.value?.data || [])
+
+  // Utilisateurs non-éditables pour un MANAGER
+  // MANAGER ne peut éditer que VIEWER et CONTRIBUTOR (pas ADMIN ni MANAGER)
+  const uneditableIds = computed(() => {
+    return users.value.filter((u) => !canEditUser(u.role)).map((u) => u.id)
+  })
+
   const openInviteDialog = ref(false)
 
   const isMe = (id: string) => currentUserId.value === id
@@ -109,6 +117,7 @@
   <UsersTable
     :data="users"
     :undeletable-ids="currentUserId ? [currentUserId] : []"
+    :uneditable-ids="uneditableIds"
     @invite="openInviteDialog = true"
     @row-show="handleRowShow"
     @row-edit="handleEditRow"

@@ -18,10 +18,12 @@
       data: User[]
       loading?: boolean
       undeletableIds?: string[]
+      uneditableIds?: string[]
     }>(),
     {
       loading: false,
       undeletableIds: () => [],
+      uneditableIds: () => [],
     },
   )
 
@@ -133,8 +135,8 @@
       header: 'Inscription',
       enableGlobalFilter: false,
       cell: ({ cell }) => {
-        const createdAt = cell.getValue() as Date
-        return h('span', { default: () => [new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] })
+        const createdAt = cell.getValue() as string | Date
+        return h('span', {}, new Date(createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' }))
       },
     },
     {
@@ -142,8 +144,8 @@
       header: 'Dernière modification',
       enableGlobalFilter: false,
       cell: ({ cell }) => {
-        const updateddAt = cell.getValue() as Date
-        return h('span', { default: () => [new Date(updateddAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })] })
+        const updatedAt = cell.getValue() as string | Date
+        return h('span', {}, new Date(updatedAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' }))
       },
     },
     {
@@ -155,6 +157,7 @@
         const id = cell.row.original.id.toString()
         return h(UsersTableActions, {
           deletable: !props.undeletableIds.includes(id),
+          editable: !props.uneditableIds.includes(id),
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),

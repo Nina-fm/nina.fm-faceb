@@ -3,13 +3,14 @@
   import { toast } from 'vue-sonner'
   import { Role } from '~/utils/roles'
 
-  definePageMeta({ roles: [Role.ADMIN] })
+  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const { params } = useRoute()
   const id = params.id as string
   const { getTag, deleteTag } = useTagApi()
   const { data } = getTag(id)
   const tag = computed(() => data.value?.data)
+  const { canManageTags } = usePermissions()
 
   const openConfirm = ref(false)
 
@@ -53,10 +54,10 @@
       <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
-      <Button size="fab" variant="destructiveOutline" @click="handleDelete">
+      <Button v-if="canManageTags" size="fab" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>
-      <Button size="fab" variant="outline">
+      <Button v-if="canManageTags" size="fab" variant="outline">
         <NuxtLink :to="`/tags/${id}/edit`">
           <PencilIcon />
         </NuxtLink>

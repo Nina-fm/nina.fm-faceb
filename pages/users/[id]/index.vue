@@ -11,10 +11,17 @@
   const currentUserId = computed(() => currentUser.value?.id || null)
   const { getUser, deleteUser } = useUserApi()
   const { data } = getUser(id)
+  const { canEditUser, isAdmin } = usePermissions()
 
   const openConfirm = ref(false)
   const user = computed(() => data.value?.data)
   const isMe = computed(() => currentUserId.value === user.value?.id)
+
+  // Vérifier si on peut éditer cet utilisateur (ADMIN ou MANAGER avec rôle cible VIEWER/CONTRIBUTOR)
+  const canEdit = computed(() => (user.value ? canEditUser(user.value.role) : false))
+
+  // Seul ADMIN peut supprimer (et pas soi-même)
+  const canDelete = computed(() => isAdmin.value && !isMe.value)
 
   useBreadcrumbItems({
     overrides: [
@@ -58,10 +65,10 @@
       <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
-      <Button v-if="!isMe" size="fab" variant="destructiveOutline" @click="handleDelete">
+      <Button v-if="canDelete" size="fab" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>
-      <Button size="fab" variant="outline">
+      <Button v-if="canEdit" size="fab" variant="outline">
         <NuxtLink :to="`/users/${id}/edit`">
           <PencilIcon />
         </NuxtLink>

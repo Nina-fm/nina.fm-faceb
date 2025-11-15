@@ -17,6 +17,23 @@
   const { data: mixtapeData, isPending: isLoading, error } = getMixtape(id)
   const pending = computed(() => updateMixtape.isPending.value)
 
+  // Vérification des permissions (CONTRIBUTOR peut modifier SA mixtape)
+  const { canEditResource } = usePermissions()
+  const mixtapeOwnerId = computed(() => mixtapeData.value?.data?.createdBy?.id)
+  const canEdit = computed(() => canEditResource(mixtapeOwnerId.value))
+
+  // Redirect si pas autorisé
+  watch(
+    [mixtapeData, canEdit],
+    ([data, allowed]) => {
+      if (data && !allowed) {
+        navigateTo('/mixtapes')
+        toast.error("Vous n'êtes pas autorisé à modifier cette mixtape")
+      }
+    },
+    { immediate: true },
+  )
+
   // Transform API Mixtape → Form Data
   const mixtape = computed((): MixtapeFormData | undefined => {
     // L'API retourne maintenant toujours { data: Mixtape } de manière cohérente

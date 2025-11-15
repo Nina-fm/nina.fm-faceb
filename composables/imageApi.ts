@@ -50,7 +50,13 @@ export const useImageApi = () => {
    * Nécessite l'authentification
    */
   const uploadImage = useMutation({
-    mutationFn: async ({ file, bucket = 'web' }: { file: File; bucket?: 'covers' | 'web' }): Promise<ImageFile> => {
+    mutationFn: async ({
+      file,
+      bucket = 'web',
+    }: {
+      file: File
+      bucket?: 'covers' | 'avatars' | 'web'
+    }): Promise<ImageFile> => {
       // Validation côté client
       if (!validateFileType(file, ALLOWED_IMAGE_TYPES)) {
         throw new Error(`Type de fichier non autorisé. Types acceptés: ${ALLOWED_IMAGE_TYPES.join(', ')}`)

@@ -131,48 +131,6 @@ export const useUserApi = () => {
   })
 
   /**
-   * Uploader un avatar et mettre à jour le profil utilisateur
-   * Process en 2 étapes :
-   * 1. Upload de l'image via /files/images/upload
-   * 2. Mise à jour du profil avec l'avatarId
-   */
-  const uploadUserAvatar = useMutation({
-    mutationFn: async ({ userId, file }: { userId: string; file: File }): Promise<User> => {
-      // Étape 1 : Upload de l'image dans le bucket 'avatars'
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('bucket', 'avatars')
-
-      const uploadedImage = await call<{ id: string }>(API_ENDPOINTS.IMAGE_FILES.UPLOAD, {
-        method: HttpMethod.POST,
-        body: formData,
-        requireAuth: true,
-      })
-
-      // Étape 2 : Mise à jour du profil avec l'avatarId
-      await call<UserProfile>(API_ENDPOINTS.USERS.PROFILE(userId), {
-        method: HttpMethod.PATCH,
-        body: { avatarId: uploadedImage.id },
-        requireAuth: true,
-      })
-
-      // Retourner l'utilisateur complet mis à jour
-      return call<User>(API_ENDPOINTS.USERS.BY_ID(userId), {
-        method: HttpMethod.GET,
-        requireAuth: true,
-      })
-    },
-    onSuccess: (_, { userId }) => {
-      // Invalider les caches
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(userId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile(userId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.images.all })
-    },
-    onError: createErrorHandler("l'upload de l'avatar"),
-  })
-
-  /**
    * Supprimer un utilisateur
    * Nécessite le rôle ADMIN
    */
@@ -251,7 +209,6 @@ export const useUserApi = () => {
     createUser,
     updateUser,
     updateUserProfile,
-    uploadUserAvatar,
     deleteUser,
 
     // Utilities

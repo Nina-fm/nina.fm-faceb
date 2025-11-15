@@ -6,19 +6,13 @@
   definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const { user: currentUser } = useAuth()
-  const currentUserId = computed(() => currentUser.value?.id || null)
+  const currentUserId = computed(() => currentUser.value?.id || '')
   const { isViewer, isAdmin } = usePermissions()
-  const { getUser, updateUser, uploadUserAvatar, updateUserProfile } = useUserApi()
+  const { getUser, updateUser, updateUserProfile } = useUserApi()
+  const { uploadImage } = useImageApi()
 
-  // S'assurer que currentUserId est défini avant de récupérer l'utilisateur
-  if (!currentUserId.value) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Utilisateur non connecté',
-    })
-  }
-
-  const { data: user, isLoading: pending } = getUser(currentUserId.value)
+  // Attendre que l'utilisateur soit chargé avant de faire la requête
+  const { data: user, isLoading: pending } = getUser(currentUserId)
 
   // Extraire le user data de la réponse API
   const userData = computed(() => user.value?.data)
@@ -68,18 +62,32 @@
       return
     }
     try {
-      // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
-      if (values.avatar?.file instanceof File) {
-        await uploadUserAvatar.mutateAsync({
-          userId: userData.value.id,
+      // Étape 1 : Gestion de l'avatar
+      let newAvatarId: string | null | undefined = undefined
+      const hasNewFile = values.avatar?.file instanceof File
+
+      if (hasNewFile) {
+        // Upload du nouvel avatar dans le bucket 'avatars'
+        const uploadedImage = await uploadImage.mutateAsync({
           file: values.avatar.file,
+          bucket: 'avatars',
         })
+        newAvatarId = uploadedImage.id
+      } else if (!values.avatar?.id) {
+        // L'avatar a été supprimé (pas de fichier et pas d'ID existant)
+        newAvatarId = null
       }
 
-      // Étape 2 : Mise à jour du profil (nickname, description)
+      // Étape 2 : Mise à jour du profil (nickname, description, avatarId)
       const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
         description: values.description,
+      }
+
+      // Ajouter avatarId seulement si il a changé (upload ou suppression)
+      // L'API backend se chargera de supprimer l'ancien avatar si nécessaire
+      if (newAvatarId !== undefined) {
+        profilePayload.avatarId = newAvatarId
       }
 
       await updateUserProfile.mutateAsync({

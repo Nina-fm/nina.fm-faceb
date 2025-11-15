@@ -1,12 +1,13 @@
 // Domain: base
 // Auto-generated from API structure analysis
 
-import type { components } from './globals.types'
+import type { components, operations } from './globals.types';
 
 // ===== TYPES =====
 
-export type BaseQueryDto = components['schemas']['BaseQueryDto']
-export type BaseResponseDto = components['schemas']['BaseResponseDto']
+export type BaseQueryDto = components['schemas']['BaseQueryDto'];
+export type BaseResponseDto = components['schemas']['BaseResponseDto'];
+
 
 // ===== GENERIC HELPERS =====
 
@@ -16,14 +17,14 @@ export type BaseResponseDto = components['schemas']['BaseResponseDto']
  * Use this instead of specific response types when you need a generic paginated list
  */
 export interface PaginatedResponse<T> {
-  data: T[]
+  data: T[];
   pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-  filters?: Record<string, unknown>
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+  filters?: Record<string, unknown>;
 }

@@ -16,6 +16,9 @@
   const TagBadge = resolveComponent('TagBadge')
   const TooltipedBadge = resolveComponent('TooltipedBadge')
 
+  // Permissions
+  const { canManageMixtapes } = usePermissions()
+
   const props = withDefaults(
     defineProps<{
       data?: Mixtape[]
@@ -216,6 +219,8 @@
       cell: ({ cell }) => {
         const id = cell.row.original.id.toString()
         return h(MixtapeTableActions, {
+          deletable: canManageMixtapes.value,
+          editable: canManageMixtapes.value,
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),

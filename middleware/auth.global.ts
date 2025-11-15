@@ -1,6 +1,6 @@
 /**
  * Middleware d'authentification
- * Protège les routes qui nécessitent une connexion
+ * Protège les routes qui nécessitent une connexion et vérifie les rôles
  * Par défaut: toutes les routes nécessitent auth sauf si meta.auth = false
  */
 export default defineNuxtRouteMiddleware((to) => {
@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
-  const { isAuthenticated, isAuthLoading } = useAuth()
+  const { isAuthenticated, isAuthLoading, userRole } = useAuth()
 
   // Wait for auth to finish loading on client-side
   if (isAuthLoading.value) {
@@ -38,5 +38,22 @@ export default defineNuxtRouteMiddleware((to) => {
   // Si route protégée et non authentifié, redirect login
   if (!isAuthenticated.value) {
     return navigateTo('/login')
+  }
+
+  // Vérification des rôles requis (si définis dans meta.roles)
+  const requiredRoles = to.meta.roles as string[] | undefined
+  if (requiredRoles && requiredRoles.length > 0) {
+    const { hasAnyRole } = useRoles()
+    const hasPermission = hasAnyRole(userRole.value || '', requiredRoles)
+
+    if (!hasPermission) {
+      // L'utilisateur n'a pas les permissions nécessaires
+      console.warn(
+        `Accès refusé à ${to.path}: rôle requis ${requiredRoles.join(' ou ')}, rôle actuel: ${userRole.value}`,
+      )
+
+      // Rediriger vers la page d'accueil avec un message d'erreur
+      return navigateTo('/')
+    }
   }
 })

@@ -9,7 +9,7 @@
   const id = params.id as string
   const { getUser, updateUser, updateUserProfile, uploadUserAvatar } = useUserApi()
   const { data } = getUser(id)
-  const user = computed(() => data.value)
+  const user = computed(() => data.value?.data)
 
   useBreadcrumbItems({
     overrides: [

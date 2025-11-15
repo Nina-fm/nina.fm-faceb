@@ -52,9 +52,9 @@ export const useUserApi = () => {
   const getUser = (userId: string | ComputedRef<string>) => {
     return useQuery({
       queryKey: computed(() => queryKeys.users.detail(unref(userId))),
-      queryFn: async (): Promise<User> => {
+      queryFn: async (): Promise<{ data: User }> => {
         const id = unref(userId)
-        return call<User>(API_ENDPOINTS.USERS.BY_ID(id), {
+        return call<{ data: User }>(API_ENDPOINTS.USERS.BY_ID(id), {
           method: HttpMethod.GET,
           requireAuth: true,
         })
@@ -69,8 +69,8 @@ export const useUserApi = () => {
    * Nécessite le rôle ADMIN
    */
   const createUser = useMutation({
-    mutationFn: async (payload: CreateUserDto): Promise<User> => {
-      return call<User>(API_ENDPOINTS.USERS.BASE, {
+    mutationFn: async (payload: CreateUserDto) => {
+      return call<{ data: User }>(API_ENDPOINTS.USERS.BASE, {
         method: HttpMethod.POST,
         body: payload,
         requireAuth: true,
@@ -88,17 +88,17 @@ export const useUserApi = () => {
    * Nécessite le rôle ADMIN ou être le propriétaire
    */
   const updateUser = useMutation({
-    mutationFn: async ({ userId, payload }: { userId: string; payload: UpdateUserDto }): Promise<User> => {
-      return call<User>(API_ENDPOINTS.USERS.BY_ID(userId), {
+    mutationFn: async ({ userId, payload }: { userId: string; payload: UpdateUserDto }) => {
+      return call<{ data: User }>(API_ENDPOINTS.USERS.BY_ID(userId), {
         method: HttpMethod.PATCH,
         body: payload,
         requireAuth: true,
       })
     },
-    onSuccess: (updatedUser) => {
+    onSuccess: (response) => {
       // Invalider les caches
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(updatedUser.id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(response.data.id) })
     },
     onError: createErrorHandler("la mise à jour de l'utilisateur"),
   })

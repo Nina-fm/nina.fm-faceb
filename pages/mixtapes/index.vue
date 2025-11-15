@@ -155,6 +155,9 @@
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
     }
   }
+
+  // Permissions
+  const { canManageMixtapes } = usePermissions()
 </script>
 
 <template>
@@ -164,7 +167,7 @@
         <LoaderCircleIcon v-if="pending" class="animate-spin" />
         <RefreshCwIcon v-else />
       </Button>
-      <Button as-child size="fab" variant="outline">
+      <Button v-if="canManageMixtapes" as-child size="fab" variant="outline">
         <NuxtLink to="/mixtapes/add">
           <PlusIcon />
         </NuxtLink>

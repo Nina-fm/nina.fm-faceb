@@ -13,7 +13,7 @@
   const { data } = getUser(id)
 
   const openConfirm = ref(false)
-  const user = computed(() => data.value)
+  const user = computed(() => data.value?.data)
   const isMe = computed(() => currentUserId.value === user.value?.id)
 
   useBreadcrumbItems({

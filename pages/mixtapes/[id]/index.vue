@@ -3,16 +3,22 @@
   import { PencilIcon, Trash2Icon, XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.ADMIN] })
+  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const route = useRoute()
   const id = route.params.id as string
   const { getMixtape, deleteMixtape } = useMixtapeApi()
   const { data: mixtapeData } = getMixtape(id)
+  const { canEditResource, canDeleteResource } = usePermissions()
 
   const openConfirm = ref(false)
   // L'API retourne maintenant toujours { data: Mixtape } de manière cohérente
   const mixtape = computed(() => mixtapeData.value?.data)
+
+  // Permissions basées sur l'ownership
+  const ownerId = computed(() => mixtape.value?.createdBy?.id)
+  const canEdit = computed(() => canEditResource(ownerId.value))
+  const canDelete = computed(() => canDeleteResource(ownerId.value))
 
   useBreadcrumbItems({
     overrides: [
@@ -54,10 +60,10 @@
       <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
       </Button>
-      <Button size="fab" variant="destructiveOutline" @click="handleDelete">
+      <Button v-if="canDelete" size="fab" variant="destructiveOutline" @click="handleDelete">
         <Trash2Icon />
       </Button>
-      <Button size="fab" variant="outline">
+      <Button v-if="canEdit" size="fab" variant="outline">
         <NuxtLink :to="`/mixtapes/${id}/edit`">
           <PencilIcon />
         </NuxtLink>

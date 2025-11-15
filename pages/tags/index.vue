@@ -2,7 +2,7 @@
   import { LoaderCircleIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: ['ADMIN'] })
+  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER] })
 
   const route = useRoute()
   const { getTags, deleteTag } = useTagApi()

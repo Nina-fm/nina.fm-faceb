@@ -17,7 +17,7 @@
   const TooltipedBadge = resolveComponent('TooltipedBadge')
 
   // Permissions
-  const { canManageMixtapes } = usePermissions()
+  const { canEditResource, canDeleteResource } = usePermissions()
 
   const props = withDefaults(
     defineProps<{
@@ -217,10 +217,17 @@
       size: 40,
       enableGlobalFilter: false,
       cell: ({ cell }) => {
-        const id = cell.row.original.id.toString()
+        const mixtape = cell.row.original
+        const id = mixtape.id.toString()
+
+        // Vérifier les permissions : MANAGER+ OU propriétaire de la mixtape
+        const ownerId = mixtape.createdBy?.id
+        const canEdit = canEditResource(ownerId)
+        const canDelete = canDeleteResource(ownerId)
+
         return h(MixtapeTableActions, {
-          deletable: canManageMixtapes.value,
-          editable: canManageMixtapes.value,
+          deletable: canDelete,
+          editable: canEdit,
           onShow: () => handleRowShow(id),
           onEdit: () => handleRowEdit(id),
           onDelete: () => handleRowDelete(id),

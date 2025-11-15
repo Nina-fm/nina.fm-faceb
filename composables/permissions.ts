@@ -30,6 +30,36 @@ export const usePermissions = () => {
     return hasAnyRole(userRole.value || '', requiredRoles)
   }
 
+  /**
+   * Vérifier si l'utilisateur peut accéder à une ressource
+   * Soit il a le rôle requis, soit il est propriétaire de la ressource
+   */
+  const canAccessResource = (ownerId: string | undefined, requiredRole: string): boolean => {
+    if (!user.value?.id) return false
+
+    // Si c'est le propriétaire, accès autorisé
+    if (ownerId === user.value.id) return true
+
+    // Sinon vérifier le rôle
+    return checkRole(requiredRole)
+  }
+
+  /**
+   * Vérifier si l'utilisateur peut modifier une ressource
+   * Soit il a le rôle MANAGER+, soit il est propriétaire
+   */
+  const canEditResource = (ownerId: string | undefined): boolean => {
+    return canAccessResource(ownerId, 'MANAGER')
+  }
+
+  /**
+   * Vérifier si l'utilisateur peut supprimer une ressource
+   * Soit il a le rôle MANAGER+, soit il est propriétaire
+   */
+  const canDeleteResource = (ownerId: string | undefined): boolean => {
+    return canAccessResource(ownerId, 'MANAGER')
+  }
+
   const requireRole = (requiredRole: string, errorMessage?: string): void => {
     if (!checkRole(requiredRole)) {
       throw createError({
@@ -88,6 +118,11 @@ export const usePermissions = () => {
     checkAnyRole,
     requireRole,
     requireAnyRole,
+
+    // Ownership & ressources
+    canAccessResource,
+    canEditResource,
+    canDeleteResource,
 
     // Utilitaires
     getPermissionErrorMessage,

@@ -27,6 +27,7 @@
     filters?: FilterDef[]
     search?: boolean
     searchValue?: string | number
+    activeFilters?: ColumnFiltersState
   }>()
 
   const emits = defineEmits<{
@@ -166,6 +167,9 @@
   onBeforeMount(() => {
     if (props.searchValue) {
       handleSearchUpdateModelValue(props.searchValue)
+    }
+    if (props.activeFilters) {
+      columnFilters.value = props.activeFilters
     }
   })
 </script>

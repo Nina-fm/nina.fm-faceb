@@ -68,6 +68,28 @@
 
   const mixtapes = computed(() => data.value?.data || [])
 
+  // Convert URL query params to ColumnFiltersState format for DataTable
+  const activeFilters = computed(() => {
+    const filters: { id: string; value: string | string[] }[] = []
+
+    const djs = normalizeQueryParam(route.query.djs)
+    if (djs.length > 0) {
+      filters.push({ id: 'djs', value: djs })
+    }
+
+    const tags = normalizeQueryParam(route.query.tags)
+    if (tags.length > 0) {
+      filters.push({ id: 'tags', value: tags })
+    }
+
+    const years = normalizeQueryParam(route.query.year)
+    if (years.length > 0) {
+      filters.push({ id: 'year', value: years })
+    }
+
+    return filters
+  })
+
   const hasActiveFilters = computed(() => {
     return !!(route.query.name || route.query.djs || route.query.tags || route.query.year)
   })
@@ -155,6 +177,7 @@
     :all-tags="allTags"
     :has-active-filters="hasActiveFilters"
     :search-value="route.query.name?.toString()"
+    :active-filters="activeFilters"
     @clear-search="handleClearSearch"
     @filters-change="handleFiltersChange"
     @row-show="handleRowShow"

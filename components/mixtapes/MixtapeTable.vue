@@ -25,7 +25,7 @@
       searchValue?: string | number
       loading?: boolean
       currentUserId?: string
-      activeFilters?: Record<string, string[]>
+      activeFilters?: ColumnFiltersState
     }>(),
     {
       data: () => [],
@@ -35,7 +35,7 @@
       searchValue: undefined,
       loading: false,
       currentUserId: undefined,
-      activeFilters: () => ({}),
+      activeFilters: () => [],
     },
   )
 
@@ -283,6 +283,7 @@
       :sorting="defaultSorting"
       :search-value="searchValue"
       :filters="filters"
+      :active-filters="activeFilters"
       search
       pagination
       background

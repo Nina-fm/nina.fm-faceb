@@ -3,7 +3,7 @@
   import { PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ requiresRole: 'ADMIN' })
+  definePageMeta({ roles: [Role.ADMIN] })
 
   const { sendInvitation, cancelInvitation, resendInvitation, getInvitations, canManageInvitations } =
     useInvitationApi()

@@ -20,21 +20,24 @@
 
   const { data: user, isLoading: pending } = getUser(currentUserId.value)
 
+  // Extraire le user data de la réponse API
+  const userData = computed(() => user.value?.data)
+
   // Watcher pour vérifier les permissions une fois que l'utilisateur est chargé
   watch(
-    user,
-    (userData) => {
+    userData,
+    (userValue) => {
       console.log('[PROFILE/EDIT] watch user - Debug:', {
         hasViewerRole: isViewer.value,
         hasAdminRole: isAdmin.value,
-        userId: userData?.id,
+        userId: userValue?.id,
         currentUserId: currentUserId.value,
-        areEqual: userData?.id === currentUserId.value,
-        userDataExists: !!userData,
+        areEqual: userValue?.id === currentUserId.value,
+        userDataExists: !!userValue,
       })
 
       // Si on a les données utilisateur et que c'est un VIEWER qui tente de modifier un autre profil
-      if (userData && isViewer.value && userData.id !== currentUserId.value) {
+      if (userValue && isViewer.value && userValue.id !== currentUserId.value) {
         console.log('[PROFILE/EDIT] Redirection vers / - utilisateur VIEWER tentant de modifier un autre profil')
         return navigateTo('/')
       }
@@ -60,7 +63,7 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (values: Record<string, any>) => {
-    if (!user.value?.id) {
+    if (!userData.value?.id) {
       toast.error('Utilisateur introuvable.')
       return
     }
@@ -68,7 +71,7 @@
       // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
       if (values.avatar?.file instanceof File) {
         await uploadUserAvatar.mutateAsync({
-          userId: user.value.id,
+          userId: userData.value.id,
           file: values.avatar.file,
         })
       }
@@ -80,21 +83,21 @@
       }
 
       await updateUserProfile.mutateAsync({
-        userId: user.value.id,
+        userId: userData.value.id,
         payload: profilePayload,
       })
 
       // Étape 3 : Mise à jour de l'email et du rôle si modifiés
       const userPayload: Record<string, unknown> = {}
-      if (values.email !== user.value.email) {
+      if (values.email !== userData.value.email) {
         userPayload.email = values.email
       }
-      if (values.role && values.role !== user.value.role) {
+      if (values.role && values.role !== userData.value.role) {
         userPayload.role = values.role
       }
 
       if (Object.keys(userPayload).length > 0) {
-        await updateUser.mutateAsync({ userId: user.value.id, payload: userPayload })
+        await updateUser.mutateAsync({ userId: userData.value.id, payload: userPayload })
       }
 
       // Refresh user data
@@ -116,8 +119,8 @@
     </template>
   </PageHeader>
   <UserForm
-    v-if="user"
-    :user="user"
+    v-if="userData"
+    :user="userData"
     teleport-to="page-header-actions"
     :can-edit-roles="false"
     :pending="pending"

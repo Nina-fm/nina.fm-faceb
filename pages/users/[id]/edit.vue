@@ -30,18 +30,19 @@
     await navigateTo('/users')
   }
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
     try {
       // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
-      if (values.avatar?.file instanceof File) {
+      const avatar = values.avatar as { file?: File } | undefined
+      if (avatar?.file instanceof File) {
         await uploadUserAvatar.mutateAsync({
           userId: id,
-          file: values.avatar.file,
+          file: avatar.file,
         })
       }
 
       // Étape 2 : Mise à jour du profil (nickname, description)
-      const profilePayload: Record<string, any> = {
+      const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
         description: values.description,
       }
@@ -52,7 +53,7 @@
       })
 
       // Étape 3 : Mise à jour de l'email et du rôle si modifiés
-      const userPayload: Record<string, any> = {}
+      const userPayload: Record<string, unknown> = {}
       if (values.email !== user.value?.email) {
         userPayload.email = values.email
       }

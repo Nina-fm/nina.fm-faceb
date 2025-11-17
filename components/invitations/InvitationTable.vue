@@ -2,6 +2,7 @@
   // Types globaux depuis api.d.ts
   import type { ColumnDef } from '@tanstack/vue-table'
   import { toast } from 'vue-sonner'
+  import type { Invitation, InvitationsListResponseDto } from '~/types/api/invitations.types'
 
   const InvitationTableActions = resolveComponent('InvitationTableActions')
   const InvitationStatus = resolveComponent('InvitationStatus')
@@ -10,10 +11,17 @@
     defineProps<{
       data?: InvitationsListResponseDto['data']
       loading?: boolean
+      serverPagination?: {
+        total: number
+        page: number
+        limit: number
+        pageCount: number
+      }
     }>(),
     {
       data: () => [],
       loading: false,
+      serverPagination: undefined,
     },
   )
 
@@ -21,6 +29,8 @@
     invite: []
     rowResend: [id: string | number]
     rowDelete: [id: string | number]
+    pageChange: [page: number]
+    limitChange: [limit: number]
   }>()
 
   const openConfirm = ref(false)
@@ -134,7 +144,17 @@
 
 <template>
   <div class="py-10">
-    <DataTable v-if="data.length" :columns="columns" :data="data" background />
+    <DataTable
+      v-if="data.length || loading"
+      :columns="columns"
+      :data="data"
+      :server-pagination="serverPagination"
+      :loading="loading"
+      pagination
+      background
+      @page-change="(page) => emit('pageChange', page)"
+      @limit-change="(limit) => emit('limitChange', limit)"
+    />
     <EmptyBlock v-else title="Aucune invitation en attente.">
       <Button variant="ghost" @click="navigateTo('/users')">Voir les utilisateurs</Button>
       <Button variant="secondary" @click="$emit('invite')">Inviter un utilisateur</Button>

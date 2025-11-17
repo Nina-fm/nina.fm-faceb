@@ -9,15 +9,24 @@
     defineProps<{
       data?: Dj[]
       loading?: boolean
+      serverPagination?: {
+        total: number
+        page: number
+        limit: number
+        pageCount: number
+      }
     }>(),
     {
       data: () => [],
       loading: false,
+      serverPagination: undefined,
     },
   )
 
   const emit = defineEmits<{
     rowShowMixtapes: [name: string]
+    pageChange: [page: number]
+    limitChange: [limit: number]
   }>()
 
   const handleRowShowMixtape = (name: string) => {
@@ -98,13 +107,17 @@
 <template>
   <div class="py-10">
     <DataTable
-      v-if="data.length"
+      v-if="data.length || loading"
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
+      :server-pagination="serverPagination"
+      :loading="loading"
       search
       pagination
       background
+      @page-change="(page) => emit('pageChange', page)"
+      @limit-change="(limit) => emit('limitChange', limit)"
     />
     <EmptyBlock v-else title="Aucun dj actuellement." />
   </div>

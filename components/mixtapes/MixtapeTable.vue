@@ -29,6 +29,14 @@
       loading?: boolean
       currentUserId?: string
       activeFilters?: ColumnFiltersState
+      serverPagination?: {
+        total: number
+        page: number
+        limit: number
+        pageCount: number
+      }
+      // Nombre de boutons de chaque côté de la page courante (défaut: 2 pour 5 boutons au total)
+      siblingCount?: number
     }>(),
     {
       data: () => [],
@@ -39,6 +47,8 @@
       loading: false,
       currentUserId: undefined,
       activeFilters: () => [],
+      serverPagination: undefined,
+      siblingCount: 2,
     },
   )
 
@@ -48,6 +58,8 @@
     rowEdit: [id: string]
     rowDelete: [id: string]
     filtersChange: [filters: Record<string, string[]>]
+    pageChange: [page: number]
+    limitChange: [limit: number]
   }>()
 
   const openConfirm = ref(false)
@@ -289,19 +301,24 @@
 <template>
   <div class="py-10">
     <DataTable
-      v-if="data.length || hasActiveFilters"
+      v-if="data.length || hasActiveFilters || loading"
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
       :search-value="searchValue"
       :filters="filters"
       :active-filters="activeFilters"
+      :server-pagination="serverPagination"
+      :sibling-count="siblingCount"
+      :loading="loading"
       search
       pagination
       background
       @row-click="handleRowShow"
       @clear-search="handleClearSearch"
       @filter-change="handleFiltersChange"
+      @page-change="(page) => emit('pageChange', page)"
+      @limit-change="(limit) => emit('limitChange', limit)"
     />
     <EmptyBlock v-else title="Aucune mixtape actuellement.">
       <Button variant="secondary" as-child>

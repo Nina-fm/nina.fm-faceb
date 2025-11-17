@@ -15,11 +15,18 @@
       data?: Tag[]
       searchValue?: string | number
       loading?: boolean
+      serverPagination?: {
+        total: number
+        page: number
+        limit: number
+        pageCount: number
+      }
     }>(),
     {
       data: () => [],
       searchValue: undefined,
       loading: false,
+      serverPagination: undefined,
     },
   )
 
@@ -28,6 +35,8 @@
     rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
+    pageChange: [page: number]
+    limitChange: [limit: number]
   }>()
 
   const openConfirm = ref(false)
@@ -130,16 +139,20 @@
 <template>
   <div class="py-10">
     <DataTable
-      v-if="data.length"
+      v-if="data.length || loading"
       :data="data"
       :columns="columns"
       :sorting="defaultSorting"
       :search-value="searchValue"
+      :server-pagination="serverPagination"
+      :loading="loading"
       search
       pagination
       background
       @row-click="handleRowShow"
       @clear-search="handleClearSearch"
+      @page-change="(page) => emit('pageChange', page)"
+      @limit-change="(limit) => emit('limitChange', limit)"
     />
     <EmptyBlock v-else title="Aucun tag actuellement.">
       <Button variant="secondary" as-child>

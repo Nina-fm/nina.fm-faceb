@@ -19,11 +19,18 @@
       loading?: boolean
       undeletableIds?: string[]
       uneditableIds?: string[]
+      serverPagination?: {
+        total: number
+        page: number
+        limit: number
+        pageCount: number
+      }
     }>(),
     {
       loading: false,
       undeletableIds: () => [],
       uneditableIds: () => [],
+      serverPagination: undefined,
     },
   )
 
@@ -33,6 +40,8 @@
     rowEdit: [id: string]
     rowDelete: [id: string]
     filterChange: [filters: Record<string, unknown>]
+    pageChange: [page: number]
+    limitChange: [limit: number]
   }>()
 
   const { getThumbnailUrl } = useImageApi()
@@ -216,12 +225,16 @@
       :columns="columns"
       :sorting="defaultSorting"
       :filters="filters"
+      :server-pagination="serverPagination"
+      :loading="loading"
       search
       pagination
       background
       empty-text="Aucun utilisateur ne correspond aux critères de recherche."
       @row-click="handleRowShow"
       @filter-change="handleFilterChange"
+      @page-change="(page) => emit('pageChange', page)"
+      @limit-change="(limit) => emit('limitChange', limit)"
     />
   </div>
   <ConfirmDeleteDialog

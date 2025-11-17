@@ -184,6 +184,7 @@ jobs:
             PORT=3000
             HOST=0.0.0.0
             API_URL=https://api.nina.fm
+            NUXT_PORT=3003
             EOF
 
             # Sécuriser le fichier d'environnement

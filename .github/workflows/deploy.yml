@@ -148,7 +148,7 @@ jobs:
           push: true
           no-cache: true
           build-args: |
-            API_URL=https://api.nina.fm
+            NUXT_PUBLIC_API_URL=https://api.nina.fm
           tags: |
             ${{ steps.meta.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.versioning.outputs.version }}

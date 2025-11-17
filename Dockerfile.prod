@@ -23,10 +23,10 @@ RUN pnpm install --frozen-lockfile
 FROM dependencies AS build
 
 # Build args for Nuxt environment variables
-ARG API_URL
+ARG NUXT_PUBLIC_API_URL
 
 # Set environment variables for Nuxt build
-ENV API_URL=${API_URL}
+ENV NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL}
 
 # Copy source code
 COPY . .

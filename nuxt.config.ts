@@ -39,7 +39,8 @@ export default defineNuxtConfig({
     debug: false,
     public: {
       sitename,
-      apiUrl: process.env.API_URL || '/api',
+      // NUXT_PUBLIC_API_URL en prod, API_URL en dev
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || process.env.API_URL || '/api',
     },
   },
 

@@ -28,12 +28,22 @@
     search?: boolean
     searchValue?: string | number
     activeFilters?: ColumnFiltersState
+    // Pagination serveur
+    serverPagination?: {
+      total: number
+      page: number
+      limit: number
+      pageCount: number
+    }
+    // Nombre de boutons de chaque côté de la page courante (défaut: 2 pour 5 boutons au total)
+    siblingCount?: number
   }>()
 
   const emits = defineEmits<{
     (e: 'clearSearch'): void
     (e: 'rowClick', id: string | number): void
     (e: 'filterChange', filters: ColumnFiltersState): void
+    (e: 'pageChange' | 'limitChange', value: number): void
   }>()
 
   const hasRowClick = computed(() => {
@@ -75,12 +85,31 @@
   const sorting = ref<SortingState>(props.sorting ?? [])
   const columnFilters = ref<ColumnFiltersState>([])
   const searchText = ref<string | number>('')
+  const isInitializing = ref(true)
 
-  // Émettre les changements de filtres vers le parent
+  // Émettre les changements de filtres vers le parent (sauf pendant l'initialisation)
   watch(
     columnFilters,
     (newFilters) => {
-      emits('filterChange', newFilters)
+      if (!isInitializing.value) {
+        emits('filterChange', newFilters)
+      }
+    },
+    { deep: true },
+  )
+
+  // Synchroniser les filtres depuis les props sans émettre d'événement
+  watch(
+    () => props.activeFilters,
+    (newActiveFilters) => {
+      if (newActiveFilters && !isInitializing.value) {
+        // Désactiver temporairement l'émission pendant la sync
+        isInitializing.value = true
+        columnFilters.value = newActiveFilters
+        nextTick(() => {
+          isInitializing.value = false
+        })
+      }
     },
     { deep: true },
   )
@@ -93,7 +122,8 @@
       return columns.value
     },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // Désactiver la pagination client si on utilise la pagination serveur
+    ...(props.serverPagination ? {} : { getPaginationRowModel: getPaginationRowModel() }),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
     onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
@@ -171,6 +201,10 @@
     if (props.activeFilters) {
       columnFilters.value = props.activeFilters
     }
+    // Fin de l'initialisation
+    nextTick(() => {
+      isInitializing.value = false
+    })
   })
 </script>
 
@@ -275,5 +309,12 @@
       </TableBody>
     </Table>
   </div>
-  <DataTablePagination v-if="props.pagination" :table="table" />
+  <DataTablePagination
+    v-if="props.pagination"
+    :table="table"
+    :server-pagination="props.serverPagination"
+    :sibling-count="props.siblingCount"
+    @page-change="(page) => emits('pageChange', page)"
+    @limit-change="(limit) => emits('limitChange', limit)"
+  />
 </template>

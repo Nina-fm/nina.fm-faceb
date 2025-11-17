@@ -71,7 +71,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/mainV2' }}
           labels: |
             org.opencontainers.image.title=Nina.fm Face B v2
             org.opencontainers.image.description=Nuxt 4 admin for Nina.fm
@@ -178,7 +178,7 @@ jobs:
           script: |
             # Créer le fichier d'environnement avec les secrets GitHub
             mkdir -p /var/nina/faceb-v2
-            
+
             cat > /var/nina/faceb-v2/.env.prod << EOF
             NODE_ENV=production
             PORT=3000
@@ -196,8 +196,8 @@ jobs:
             # Login Docker sur le serveur pour accéder au registry privé
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Pull de la nouvelle image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            # Pull de la nouvelle image (tag mainV2 pour pré-prod)
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mainV2
 
             # S'assurer que le réseau existe
             echo "🔄 Vérification du réseau..."

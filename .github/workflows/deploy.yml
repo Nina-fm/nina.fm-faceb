@@ -1,0 +1,245 @@
+name: Deploy Nina.fm Face B v2
+
+on:
+  push:
+    branches: [mainV2]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: nina-fm/nina.fm-faceb-v2
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run lint
+        run: pnpm lint
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=Nina.fm Face B v2
+            org.opencontainers.image.description=Nuxt 4 admin for Nina.fm
+            org.opencontainers.image.vendor=Nina.fm
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Version and tag
+        id: versioning
+        if: github.ref == 'refs/heads/mainV2'
+        run: |
+          # Configuration git pour les commits automatiques
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # DEBUG: Lister les fichiers dans .changeset
+          echo "🔍 DEBUG: Contenu du dossier .changeset/"
+          ls -la .changeset/ || echo "Dossier .changeset inexistant"
+
+          # Vérifier s'il y a des changesets à appliquer
+          CHANGESET_FILES=$(ls .changeset/*.md 2>/dev/null | grep -v README || echo "")
+          echo "🔍 DEBUG: Fichiers changeset trouvés: $CHANGESET_FILES"
+
+          if [ -n "$CHANGESET_FILES" ]; then
+            echo "📦 Changesets détectés, mise à jour de la version..."
+            
+            # Exécuter changeset version (génère CHANGELOG.md automatiquement)
+            echo "🔍 Exécution de changeset:version (génère package.json + CHANGELOG.md)..."
+            if ! pnpm changeset:version; then
+              echo "❌ Erreur lors de l'exécution de changeset:version"
+              exit 1
+            fi
+            
+            # Récupérer la nouvelle version (sans prefix 'v')
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            CLEAN_VERSION=$(echo $NEW_VERSION | sed 's/^v//')
+            echo "🏷️ Nouvelle version: $CLEAN_VERSION"
+            
+            # Push du commit créé par changeset (il commit automatiquement)
+            echo "⬆️ Push du commit de version créé par changeset..."
+            if ! git push origin mainV2; then
+              echo "❌ Erreur lors du push du commit"
+              exit 1
+            fi
+            
+            # Créer le tag Git (sans prefix 'v')
+            echo "🏷️ Création du tag $CLEAN_VERSION..."
+            git tag "$CLEAN_VERSION"
+            
+            # Push du tag
+            echo "⬆️ Push du tag $CLEAN_VERSION..."
+            if ! git push origin "$CLEAN_VERSION"; then
+              echo "❌ Erreur lors du push du tag"
+              exit 1
+            fi
+            
+            echo "✅ Version $CLEAN_VERSION créée, taguée et poussée avec succès"
+            echo "version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+            echo "has_release=true" >> $GITHUB_OUTPUT
+          else
+            # Pas de changesets, utiliser la version actuelle
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            echo "📋 Aucun changeset détecté, version actuelle: $CURRENT_VERSION"
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "has_release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.prod
+          push: true
+          no-cache: true
+          build-args: |
+            API_URL=https://api.nina.fm
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.versioning.outputs.version }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.version=${{ steps.versioning.outputs.version }}
+            org.opencontainers.image.created={{date 'YYYY-MM-DDTHH:mm:ssZ'}}
+
+      - name: Create GitHub Release
+        if: steps.versioning.outputs.has_release == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.versioning.outputs.version }}
+          name: Release ${{ steps.versioning.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Créer le fichier d'environnement avec les secrets GitHub
+            mkdir -p /var/nina/faceb-v2
+            
+            cat > /var/nina/faceb-v2/.env.prod << EOF
+            NODE_ENV=production
+            PORT=3000
+            HOST=0.0.0.0
+            API_URL=https://api.nina.fm
+            EOF
+
+            # Sécuriser le fichier d'environnement
+            chmod 600 /var/nina/faceb-v2/.env.prod
+
+            # Créer le répertoire de déploiement
+            mkdir -p /var/nina/faceb-v2/deploy
+            cd /var/nina/faceb-v2/deploy
+
+            # Login Docker sur le serveur pour accéder au registry privé
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull de la nouvelle image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            # S'assurer que le réseau existe
+            echo "🔄 Vérification du réseau..."
+            docker network create nina-network 2>/dev/null || echo "Réseau nina-network existe déjà"
+
+            # Télécharger le docker-compose.prod.yml depuis GitHub
+            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3.raw" \
+                 -o docker-compose.yml \
+                 "https://raw.githubusercontent.com/${{ github.repository }}/mainV2/docker-compose.prod.yml"
+
+            # Déploiement avec docker-compose
+            docker compose --env-file /var/nina/faceb-v2/.env.prod up -d --force-recreate
+
+            # Vérifier que le conteneur démarre correctement
+            echo "🔍 Vérification du conteneur..."
+            sleep 10
+            if docker ps | grep nina-faceb-v2; then
+              echo "✅ Déploiement réussi - Face B v2 opérationnelle"
+              docker logs nina-faceb-v2 --tail 20
+            else
+              echo "❌ Le conteneur nina-faceb-v2 n'est pas en cours d'exécution"
+              docker logs nina-faceb-v2 --tail 50
+              exit 1
+            fi
+
+  cleanup:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Nettoyage Docker sur le serveur
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Nettoyage des images Docker orphelines
+            echo "🧹 Nettoyage des images Docker..."
+            docker image prune -f --filter "dangling=true"
+
+            # Garder seulement les 3 dernières images de Face B v2
+            docker images ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | \
+            tail -n +2 | sort -k2 -r | tail -n +4 | awk '{print $1}' | \
+            xargs -r docker rmi || echo "Aucune ancienne image à supprimer"

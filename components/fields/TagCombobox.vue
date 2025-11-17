@@ -98,16 +98,6 @@
     }
   }
 
-  const convertOptionValue = (value: unknown, key?: string) => {
-    const record = value as Record<string, unknown>
-    if (typeof value === 'object' && value && record.value && key && record[key]) {
-      return record[key]
-    } else if (typeof value === 'object' && value && record.value) {
-      return record.value
-    }
-    return value
-  }
-
   const delimiter = /[\t\n\r]+/
 </script>
 

@@ -30,6 +30,17 @@
 
   const djs = computed(() => djsData.value?.data || [])
 
+  const paginationMeta = computed(() => {
+    const pagination = djsData.value?.pagination
+    if (!pagination) return undefined
+    return {
+      total: pagination.total,
+      page: pagination.page,
+      limit: pagination.limit,
+      pageCount: pagination.totalPages,
+    }
+  })
+
   const variant = computed(() => {
     if (pending.value) return 'primaryMuted'
     return 'outline'
@@ -48,6 +59,28 @@
   const handleShowMixtapes = (name: string) => {
     return navigateTo({ path: '/mixtapes', query: { djs: [name] } })
   }
+
+  const handlePageChange = (page: number) => {
+    const query: Record<string, string | number> = {
+      page,
+      limit: limit.value,
+    }
+    if (search.value) query.search = search.value
+    if (hasMixtapes.value !== undefined) query.hasMixtapes = hasMixtapes.value.toString()
+
+    navigateTo({ path: '/djs', query })
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    const query: Record<string, string | number> = {
+      page: 1,
+      limit: newLimit,
+    }
+    if (search.value) query.search = search.value
+    if (hasMixtapes.value !== undefined) query.hasMixtapes = hasMixtapes.value.toString()
+
+    navigateTo({ path: '/djs', query })
+  }
 </script>
 
 <template>
@@ -59,5 +92,12 @@
       </Button>
     </template>
   </PageHeader>
-  <DjTable :data="djs" :loading="pending" @row-show-mixtapes="handleShowMixtapes" />
+  <DjTable
+    :data="djs"
+    :loading="pending"
+    :server-pagination="paginationMeta"
+    @row-show-mixtapes="handleShowMixtapes"
+    @page-change="handlePageChange"
+    @limit-change="handleLimitChange"
+  />
 </template>

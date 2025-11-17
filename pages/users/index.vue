@@ -7,29 +7,47 @@
     requiresRoles: ['ADMIN', 'MANAGER'],
   })
 
+  const route = useRoute()
   const { user } = useAuth()
   const currentUserId = computed(() => user.value?.id || null)
   const { getUsers, deleteUser } = useUserApi()
   const { sendInvitation } = useInvitationApi()
   const { canEditUser } = usePermissions()
 
-  // Pagination et filtres
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const searchQuery = ref('')
-  const roleFilter = ref<Role | undefined>(undefined)
+  // Query params
+  const page = computed(() => Number(route.query.page) || 1)
+  const limit = computed(() => Number(route.query.limit) || 10)
+  const search = computed(() => route.query.search?.toString())
+  const roleFilter = computed(() => route.query.role as Role | undefined)
 
-  // Query avec pagination et filtres - utilisation de computed pour la réactivité
+  // Query avec pagination et filtres
   const queryParams = computed(() => ({
-    page: currentPage.value,
-    limit: pageSize.value,
-    search: searchQuery.value || undefined,
+    page: page.value,
+    limit: limit.value,
+    search: search.value,
     role: roleFilter.value,
   }))
 
-  const { data: usersData, error, refetch } = getUsers(queryParams)
+  const { data: usersData, error, refetch, isPending } = getUsers(queryParams)
 
   const users = computed(() => usersData.value?.data || [])
+
+  const paginationMeta = computed(() => {
+    const pagination = usersData.value?.pagination
+    if (!pagination) return undefined
+
+    // Ensure all required fields are present
+    if (!pagination.total || !pagination.page || !pagination.limit || !pagination.totalPages) {
+      return undefined
+    }
+
+    return {
+      total: pagination.total,
+      page: pagination.page,
+      limit: pagination.limit,
+      pageCount: pagination.totalPages,
+    }
+  })
 
   // Utilisateurs non-éditables pour un MANAGER
   // MANAGER ne peut éditer que VIEWER et CONTRIBUTOR (pas ADMIN ni MANAGER)
@@ -99,7 +117,35 @@
   }
 
   const handleFilterChange = (filters: Record<string, unknown>) => {
-    roleFilter.value = filters.role as Role | undefined
+    navigateTo({
+      query: {
+        ...route.query,
+        role: filters.role as Role | undefined,
+        page: '1', // Reset to page 1 when filtering
+      },
+    })
+  }
+
+  const handlePageChange = (page: number) => {
+    const query: Record<string, string | number> = {
+      page,
+      limit: limit.value,
+    }
+    if (search.value) query.search = search.value
+    if (roleFilter.value) query.role = roleFilter.value
+
+    navigateTo({ path: '/users', query })
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    const query: Record<string, string | number> = {
+      page: 1,
+      limit: newLimit,
+    }
+    if (search.value) query.search = search.value
+    if (roleFilter.value) query.role = roleFilter.value
+
+    navigateTo({ path: '/users', query })
   }
 </script>
 
@@ -118,11 +164,15 @@
     :data="users"
     :undeletable-ids="currentUserId ? [currentUserId] : []"
     :uneditable-ids="uneditableIds"
+    :server-pagination="paginationMeta"
+    :loading="isPending"
     @invite="openInviteDialog = true"
     @row-show="handleRowShow"
     @row-edit="handleEditRow"
     @row-delete="handleDeleteRow"
     @filter-change="handleFilterChange"
+    @page-change="handlePageChange"
+    @limit-change="handleLimitChange"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
 </template>

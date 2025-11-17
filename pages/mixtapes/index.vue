@@ -29,7 +29,11 @@
 
   // Parse query params for API filters
   const queryParams = computed(() => {
-    const params: Record<string, string | string[]> = {}
+    const params: Record<string, string | string[] | number> = {}
+
+    // Pagination
+    params.page = Number(route.query.page) || 1
+    params.limit = Number(route.query.limit) || 10
 
     // Search
     if (route.query.name && typeof route.query.name === 'string') {
@@ -67,6 +71,17 @@
   const { data, isPending, error, refetch } = getMixtapes(queryParams)
 
   const mixtapes = computed(() => data.value?.data || [])
+
+  const paginationMeta = computed(() => {
+    const pagination = data.value?.pagination
+    if (!pagination) return undefined
+    return {
+      total: pagination.total,
+      page: pagination.page,
+      limit: pagination.limit,
+      pageCount: pagination.totalPages,
+    }
+  })
 
   // Convert URL query params to ColumnFiltersState format for DataTable
   const activeFilters = computed(() => {
@@ -126,10 +141,15 @@
   // Debounce filter changes to avoid multiple rapid navigations
   let filterTimeout: ReturnType<typeof setTimeout> | null = null
   const handleFiltersChange = (filters: Record<string, string[]>) => {
+    console.log('🟢 handleFiltersChange called with:', filters)
     if (filterTimeout) clearTimeout(filterTimeout)
 
     filterTimeout = setTimeout(() => {
-      const query: Record<string, string | string[]> = {}
+      const query: Record<string, string | string[]> = {
+        // IMPORTANT: Reset to page 1 when filters change
+        page: '1',
+        limit: String(route.query.limit || 10),
+      }
 
       // Keep search if exists
       if (route.query.name) {
@@ -143,6 +163,7 @@
         }
       })
 
+      console.log('🟢 handleFiltersChange navigating with query:', JSON.stringify(query))
       navigateTo({ path: '/mixtapes', query })
     }, 300) // 300ms debounce
   }
@@ -154,6 +175,70 @@
     } catch {
       toast.error('Une erreur est survenue lors de la suppression de la mixtape.')
     }
+  }
+
+  const handlePageChange = (page: number) => {
+    console.log('🔵 handlePageChange called with:', page)
+    console.log('🔵 Current route.query:', JSON.stringify(route.query))
+
+    const query: Record<string, string | string[]> = {
+      page: String(page),
+      limit: String(route.query.limit || 10),
+    }
+
+    // Keep search
+    if (route.query.name) {
+      query.name = String(route.query.name)
+    }
+
+    // Keep filters using normalizeQueryParam
+    const djs = normalizeQueryParam(route.query.djs)
+    if (djs.length > 0) {
+      query.djs = djs
+    }
+
+    const tags = normalizeQueryParam(route.query.tags)
+    if (tags.length > 0) {
+      query.tags = tags
+    }
+
+    const years = normalizeQueryParam(route.query.year)
+    if (years.length > 0) {
+      query.year = years
+    }
+
+    console.log('🔵 Navigating with query:', JSON.stringify(query))
+    navigateTo({ path: '/mixtapes', query })
+  }
+
+  const handleLimitChange = (limit: number) => {
+    const query: Record<string, string | string[]> = {
+      page: '1',
+      limit: String(limit),
+    }
+
+    // Keep search
+    if (route.query.name) {
+      query.name = String(route.query.name)
+    }
+
+    // Keep filters using normalizeQueryParam
+    const djs = normalizeQueryParam(route.query.djs)
+    if (djs.length > 0) {
+      query.djs = djs
+    }
+
+    const tags = normalizeQueryParam(route.query.tags)
+    if (tags.length > 0) {
+      query.tags = tags
+    }
+
+    const years = normalizeQueryParam(route.query.year)
+    if (years.length > 0) {
+      query.year = years
+    }
+
+    navigateTo({ path: '/mixtapes', query })
   }
 
   // Permissions
@@ -181,8 +266,13 @@
     :has-active-filters="hasActiveFilters"
     :search-value="route.query.name?.toString()"
     :active-filters="activeFilters"
+    :server-pagination="paginationMeta"
+    :sibling-count="2"
+    :loading="pending"
     @clear-search="handleClearSearch"
     @filters-change="handleFiltersChange"
+    @page-change="handlePageChange"
+    @limit-change="handleLimitChange"
     @row-show="handleRowShow"
     @row-edit="handleRowEdit"
     @row-delete="handleRowDelete"

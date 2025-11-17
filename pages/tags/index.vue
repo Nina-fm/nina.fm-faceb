@@ -30,6 +30,17 @@
 
   const tags = computed(() => tagsData.value?.data || [])
 
+  const paginationMeta = computed(() => {
+    const pagination = tagsData.value?.pagination
+    if (!pagination) return undefined
+    return {
+      total: pagination.total,
+      page: pagination.page,
+      limit: pagination.limit,
+      pageCount: pagination.totalPages,
+    }
+  })
+
   const variant = computed(() => {
     if (pending.value) return 'primaryMuted'
     return 'outline'
@@ -66,6 +77,28 @@
     }
   }
 
+  const handlePageChange = (page: number) => {
+    const query: Record<string, string | number> = {
+      page,
+      limit: limit.value,
+    }
+    if (search.value) query.search = search.value
+    if (hasUsage.value !== undefined) query.hasUsage = hasUsage.value.toString()
+
+    navigateTo({ path: '/tags', query })
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    const query: Record<string, string | number> = {
+      page: 1,
+      limit: newLimit,
+    }
+    if (search.value) query.search = search.value
+    if (hasUsage.value !== undefined) query.hasUsage = hasUsage.value.toString()
+
+    navigateTo({ path: '/tags', query })
+  }
+
   // Permissions
   const { canCreateTag } = usePermissions()
 </script>
@@ -88,9 +121,12 @@
     :data="tags"
     :loading="pending"
     :search-value="route.query.name?.toString()"
+    :server-pagination="paginationMeta"
     @clear-search="handleClearSearch"
     @row-show="handleRowShow"
     @row-edit="handleRowEdit"
     @row-delete="handleRowDelete"
+    @page-change="handlePageChange"
+    @limit-change="handleLimitChange"
   />
 </template>

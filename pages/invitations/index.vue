@@ -5,26 +5,44 @@
 
   definePageMeta({ roles: [Role.ADMIN, Role.MANAGER] })
 
-  const { sendInvitation, cancelInvitation, resendInvitation, getInvitations, canManageInvitations } =
-    useInvitationApi()
+  const route = useRoute()
+  const { sendInvitation, cancelInvitation, resendInvitation, getInvitations } = useInvitationApi()
 
-  // Pagination et filtres
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const searchQuery = ref('')
-  const statusFilter = ref<'pending' | 'used' | 'expired' | undefined>(undefined)
+  // Pagination et filtres depuis l'URL
+  const page = computed(() => Number(route.query.page) || 1)
+  const limit = computed(() => Number(route.query.limit) || 10)
+  const search = computed(() => route.query.search?.toString())
+  const statusFilter = computed(() => route.query.status as 'pending' | 'used' | 'expired' | undefined)
 
-  // Query avec pagination et filtres - utilisation de computed pour la réactivité
+  // Query avec pagination et filtres
   const queryParams = computed(() => ({
-    page: currentPage.value,
-    limit: pageSize.value,
-    search: searchQuery.value || undefined,
+    page: page.value,
+    limit: limit.value,
+    search: search.value || undefined,
     status: statusFilter.value,
   }))
 
-  const { data: invitationsData, error, refetch } = getInvitations(queryParams)
+  const { data: invitationsData, error, refetch, isPending } = getInvitations(queryParams)
 
   const invitations = computed(() => invitationsData.value?.data || [])
+
+  const paginationMeta = computed(() => {
+    const pagination = invitationsData.value?.pagination
+    if (!pagination) return undefined
+
+    // Ensure all required fields are present
+    if (!pagination.total || !pagination.page || !pagination.limit || !pagination.totalPages) {
+      return undefined
+    }
+
+    return {
+      total: pagination.total,
+      page: pagination.page,
+      limit: pagination.limit,
+      pageCount: pagination.totalPages,
+    }
+  })
+
   const openInviteDialog = ref(false)
 
   watch(error, (value) => {
@@ -79,12 +97,26 @@
     }
   }
 
-  // Vérification des permissions
-  if (!canManageInvitations.value) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Accès non autorisé - Rôle administrateur requis',
-    })
+  const handlePageChange = (newPage: number) => {
+    const query: Record<string, string | number> = {
+      page: newPage,
+      limit: limit.value,
+    }
+    if (search.value) query.search = search.value
+    if (statusFilter.value) query.status = statusFilter.value
+
+    navigateTo({ path: '/invitations', query })
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    const query: Record<string, string | number> = {
+      page: 1,
+      limit: newLimit,
+    }
+    if (search.value) query.search = search.value
+    if (statusFilter.value) query.status = statusFilter.value
+
+    navigateTo({ path: '/invitations', query })
   }
 </script>
 
@@ -101,9 +133,13 @@
   </PageHeader>
   <InvitationTable
     :data="invitations"
+    :loading="isPending"
+    :server-pagination="paginationMeta"
     @invite="openInviteDialog = true"
     @row-resend="handleResendInvitation"
     @row-delete="handleDeleteInvitation"
+    @page-change="handlePageChange"
+    @limit-change="handleLimitChange"
   />
   <InvitationDialog v-model="openInviteDialog" @submit="handleSubmitInvite" />
 </template>

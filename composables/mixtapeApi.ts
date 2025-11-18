@@ -1,9 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { API_ENDPOINTS, type PaginatedResponse } from '~/types/api-config'
+import type { operations } from '~/types/api/globals.types'
 import type { CreateMixtapeDto, Mixtape, MixtapesQueryDto, UpdateMixtapeDto } from '~/types/api/mixtapes.types'
 import { HttpMethod, useApi } from './api'
 import { buildEndpoint, createErrorHandler, getListQueryConfig } from './apiHelpers'
 import { queryKeys } from './query-keys'
+
+// Type pour la réponse de getAvailableYears
+type GetAvailableYearsResponse =
+  operations['MixtapesController_getAvailableYears']['responses'][200]['content']['application/json']
 
 /**
  * Composable pour gérer les Mixtapes via l'API
@@ -45,6 +50,21 @@ export const useMixtapeApi = () => {
         })
       },
       enabled: computed(() => !!unref(mixtapeId)),
+    })
+
+  /**
+   * Récupérer toutes les années disponibles
+   */
+  const getAvailableYears = () =>
+    useQuery({
+      queryKey: ['mixtapes', 'years'] as const,
+      queryFn: async () => {
+        return call<GetAvailableYearsResponse>(API_ENDPOINTS.MIXTAPES.YEARS, {
+          method: HttpMethod.GET,
+          requireAuth: true,
+        })
+      },
+      ...getListQueryConfig(),
     })
 
   // ========================================
@@ -115,6 +135,7 @@ export const useMixtapeApi = () => {
     // Queries
     getMixtapes,
     getMixtape,
+    getAvailableYears,
 
     // Mutations
     createMixtape,

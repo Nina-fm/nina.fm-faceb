@@ -2,16 +2,20 @@
   import { LoaderCircleIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
+  definePageMeta({ roles: [Role.DJ, Role.MANAGER, Role.ADMIN] })
 
   const route = useRoute()
-  const { getMixtapes, deleteMixtape } = useMixtapeApi()
+  const { getMixtapes, deleteMixtape, getAvailableYears } = useMixtapeApi()
   const { getDjs } = useDjApi()
   const { getTags } = useTagApi()
 
-  // Load all DJs and Tags for filter options
-  const { data: djsData } = getDjs()
-  const { data: tagsData } = getTags()
+  // Récupérer toutes les années disponibles pour le filtre
+  const { data: yearsData } = getAvailableYears()
+  const allYears = computed(() => yearsData.value?.data || [])
+
+  // Récupérer tous les DJs et Tags pour les filtres
+  const { data: djsData } = getDjs({ limit: 1000 })
+  const { data: tagsData } = getTags({ limit: 1000 })
 
   const allDjs = computed(() => djsData.value?.data || [])
   const allTags = computed(() => tagsData.value?.data || [])
@@ -263,6 +267,7 @@
     :data="mixtapes"
     :all-djs="allDjs"
     :all-tags="allTags"
+    :all-years="allYears"
     :has-active-filters="hasActiveFilters"
     :search-value="route.query.name?.toString()"
     :active-filters="activeFilters"

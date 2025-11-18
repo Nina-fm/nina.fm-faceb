@@ -24,6 +24,7 @@
       data?: Mixtape[]
       allDjs?: Dj[]
       allTags?: Tag[]
+      allYears?: number[]
       hasActiveFilters?: boolean
       searchValue?: string | number
       loading?: boolean
@@ -42,6 +43,7 @@
       data: () => [],
       allDjs: () => [],
       allTags: () => [],
+      allYears: () => [],
       hasActiveFilters: false,
       searchValue: undefined,
       loading: false,
@@ -76,6 +78,14 @@
   })
 
   const yearsFilterOptions = computed(() => {
+    // Use years from props (fetched from API)
+    if (props.allYears && props.allYears.length > 0) {
+      return props.allYears.map((year) => ({
+        label: String(year),
+        value: String(year),
+      }))
+    }
+    // Fallback to local data if API data not available
     const years = props.data.map((m) => m.year).filter((y) => y)
     const uniqueYears = Array.from(new Set(years)).sort((a, b) => b - a)
     return uniqueYears.map((year) => ({

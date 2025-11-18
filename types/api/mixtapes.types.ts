@@ -28,6 +28,26 @@ export interface MixtapesPaths {
     patch?: never
     trace?: never
   }
+  '/mixtapes/years': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all available years
+     * @description Retrieve a list of all unique years from existing mixtapes, sorted in descending order.
+     */
+    get: operations['MixtapesController_getAvailableYears']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/mixtapes/{id}': {
     parameters: {
       query?: never
@@ -190,6 +210,7 @@ export interface MixtapesPaths {
 export type MixtapesOperations =
   | 'MixtapesController_findAll'
   | 'MixtapesController_create'
+  | 'MixtapesController_getAvailableYears'
   | 'MixtapesController_findOne'
   | 'MixtapesController_remove'
   | 'MixtapesController_update'
@@ -204,20 +225,22 @@ export type MixtapesOperations =
 
 // ===== TYPES =====
 
-export type Mixtape = components['schemas']['Mixtape']
-export type DjWithMixtapesCount = components['schemas']['DjWithMixtapesCount']
+export type MixtapeMetadataDto = components['schemas']['MixtapeMetadataDto']
 export type MixtapesQueryDto = components['schemas']['MixtapesQueryDto']
+export type Mixtape = components['schemas']['Mixtape']
 export type MixtapesListResponseDto = components['schemas']['MixtapesListResponseDto']
 export type MixtapeResponseDto = components['schemas']['MixtapeResponseDto']
 export type CreateMixtapeDto = components['schemas']['CreateMixtapeDto']
 export type UpdateMixtapeDto = components['schemas']['UpdateMixtapeDto']
 export type AddTagsToMixtapeDto = components['schemas']['AddTagsToMixtapeDto']
 export type AddDjsToMixtapeDto = components['schemas']['AddDjsToMixtapeDto']
+export type DjWithMixtapesCount = components['schemas']['DjWithMixtapesCount']
 
 // ===== ENDPOINTS =====
 
 export const MIXTAPES_ENDPOINTS = {
   BASE: '/mixtapes',
+  YEARS: '/mixtapes/years',
   BY_ID: (id: string) => `/mixtapes/${id}`,
   COVER: (id: string, imageId: string) => `/mixtapes/${id}/cover/${imageId}`,
   COVER_DETAIL: (id: string) => `/mixtapes/${id}/cover`,

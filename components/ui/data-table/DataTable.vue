@@ -129,12 +129,16 @@
       ? {
           manualPagination: true, // La pagination est gérée côté serveur
           pageCount: props.serverPagination.pageCount,
+          // Ne pas utiliser de row models côté client en pagination serveur
+          // Le tri et le filtrage se font côté serveur
         }
-      : { getPaginationRowModel: getPaginationRowModel() }),
-    getSortedRowModel: getSortedRowModel(),
+      : {
+          getPaginationRowModel: getPaginationRowModel(),
+          getSortedRowModel: getSortedRowModel(),
+          getFilteredRowModel: getFilteredRowModel(),
+        }),
     onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
     onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       get sorting() {
         return sorting.value
@@ -142,15 +146,17 @@
       get columnFilters() {
         return columnFilters.value
       },
-      // IMPORTANT: Pour manualPagination, il faut fournir l'état de pagination
-      ...(props.serverPagination
-        ? {
-            pagination: {
-              pageIndex: (props.serverPagination.page || 1) - 1, // TanStack Table utilise 0-based index
-              pageSize: props.serverPagination.limit || 10,
-            },
+      // IMPORTANT: Pour manualPagination, il faut toujours fournir l'état de pagination
+      get pagination() {
+        if (props.serverPagination) {
+          return {
+            pageIndex: (props.serverPagination.page || 1) - 1, // TanStack Table utilise 0-based index
+            pageSize: props.serverPagination.limit || 10,
           }
-        : {}),
+        }
+        // Fallback pour pagination locale
+        return undefined
+      },
     },
   })
 

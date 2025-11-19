@@ -108,9 +108,10 @@
         await updateUser.mutateAsync({ userId: userData.value.id, payload: userPayload })
       }
 
-      // Refresh user data
-      window.location.reload()
       toast.success('Profil modifié avec succès.')
+
+      // Rediriger vers la page de profil au lieu de recharger
+      await navigateTo('/profile')
     } catch (error) {
       console.error('Error editing user:', error)
       toast.error('Erreur lors de la modification du profil.')

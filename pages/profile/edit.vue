@@ -51,6 +51,9 @@
     ],
   })
 
+  // Référence au composant UserForm pour pouvoir reset le formulaire
+  const userFormRef = ref<{ resetForm?: () => void }>()
+
   const handleCancel = async () => {
     await navigateTo('/profile')
   }
@@ -110,7 +113,13 @@
 
       toast.success('Profil modifié avec succès.')
 
-      // Rediriger vers la page de profil au lieu de recharger
+      // Reset le formulaire pour éviter l'alerte de navigation
+      // TanStack Query va automatiquement refetch les données
+      if (userFormRef.value?.resetForm) {
+        userFormRef.value.resetForm()
+      }
+
+      // Rediriger vers la page de profil
       await navigateTo('/profile')
     } catch (error) {
       console.error('Error editing user:', error)
@@ -129,6 +138,7 @@
   </PageHeader>
   <UserForm
     v-if="userData"
+    ref="userFormRef"
     :user="userData"
     teleport-to="page-header-actions"
     :can-edit-roles="false"

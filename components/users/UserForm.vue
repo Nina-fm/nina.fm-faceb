@@ -103,6 +103,11 @@
   const handleSubmit = form.handleSubmit((values: Data) => {
     emit('submit', values)
   })
+
+  // Exposer resetForm pour pouvoir l'appeler depuis le parent
+  defineExpose({
+    resetForm: () => form.resetForm(),
+  })
 </script>
 
 <template>

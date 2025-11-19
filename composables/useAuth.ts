@@ -19,7 +19,8 @@ export const useAuth = () => {
   // Fetch user from API (client-side only)
   const fetchUser = async () => {
     try {
-      const response = await $fetch<{ user: User; expiresAt: number }>('/api/auth/profile', {
+      const config = useRuntimeConfig()
+      const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/profile`, {
         credentials: 'include',
       })
       user.value = response.user

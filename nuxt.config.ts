@@ -58,7 +58,8 @@ export default defineNuxtConfig({
       '/api': {
         target: process.env.API_DEV_TARGET || 'http://localhost:4000',
         changeOrigin: true,
-        prependPath: true,
+        // Retirer /api du path avant de proxy vers l'API
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

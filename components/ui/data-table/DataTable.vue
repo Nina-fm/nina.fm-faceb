@@ -41,6 +41,7 @@
 
   const emits = defineEmits<{
     (e: 'clearSearch'): void
+    (e: 'searchChange', value: string): void
     (e: 'rowClick', id: string | number): void
     (e: 'filterChange', filters: ColumnFiltersState): void
     (e: 'pageChange' | 'limitChange', value: number): void
@@ -86,6 +87,7 @@
   const columnFilters = ref<ColumnFiltersState>([])
   const searchText = ref<string | number>('')
   const isInitializing = ref(true)
+  let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null
 
   // Émettre les changements de filtres vers le parent (sauf pendant l'initialisation)
   watch(
@@ -176,13 +178,32 @@
 
   const handleSearchUpdateModelValue = (value: string | number) => {
     searchText.value = value
-    table.setGlobalFilter(value)
+
+    // Clear previous timeout
+    if (searchDebounceTimeout) clearTimeout(searchDebounceTimeout)
+
+    // Si pagination serveur, émettre l'événement après debounce
+    if (props.serverPagination) {
+      searchDebounceTimeout = setTimeout(() => {
+        emits('searchChange', String(value))
+      }, 500)
+    } else {
+      // Sinon, filtrage local classique (pas de debounce nécessaire)
+      table.setGlobalFilter(value)
+    }
   }
 
   const handleSearchClear = () => {
     searchText.value = ''
-    table.setGlobalFilter('')
-    emits('clearSearch')
+
+    if (props.serverPagination) {
+      // Pour la recherche serveur, émettre clearSearch au lieu de searchChange avec valeur vide
+      emits('clearSearch')
+    } else {
+      // Filtrage local
+      table.setGlobalFilter('')
+      emits('clearSearch')
+    }
   }
 
   const handleRemoveFilter = (id: string, value: unknown) => {

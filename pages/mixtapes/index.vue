@@ -142,6 +142,36 @@
     return navigateTo('/mixtapes')
   }
 
+  const handleSearchChange = (search: string) => {
+    const query: Record<string, string | string[]> = {
+      page: '1', // Reset to page 1 on search
+      limit: String(route.query.limit || 10),
+    }
+
+    // Add search to query if not empty
+    if (search && search.trim()) {
+      query.name = search.trim()
+    }
+
+    // Keep filters
+    const djs = normalizeQueryParam(route.query.djs)
+    if (djs.length > 0) {
+      query.djs = djs
+    }
+
+    const tags = normalizeQueryParam(route.query.tags)
+    if (tags.length > 0) {
+      query.tags = tags
+    }
+
+    const years = normalizeQueryParam(route.query.year)
+    if (years.length > 0) {
+      query.year = years
+    }
+
+    navigateTo({ path: '/mixtapes', query })
+  }
+
   // Debounce filter changes to avoid multiple rapid navigations
   let filterTimeout: ReturnType<typeof setTimeout> | null = null
   const handleFiltersChange = (filters: Record<string, string[]>) => {
@@ -275,6 +305,7 @@
     :sibling-count="2"
     :loading="pending"
     @clear-search="handleClearSearch"
+    @search-change="handleSearchChange"
     @filters-change="handleFiltersChange"
     @page-change="handlePageChange"
     @limit-change="handleLimitChange"

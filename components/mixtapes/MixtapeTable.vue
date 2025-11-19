@@ -56,6 +56,7 @@
 
   const emit = defineEmits<{
     clearSearch: []
+    searchChange: [search: string]
     rowShow: [id: string]
     rowEdit: [id: string]
     rowDelete: [id: string]
@@ -326,6 +327,7 @@
       background
       @row-click="handleRowShow"
       @clear-search="handleClearSearch"
+      @search-change="(search) => emit('searchChange', search)"
       @filter-change="handleFiltersChange"
       @page-change="(page) => emit('pageChange', page)"
       @limit-change="(limit) => emit('limitChange', limit)"

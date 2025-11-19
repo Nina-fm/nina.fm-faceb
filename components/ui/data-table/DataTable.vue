@@ -323,9 +323,9 @@
             </TableCell>
           </TableRow>
         </template>
-        <template v-else-if="table.getRowModel().rows?.length">
+        <template v-else-if="table.getCoreRowModel().rows?.length">
           <TableRow
-            v-for="row in table.getRowModel().rows"
+            v-for="row in table.getCoreRowModel().rows"
             :key="row.id"
             :data-state="row.getIsSelected() ? 'selected' : undefined"
             :class="

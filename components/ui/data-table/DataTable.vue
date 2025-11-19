@@ -122,8 +122,13 @@
       return columns.value
     },
     getCoreRowModel: getCoreRowModel(),
-    // Désactiver la pagination client si on utilise la pagination serveur
-    ...(props.serverPagination ? {} : { getPaginationRowModel: getPaginationRowModel() }),
+    // Configuration de la pagination
+    ...(props.serverPagination
+      ? {
+          manualPagination: true, // La pagination est gérée côté serveur
+          pageCount: props.serverPagination.pageCount,
+        }
+      : { getPaginationRowModel: getPaginationRowModel() }),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
     onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),

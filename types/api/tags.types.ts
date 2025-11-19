@@ -91,8 +91,10 @@ export type TagsOperations =
 
 export type Tag = components['schemas']['Tag']
 export type TagsQueryDto = components['schemas']['TagsQueryDto']
+export type CreateTagDto = components['schemas']['CreateTagDto']
 export type TagsListResponseDto = components['schemas']['TagsListResponseDto']
 export type TagResponseDto = components['schemas']['TagResponseDto']
+export type UpdateTagDto = components['schemas']['UpdateTagDto']
 
 // ===== ENDPOINTS =====
 

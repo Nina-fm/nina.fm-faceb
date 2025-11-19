@@ -1504,10 +1504,10 @@ export interface components {
        */
       description?: string
       /**
-       * @description Avatar image ID (optional, null to remove avatar)
+       * @description Avatar image ID (optional, null or empty string to remove avatar)
        * @example 456e4567-e89b-12d3-a456-426614174001
        */
-      avatarId?: string
+      avatarId?: Record<string, never>
     }
     AudioFile: {
       /** @description File unique identifier */
@@ -2291,8 +2291,20 @@ export interface components {
       /** @description The DJ data */
       data: components['schemas']['Dj']
     }
-    CreateDjDto: Record<string, never>
-    UpdateDjDto: Record<string, never>
+    CreateDjDto: {
+      /**
+       * @description DJ name
+       * @example DJ Shadow
+       */
+      name: string
+    }
+    UpdateDjDto: {
+      /**
+       * @description DJ name
+       * @example DJ Shadow
+       */
+      name?: string
+    }
     SessionTrack: {
       /** @description Track unique identifier */
       id: string
@@ -2462,7 +2474,18 @@ export interface components {
        */
       hasUsage?: boolean
     }
-    CreateTagDto: Record<string, never>
+    CreateTagDto: {
+      /**
+       * @description Tag name
+       * @example Electronic
+       */
+      name: string
+      /**
+       * @description Tag color (hex format)
+       * @example #3B82F6
+       */
+      color?: string
+    }
     TagsListResponseDto: {
       /** @description Pagination metadata */
       pagination: {
@@ -2484,7 +2507,18 @@ export interface components {
       /** @description The tag data */
       data: components['schemas']['Tag']
     }
-    UpdateTagDto: Record<string, never>
+    UpdateTagDto: {
+      /**
+       * @description Tag name
+       * @example Electronic
+       */
+      name?: string
+      /**
+       * @description Tag color (hex format)
+       * @example #3B82F6
+       */
+      color?: string
+    }
     BaseQueryDto: {
       /**
        * @description Numéro de page (commence à 1)

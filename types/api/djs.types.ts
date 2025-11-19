@@ -93,6 +93,8 @@ export type Dj = components['schemas']['Dj']
 export type DjsQueryDto = components['schemas']['DjsQueryDto']
 export type DjsListResponseDto = components['schemas']['DjsListResponseDto']
 export type DjResponseDto = components['schemas']['DjResponseDto']
+export type CreateDjDto = components['schemas']['CreateDjDto']
+export type UpdateDjDto = components['schemas']['UpdateDjDto']
 
 // ===== ENDPOINTS =====
 

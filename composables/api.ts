@@ -28,7 +28,10 @@ export interface ApiError extends Error {
  */
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const { refreshToken } = useTokenRefresh()
+
+  // IMPORTANT: useTokenRefresh ne doit être appelé que côté client
+  // car il utilise navigateTo et autres composables client-only
+  const { refreshToken } = import.meta.client ? useTokenRefresh() : { refreshToken: async () => false }
 
   const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
 

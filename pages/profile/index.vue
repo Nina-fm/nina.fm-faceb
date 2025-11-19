@@ -3,7 +3,7 @@
   import { PencilIcon, XIcon } from 'lucide-vue-next'
   import type { User } from '~/types/api/users.types'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const { user } = useAuth()
   const { checkRole } = usePermissions()

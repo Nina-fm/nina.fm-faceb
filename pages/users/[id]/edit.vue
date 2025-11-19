@@ -3,7 +3,7 @@
   import { XIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER] })
 
   const { params } = useRoute()
   const id = params.id as string

@@ -2,7 +2,7 @@
   import { LoaderCircleIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
   import { toast } from 'vue-sonner'
 
-  definePageMeta({ roles: [Role.DJ, Role.MANAGER, Role.ADMIN] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const route = useRoute()
   const { getMixtapes, deleteMixtape, getAvailableYears } = useMixtapeApi()

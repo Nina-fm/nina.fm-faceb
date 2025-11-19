@@ -3,7 +3,7 @@
   import { toast } from 'vue-sonner'
   import { Role } from '~/utils/roles'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const { params } = useRoute()
   const id = params.id as string

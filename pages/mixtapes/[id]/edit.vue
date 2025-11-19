@@ -6,7 +6,9 @@
   import { Role } from '~/utils/roles'
   import { parseTracks, serializeTracks } from '~/utils/tracks'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR] })
+  definePageMeta({
+    requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR],
+  })
 
   const route = useRoute()
   const id = route.params.id as string

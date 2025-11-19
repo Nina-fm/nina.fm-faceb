@@ -3,7 +3,7 @@
   import { toast } from 'vue-sonner'
   import { Role } from '~/utils/roles'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR] })
 
   const { createTag } = useTagApi()
   const formRef = ref()

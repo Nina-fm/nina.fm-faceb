@@ -2,16 +2,11 @@
   import type { NuxtError } from '#app'
   import { HomeIcon } from 'lucide-vue-next'
 
-  defineOptions({
-    layout: 'default',
-  })
-
   const props = defineProps({
     error: Object as () => NuxtError,
   })
 
   const statusCode = computed(() => props.error?.statusCode || 500)
-  const statusMessage = computed(() => props.error?.statusMessage || 'Erreur')
 
   const errorConfig = computed(() => {
     switch (statusCode.value) {
@@ -46,11 +41,14 @@
     }
   })
 
-  const handleClearError = () => clearError({ redirect: errorConfig.value.redirect })
+  const handleClearError = () => {
+    // Force un rechargement complet pour éviter les boucles
+    window.location.href = errorConfig.value.redirect
+  }
 </script>
 
 <template>
-  <div class="flex min-h-[60vh] flex-col items-center justify-center px-4 py-16">
+  <div class="flex min-h-screen flex-col items-center justify-center px-4 py-16">
     <div class="text-primary mb-8 text-9xl font-bold opacity-20">
       {{ statusCode }}
     </div>
@@ -65,7 +63,7 @@
       <p class="text-muted-foreground font-mono text-sm">{{ error.message }}</p>
     </div>
 
-    <Button @click="handleClearError" size="lg">
+    <Button size="lg" @click="handleClearError">
       <HomeIcon class="mr-2 size-4" />
       {{ errorConfig.buttonText }}
     </Button>

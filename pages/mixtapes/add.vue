@@ -6,7 +6,7 @@
   import { Role } from '~/utils/roles'
   import { serializeTracks } from '~/utils/tracks'
 
-  definePageMeta({ roles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR] })
+  definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR] })
 
   const { createMixtape } = useMixtapeApi()
   const { uploadImage } = useImageApi()

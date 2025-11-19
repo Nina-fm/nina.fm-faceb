@@ -19,7 +19,7 @@ export const usePermissions = () => {
   const canManageDJs = computed(() => isAdmin.value || isManager.value)
   const canManageTags = computed(() => isAdmin.value || isManager.value)
   const canUploadImages = computed(() => isAdmin.value || isManager.value || isContributor.value)
-  const canViewBackoffice = computed(() => isAdmin.value || isManager.value || isContributor.value)
+  const canViewBackoffice = computed(() => isAdmin.value || isManager.value || isContributor.value || isViewer.value)
 
   // Permissions de création (incluent CONTRIBUTOR)
   const canCreateMixtape = computed(() => isAdmin.value || isManager.value || isContributor.value)

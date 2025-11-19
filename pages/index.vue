@@ -11,8 +11,18 @@
   onMounted(() => {
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href)
-      if (url.searchParams.get('error') === 'invitation_required') {
+      const error = url.searchParams.get('error')
+
+      if (error === 'invitation_required') {
         toast.error("Lien d'invitation requis pour accéder à l'inscription.")
+      } else if (error === 'forbidden') {
+        toast.error('Accès refusé', {
+          description: "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+        })
+      }
+
+      // Nettoyer l'URL
+      if (error) {
         url.searchParams.delete('error')
         window.history.replaceState({}, '', url.pathname + url.search)
       }

@@ -12,6 +12,11 @@ export default defineNuxtPlugin({
     islands: false, // Client-side only
   },
   async setup() {
+    // Double protection: ne JAMAIS s'exécuter côté serveur
+    if (import.meta.server) {
+      return
+    }
+
     const { fetchUser } = useAuth()
     const { startRefreshTimer } = useTokenRefresh()
     const route = useRoute()

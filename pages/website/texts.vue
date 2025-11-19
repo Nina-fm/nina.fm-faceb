@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   definePageMeta({
-    roles: [Role.ADMIN, Role.MANAGER],
+    requiresRoles: [Role.ADMIN, Role.MANAGER],
     breadcrumb: {
       label: 'Textes',
     },

@@ -58,8 +58,7 @@ export default defineNuxtConfig({
       '/api': {
         target: process.env.API_DEV_TARGET || 'http://localhost:4000',
         changeOrigin: true,
-        // Retirer /api du path avant de proxy vers l'API
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        prependPath: false,
       },
     },
   },
@@ -69,7 +68,7 @@ export default defineNuxtConfig({
     shim: false,
   },
 
-  // Disable SSR for auth-related pages to avoid flash
+  // Disable SSR for auth pages to avoid redirects flash
   routeRules: {
     '/': { ssr: false },
     '/login': { ssr: false },

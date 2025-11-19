@@ -5,7 +5,7 @@
 
   definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
-  const { user: currentUser } = useAuth()
+  const { user: currentUser, fetchUser } = useAuth()
   const currentUserId = computed(() => currentUser.value?.id || '')
   const { isViewer, isAdmin } = usePermissions()
   const { getUser, updateUser, updateUserProfile } = useUserApi()
@@ -112,6 +112,9 @@
       }
 
       toast.success('Profil modifié avec succès.')
+
+      // Rafraîchir le user dans useAuth pour mettre à jour le menu
+      await fetchUser()
 
       // Reset le formulaire pour éviter l'alerte de navigation
       // TanStack Query va automatiquement refetch les données

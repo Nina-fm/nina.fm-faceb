@@ -139,8 +139,6 @@
     const centerButtons = siblings * 2 + 1 // Nombre total de boutons au centre (current ± siblings)
     const minPagesForEllipsis = centerButtons + 2 // Minimum de pages pour afficher des ellipses
 
-    console.log('📄 pageNumbers computed:', { current, total, siblings })
-
     const pages: (number | 'ellipsis-start' | 'ellipsis-end')[] = []
 
     if (total <= minPagesForEllipsis) {
@@ -148,7 +146,6 @@
       for (let i = 1; i <= total; i++) {
         pages.push(i)
       }
-      console.log('📄 Total <= minPagesForEllipsis, returning:', pages)
       return pages
     }
 
@@ -163,7 +160,6 @@
       }
       pages.push('ellipsis-end')
       pages.push(total)
-      console.log('📄 Near start, returning:', pages)
       return pages
     }
 
@@ -175,7 +171,6 @@
         pages.push(i)
       }
       pages.push(total)
-      console.log('📄 Near end, returning:', pages)
       return pages
     }
 
@@ -187,7 +182,6 @@
     pages.push('ellipsis-end')
     pages.push(total)
 
-    console.log('📄 Middle, returning:', pages)
     return pages
   })
 </script>

@@ -175,7 +175,6 @@
   // Debounce filter changes to avoid multiple rapid navigations
   let filterTimeout: ReturnType<typeof setTimeout> | null = null
   const handleFiltersChange = (filters: Record<string, string[]>) => {
-    console.log('🟢 handleFiltersChange called with:', filters)
     if (filterTimeout) clearTimeout(filterTimeout)
 
     filterTimeout = setTimeout(() => {
@@ -197,7 +196,6 @@
         }
       })
 
-      console.log('🟢 handleFiltersChange navigating with query:', JSON.stringify(query))
       navigateTo({ path: '/mixtapes', query })
     }, 300) // 300ms debounce
   }
@@ -212,9 +210,6 @@
   }
 
   const handlePageChange = (page: number) => {
-    console.log('🔵 handlePageChange called with:', page)
-    console.log('🔵 Current route.query:', JSON.stringify(route.query))
-
     const query: Record<string, string | string[]> = {
       page: String(page),
       limit: String(route.query.limit || 10),
@@ -241,7 +236,6 @@
       query.year = years
     }
 
-    console.log('🔵 Navigating with query:', JSON.stringify(query))
     navigateTo({ path: '/mixtapes', query })
   }
 

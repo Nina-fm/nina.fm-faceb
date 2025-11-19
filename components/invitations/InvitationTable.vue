@@ -78,9 +78,6 @@
     },
     {
       accessorFn: (row) => {
-        if (typeof window !== 'undefined') {
-          console.log('Invitation row (invitedBy):', row)
-        }
         return row.invitedBy
       },
       id: 'invitedBy',
@@ -94,10 +91,6 @@
     },
     {
       accessorFn: (row) => {
-        // DEBUG: log structure de la ligne
-        if (typeof window !== 'undefined') {
-          console.log('Invitation row:', row)
-        }
         return row.createdAt
       },
       id: 'createdAt',

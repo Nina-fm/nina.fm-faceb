@@ -142,6 +142,15 @@
       get columnFilters() {
         return columnFilters.value
       },
+      // IMPORTANT: Pour manualPagination, il faut fournir l'état de pagination
+      ...(props.serverPagination
+        ? {
+            pagination: {
+              pageIndex: (props.serverPagination.page || 1) - 1, // TanStack Table utilise 0-based index
+              pageSize: props.serverPagination.limit || 10,
+            },
+          }
+        : {}),
     },
   })
 

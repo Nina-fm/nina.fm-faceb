@@ -1,9 +1,6 @@
 <script lang="ts" setup generic="TData">
   import type { Table } from '@tanstack/vue-table'
-  import { FunnelIcon } from 'lucide-vue-next'
-  import type { DropdownMenuCheckboxItemProps } from 'reka-ui'
-
-  type Checked = DropdownMenuCheckboxItemProps['modelValue']
+  import { Check, ChevronsUpDown, FunnelIcon } from 'lucide-vue-next'
 
   interface DataTableFilterProps {
     table: Table<TData & { id: string | number }>
@@ -16,39 +13,68 @@
   }
   const props = defineProps<DataTableFilterProps>()
 
-  const isActive = computed(() => {
-    const column = props.table.getColumn(props.id)
-    if (!column) return false
-    const filterValue = column.getFilterValue() as Checked
-    return filterValue !== undefined && filterValue !== null
+  const open = ref(false)
+
+  const filterValue = computed(() => props.table.getColumn(props.id)?.getFilterValue() as string | number | undefined)
+
+  const isActive = computed(() => filterValue.value !== undefined && filterValue.value !== null)
+
+  const selectedLabel = computed(() => {
+    if (!filterValue.value) return props.label
+    return props.options.find((opt) => opt.value === filterValue.value)?.label ?? props.label
   })
+
+  const handleSelect = (value: string | number) => {
+    const column = props.table.getColumn(props.id)
+    if (column) {
+      if (filterValue.value === value) {
+        column.setFilterValue(undefined)
+      } else {
+        column.setFilterValue(value)
+      }
+    }
+    open.value = false
+  }
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger as-child>
+  <Popover v-model:open="open">
+    <PopoverTrigger as-child>
       <Button
         variant="outline"
         size="sm"
+        role="combobox"
+        :aria-expanded="open"
         :class="
-          cn('data-[state=open]:bg-accent text-muted-foreground', {
+          cn('text-muted-foreground justify-between', {
             'text-accent-foreground': isActive,
           })
         "
       >
-        <span>{{ label }}</span>
-        <FunnelIcon class="ml-2 h-4 w-4" />
+        <FunnelIcon class="mr-1 size-3" />
+        <span class="truncate">{{ selectedLabel }}</span>
+        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56">
-      <DropdownMenuCheckboxItem
-        v-for="option in options"
-        :key="option.value"
-        :model-value="(table.getColumn(id)?.getFilterValue() as Checked) === option.value"
-        @update:model-value="table.getColumn(id)?.setFilterValue(option.value)"
-      >
-        {{ option.label }}
-      </DropdownMenuCheckboxItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
+    </PopoverTrigger>
+    <PopoverContent class="w-56 p-0">
+      <Command>
+        <CommandInput :placeholder="`Rechercher ${label.toLowerCase()}...`" />
+        <CommandList>
+          <CommandEmpty>Aucun résultat.</CommandEmpty>
+          <CommandGroup>
+            <CommandItem
+              v-for="option in options"
+              :key="option.value"
+              :value="String(option.value)"
+              :keywords="[option.label]"
+              @select="handleSelect(option.value!)"
+            >
+              <Check :class="cn('mr-2 h-4 w-4', filterValue === option.value ? 'opacity-100' : 'opacity-0')" />
+              {{ option.label }}
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </PopoverContent>
+  </Popover>
 </template>

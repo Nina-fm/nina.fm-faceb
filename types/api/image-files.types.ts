@@ -15,7 +15,7 @@ export interface ImageFilesPaths {
     put?: never
     /**
      * Upload an image file
-     * @description Upload an image file with automatic processing and thumbnail generation.
+     * @description Upload an image file with automatic processing and thumbnail generation. Users can upload images for their own use (avatars, etc.).
      */
     post: operations['ImageFilesController_upload']
     delete?: never

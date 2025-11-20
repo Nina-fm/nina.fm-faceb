@@ -37,7 +37,7 @@ export interface UsersPaths {
     }
     /**
      * Get user by ID
-     * @description Retrieve a specific user by their ID. Users can only access their own profile unless they have admin privileges.
+     * @description Retrieve a specific user by their ID. Users with READ_ALL_USERS permission (ADMIN, MANAGER) can access any user. Others can only access their own profile.
      */
     get: operations['UsersController_findOne']
     put?: never

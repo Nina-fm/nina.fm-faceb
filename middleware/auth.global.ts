@@ -14,20 +14,10 @@ export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized, _fr
     return
   }
 
-  // Côté serveur : vérifier uniquement si requiresRoles est défini
+  // Côté serveur : ne pas bloquer, juste retourner
+  // Le SSR va s'exécuter normalement, mais le plugin client va charger l'auth
+  // et le middleware client fera les vérifications de permissions
   if (import.meta.server) {
-    const requiredRoles = to.meta.requiresRoles as string[] | undefined
-
-    // Si la route nécessite des rôles spécifiques, bloquer le rendu SSR
-    if (requiredRoles && requiredRoles.length > 0) {
-      // Rediriger vers une page d'erreur pour éviter le flash
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Accès refusé',
-        message: "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
-        fatal: false,
-      })
-    }
     return
   }
 

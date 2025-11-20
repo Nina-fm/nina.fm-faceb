@@ -154,7 +154,7 @@ export interface paths {
     }
     /**
      * Get user by ID
-     * @description Retrieve a specific user by their ID. Users can only access their own profile unless they have admin privileges.
+     * @description Retrieve a specific user by their ID. Users with READ_ALL_USERS permission (ADMIN, MANAGER) can access any user. Others can only access their own profile.
      */
     get: operations['UsersController_findOne']
     put?: never
@@ -312,7 +312,7 @@ export interface paths {
     put?: never
     /**
      * Upload an image file
-     * @description Upload an image file with automatic processing and thumbnail generation.
+     * @description Upload an image file with automatic processing and thumbnail generation. Users can upload images for their own use (avatars, etc.).
      */
     post: operations['ImageFilesController_upload']
     delete?: never
@@ -1270,6 +1270,11 @@ export interface components {
       id: string
       email: string
       token: string
+      /**
+       * @default VIEWER
+       * @enum {string}
+       */
+      role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
       /** Format: date-time */
       usedAt: string | null
       /** Format: date-time */
@@ -1478,6 +1483,12 @@ export interface components {
        * @example SecurePassword123!
        */
       password: string
+      /**
+       * @description User role
+       * @default VIEWER
+       * @enum {string}
+       */
+      role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
     }
     UpdateUserDto: {
       /**
@@ -1491,6 +1502,12 @@ export interface components {
        * @example SecurePassword123!
        */
       password?: string
+      /**
+       * @description User role
+       * @default VIEWER
+       * @enum {string}
+       */
+      role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
     }
     UpdateUserProfileDto: {
       /**
@@ -1640,6 +1657,13 @@ export interface components {
        * @example Rejoignez-nous sur Nina.fm !
        */
       message?: string
+      /**
+       * @description Rôle qui sera attribué à l'utilisateur lors de la création de son compte
+       * @default VIEWER
+       * @example VIEWER
+       * @enum {string}
+       */
+      role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
     }
     InvitationDto: {
       /** Format: uuid */

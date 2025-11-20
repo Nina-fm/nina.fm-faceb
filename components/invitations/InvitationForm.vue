@@ -1,27 +1,24 @@
 <script lang="ts" setup>
   import { toast } from 'vue-sonner'
-  import * as z from 'zod'
+  import type { InvitationFormData } from './invitation.schema'
+  import { invitationFormSchema, invitationFormSetValues, roleOptions } from './invitation.schema'
 
   const emit = defineEmits<{
-    (e: 'submit', payload: { email: string; message?: string }): void | Promise<void>
+    (e: 'submit', payload: InvitationFormData): void | Promise<void>
   }>()
 
   const { sendInvitation } = useInvitationApi()
 
-  const formSchema = z.object({
-    email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
-    message: z.string().optional().describe('Message'),
-  })
-
   const form = useForm({
-    validationSchema: toTypedSchema(formSchema),
+    validationSchema: toTypedSchema(invitationFormSchema),
+    initialValues: invitationFormSetValues(),
   })
 
-  const handleSubmit = async ({ email, message }: { email: string; message?: string }) => {
+  const handleSubmit = async (values: InvitationFormData) => {
     try {
-      await sendInvitation.mutateAsync({ email, message })
+      await sendInvitation.mutateAsync(values)
       form.resetForm()
-      emit('submit', { email, message })
+      emit('submit', values)
       toast.success('Invitation envoyée !')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -37,16 +34,28 @@
 <template>
   <AutoForm
     class="space-y-6"
-    :schema="formSchema"
+    :schema="invitationFormSchema"
     :form="form"
     :field-config="{
+      email: {
+        label: 'Email',
+      },
       message: {
         component: 'textarea',
         label: 'Message (optionnel)',
       },
+      role: {
+        component: 'select',
+        label: 'Rôle',
+        description: 'Le rôle qui sera attribué automatiquement lors de la création du compte',
+      },
     }"
     @submit="handleSubmit"
   >
+    <template #role="slotProps">
+      <SelectField v-bind="slotProps" name="role" label="Rôle" :options="roleOptions" />
+    </template>
+
     <div class="flex flex-col items-center gap-5">
       <div class="flex gap-2">
         <Button type="submit">Envoyer l'invitation</Button>
@@ -54,5 +63,3 @@
     </div>
   </AutoForm>
 </template>
-
-<style></style>

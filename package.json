@@ -21,7 +21,7 @@
     "format": "prettier --write .",
     "docker:up": "docker-compose up -d",
     "docker:up:dev": "docker-compose -f docker-compose.dev.yml up -d",
-    "types:sync": "./scripts/generate-types.sh"
+    "types:sync": "./scripts/generate-types.sh && eslint --fix ./types"
   },
   "dependencies": {
     "@date-io/luxon": "^3.2.0",

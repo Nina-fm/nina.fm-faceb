@@ -51,8 +51,29 @@
 
   // Utilisateurs non-éditables pour un MANAGER
   // MANAGER ne peut éditer que VIEWER et CONTRIBUTOR (pas ADMIN ni MANAGER)
+  // SAUF lui-même (self-management toujours autorisé)
   const uneditableIds = computed(() => {
-    return users.value.filter((u) => !canEditUser(u.role)).map((u) => u.id)
+    return users.value.filter((u) => u.id !== currentUserId.value && !canEditUser(u.role)).map((u) => u.id)
+  })
+
+  // Utilisateurs non-supprimables pour un MANAGER
+  // MANAGER ne peut supprimer personne (sauf lui-même via son profil)
+  // ADMIN peut supprimer tout le monde sauf lui-même
+  const undeletableIds = computed(() => {
+    const { isAdmin, isManager } = usePermissions()
+
+    if (isAdmin.value) {
+      // ADMIN ne peut pas se supprimer lui-même
+      return currentUserId.value ? [currentUserId.value] : []
+    }
+
+    if (isManager.value) {
+      // MANAGER ne peut supprimer personne
+      return users.value.map((u) => u.id)
+    }
+
+    // Autres rôles: tout le monde est non-supprimable
+    return users.value.map((u) => u.id)
   })
 
   const openInviteDialog = ref(false)
@@ -162,7 +183,7 @@
   </PageHeader>
   <UsersTable
     :data="users"
-    :undeletable-ids="currentUserId ? [currentUserId] : []"
+    :undeletable-ids="undeletableIds"
     :uneditable-ids="uneditableIds"
     :server-pagination="paginationMeta"
     :loading="isPending"

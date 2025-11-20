@@ -1,4 +1,4 @@
-# Dockerfile multi-stage pour Nina.fm Face B v2
+# Dockerfile multi-stage pour Nina.fm Face B
 FROM node:20-alpine AS base
 
 # Enable pnpm

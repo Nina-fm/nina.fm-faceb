@@ -1,7 +1,7 @@
 services:
-  faceb-v2:
-    image: ghcr.io/nina-fm/nina.fm-faceb-v2:mainV2
-    container_name: nina-faceb-v2
+  faceb:
+    image: ghcr.io/nina-fm/nina.fm-faceb:main
+    container_name: nina-faceb
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -9,7 +9,7 @@ services:
       - HOST=0.0.0.0
       - NUXT_PUBLIC_API_URL=${API_URL}
     ports:
-      - "127.0.0.1:${NUXT_PORT:-3003}:3000"
+      - "127.0.0.1:${NUXT_PORT:-3002}:3000"
     networks:
       - nina-network
     healthcheck:

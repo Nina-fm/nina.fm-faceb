@@ -35,8 +35,8 @@ Nina.fm Face B
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/Nina-fm/nina.fm-faceb-v2.git
-cd nina.fm-faceb-v2
+git clone https://github.com/Nina-fm/nina.fm-faceb.git
+cd nina.fm-faceb
 
 # 2. Installer les dépendances
 pnpm install
@@ -226,7 +226,7 @@ Ce projet est sous licence privée - voir le fichier [LICENSE](LICENSE) pour plu
 ## 🆘 Support
 
 - 📧 **Email** : dev@nina.fm
-- 🐛 **Issues** : [GitHub Issues](https://github.com/Nina-fm/nina.fm-faceb-v2/issues)
+- 🐛 **Issues** : [GitHub Issues](https://github.com/Nina-fm/nina.fm-faceb/issues)
 - 📚 **Documentation** : [docs/](docs/)
 
 ---

@@ -1,13 +1,13 @@
-name: Deploy Nina.fm Face B v2
+name: Deploy Nina.fm Face B
 
 on:
   push:
-    branches: [mainV2]
+    branches: [main]
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: nina-fm/nina.fm-faceb-v2
+  IMAGE_NAME: nina-fm/nina.fm-faceb
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -47,7 +47,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -71,9 +71,9 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/mainV2' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
           labels: |
-            org.opencontainers.image.title=Nina.fm Face B v2
+            org.opencontainers.image.title=Nina.fm Face B
             org.opencontainers.image.description=Nuxt 4 admin for Nina.fm
             org.opencontainers.image.vendor=Nina.fm
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
@@ -82,7 +82,7 @@ jobs:
 
       - name: Version and tag
         id: versioning
-        if: github.ref == 'refs/heads/mainV2'
+        if: github.ref == 'refs/heads/main'
         run: |
           # Configuration git pour les commits automatiques
           git config --local user.email "action@github.com"
@@ -113,7 +113,7 @@ jobs:
             
             # Push du commit créé par changeset (il commit automatiquement)
             echo "⬆️ Push du commit de version créé par changeset..."
-            if ! git push origin mainV2; then
+            if ! git push origin main; then
               echo "❌ Erreur lors du push du commit"
               exit 1
             fi
@@ -177,28 +177,28 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Créer le fichier d'environnement avec les secrets GitHub
-            mkdir -p /var/nina/faceb-v2
+            mkdir -p /var/nina/faceb
 
-            cat > /var/nina/faceb-v2/.env.prod << EOF
+            cat > /var/nina/faceb/.env.prod << EOF
             NODE_ENV=production
             PORT=3000
             HOST=0.0.0.0
             API_URL=https://api.nina.fm
-            NUXT_PORT=3003
+            NUXT_PORT=3002
             EOF
 
             # Sécuriser le fichier d'environnement
-            chmod 600 /var/nina/faceb-v2/.env.prod
+            chmod 600 /var/nina/faceb/.env.prod
 
             # Créer le répertoire de déploiement
-            mkdir -p /var/nina/faceb-v2/deploy
-            cd /var/nina/faceb-v2/deploy
+            mkdir -p /var/nina/faceb/deploy
+            cd /var/nina/faceb/deploy
 
             # Login Docker sur le serveur pour accéder au registry privé
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Pull de la nouvelle image (tag mainV2 pour pré-prod)
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mainV2
+            # Pull de la nouvelle image (tag main pour prod)
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
             # S'assurer que le réseau existe
             echo "🔄 Vérification du réseau..."
@@ -208,20 +208,20 @@ jobs:
             curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                  -H "Accept: application/vnd.github.v3.raw" \
                  -o docker-compose.yml \
-                 "https://raw.githubusercontent.com/${{ github.repository }}/mainV2/docker-compose.prod.yml"
+                 "https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml"
 
             # Déploiement avec docker-compose
-            docker compose --env-file /var/nina/faceb-v2/.env.prod up -d --force-recreate
+            docker compose --env-file /var/nina/faceb/.env.prod up -d --force-recreate
 
             # Vérifier que le conteneur démarre correctement
             echo "🔍 Vérification du conteneur..."
             sleep 10
-            if docker ps | grep nina-faceb-v2; then
-              echo "✅ Déploiement réussi - Face B v2 opérationnelle"
-              docker logs nina-faceb-v2 --tail 20
+            if docker ps | grep nina-faceb; then
+              echo "✅ Déploiement réussi - Face B opérationnelle"
+              docker logs nina-faceb --tail 20
             else
-              echo "❌ Le conteneur nina-faceb-v2 n'est pas en cours d'exécution"
-              docker logs nina-faceb-v2 --tail 50
+              echo "❌ Le conteneur nina-faceb n'est pas en cours d'exécution"
+              docker logs nina-faceb --tail 50
               exit 1
             fi
 
@@ -240,7 +240,7 @@ jobs:
             echo "🧹 Nettoyage des images Docker..."
             docker image prune -f --filter "dangling=true"
 
-            # Garder seulement les 3 dernières images de Face B v2
+            # Garder seulement les 3 dernières images de Face B
             docker images ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | \
             tail -n +2 | sort -k2 -r | tail -n +4 | awk '{print $1}' | \
             xargs -r docker rmi || echo "Aucune ancienne image à supprimer"

@@ -1665,11 +1665,14 @@ export interface components {
        */
       role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
     }
+    /** @enum {string} */
+    Role: 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'PUBLIC'
     InvitationDto: {
       /** Format: uuid */
       id: string
       email: string
       token: string
+      role: components['schemas']['Role']
       /** Format: date-time */
       usedAt: string | null
       /** Format: date-time */

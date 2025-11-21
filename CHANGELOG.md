@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.1.0
+
+### Minor Changes
+
+- 3b76242: Add lightbox for cover and avatar on details pages
+
 ## 1.0.0
 
 ### Major Changes

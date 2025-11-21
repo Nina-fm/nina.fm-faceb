@@ -8,6 +8,9 @@
 
   const { getImageUrl } = useImageApi()
   const djsText = computed(() => formatDjs(props.mixtape.djs))
+
+  // Lightbox state
+  const isLightboxOpen = ref(false)
 </script>
 
 <template>
@@ -16,7 +19,10 @@
       <CardHeader>
         <div class="flex gap-5">
           <div v-if="props.mixtape?.cover" class="">
-            <Avatar class="size-38 rounded-lg">
+            <Avatar
+              class="size-38 cursor-pointer rounded-lg transition-opacity hover:opacity-80"
+              @click="isLightboxOpen = true"
+            >
               <AvatarImage :src="getImageUrl(props.mixtape.cover) || ''" :alt="props.mixtape.cover.originalName" />
               <AvatarFallback class="bg-muted text-muted-foreground rounded-lg">
                 <UserRoundIcon class="size-14" />
@@ -38,5 +44,15 @@
         <MixtapeTracklist :tracks-as-text="mixtape?.tracksAsText" />
       </CardContent>
     </Card>
+
+    <!-- Lightbox -->
+    <Lightbox
+      v-model:open="isLightboxOpen"
+      :src="getImageUrl(props.mixtape.cover) || ''"
+      :alt="props.mixtape.cover?.originalName"
+    >
+      <h2 class="text-center text-xl font-bold">{{ mixtape?.name }}</h2>
+      <p class="text-center text-sm opacity-90">Mixée en {{ mixtape?.year }} par {{ djsText }}</p>
+    </Lightbox>
   </div>
 </template>

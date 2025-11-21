@@ -17,10 +17,11 @@ export const badgeVariants = cva(
         warning:
           'border-transparent bg-warning text-white [a&]:hover:bg-warning/90 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 dark:bg-warning/60',
         // Muted
+        muted: 'border-transparent bg-secondary text-secondary-foreground/40 [a&]:hover:bg-secondary/90',
         primaryMuted:
           'border-none bg-primary/25 text-primary [a&]:hover:bg-primary/90 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/40 ',
         destructiveMuted:
-          'border-none bg-destructive/25 text-destructive [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 ',
+          'border-none bg-destructive/25 text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 ',
         successMuted:
           'border-none bg-success/25 text-success [a&]:hover:bg-success/90 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 ',
         infoMuted:

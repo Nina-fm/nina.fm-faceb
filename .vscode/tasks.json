@@ -10,9 +10,6 @@
         "kind": "build",
         "isDefault": true
       },
-      "options": {
-        "cwd": "${workspaceFolder:Face B (v2)}"
-      },
       "presentation": {
         "echo": true,
         "reveal": "always",

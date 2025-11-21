@@ -7,7 +7,7 @@
   }>()
 
   const { user: currentUser } = useAuth()
-  const { getThumbnailUrl } = useImageApi()
+  const { getThumbnailUrl, getImageUrl } = useImageApi()
 
   const isMe = computed(() => currentUser.value?.id === props.user?.id)
   const avatarUrl = computed(() => {
@@ -16,6 +16,9 @@
     }
     return undefined
   })
+
+  // Lightbox state
+  const isLightboxOpen = ref(false)
 </script>
 
 <template>
@@ -24,7 +27,7 @@
       <CardContent>
         <div class="flex gap-5">
           <div v-if="avatarUrl" class="">
-            <Avatar class="size-38 rounded-full">
+            <Avatar class="size-38 cursor-pointer rounded-full" @click="isLightboxOpen = true">
               <AvatarImage v-if="avatarUrl" :src="avatarUrl" :alt="user.profile.nickname" />
               <AvatarFallback class="bg-muted text-muted-foreground rounded-full">
                 <UserRoundIcon class="size-14" />
@@ -76,5 +79,14 @@
         </div>
       </CardContent>
     </Card>
+
+    <!-- Lightbox -->
+    <Lightbox
+      v-model:open="isLightboxOpen"
+      :src="getImageUrl(props.user.profile.avatar) || ''"
+      :alt="props.user.profile.nickname"
+    >
+      <h2 class="text-center text-xl font-bold">{{ user?.profile?.nickname }}</h2>
+    </Lightbox>
   </div>
 </template>

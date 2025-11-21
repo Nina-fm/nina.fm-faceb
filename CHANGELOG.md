@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.1.1
+
+### Patch Changes
+
+- 725fc5e: Add role badges for all users
+
 ## 1.1.0
 
 ### Minor Changes

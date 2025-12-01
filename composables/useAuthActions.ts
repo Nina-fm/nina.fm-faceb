@@ -1,96 +1,110 @@
 import type { User } from '~/types/api/users.types'
 
 /**
- * Composable pour les actions d'authentification
- * Login, register, logout - utilise cookies httpOnly
+ * Composable ultra-léger pour les actions d'authentification SuperTokens
+ *
+ * SuperTokens gère automatiquement :
+ * - Cookies httpOnly (access + refresh)
+ * - Refresh des tokens
+ * - Expiration des sessions
+ *
+ * On appelle juste les endpoints et on met à jour l'UI
  */
 export const useAuthActions = () => {
   const { setUser, clearUser } = useAuth()
-  const { startRefreshTimer, stopRefreshTimer } = useTokenRefresh()
   const router = useRouter()
   const config = useRuntimeConfig()
 
   /**
    * Login avec email/password
-   * L'API set les cookies httpOnly automatiquement
+   * SuperTokens gère les cookies automatiquement
    */
   const login = async (email: string, password: string) => {
-    const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/login`, {
+    const response = await $fetch<{ user: User }>(`${config.public.apiUrl}/auth/signin`, {
       method: 'POST',
-      body: { email, password },
-      credentials: 'include', // Important: envoyer et recevoir cookies
+      body: {
+        formFields: [
+          { id: 'email', value: email },
+          { id: 'password', value: password },
+        ],
+      },
+      credentials: 'include',
     })
 
-    // Cookies déjà set par l'API, on stocke juste le user
-    setUser(response.user, response.expiresAt)
-
-    // Démarrer le timer de refresh automatique
-    startRefreshTimer()
-
+    setUser(response.user)
     return response
   }
 
   /**
-   * Register avec email/password + invitation token optionnel
-   * L'API set les cookies httpOnly automatiquement
+   * Register avec email/password + firstName/lastName
+   * SuperTokens gère les cookies automatiquement
    */
-  const register = async (data: { email: string; password: string; name?: string; invitationToken?: string }) => {
-    const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/register`, {
+  const register = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
+    const response = await $fetch<{ user: User }>(`${config.public.apiUrl}/auth/signup`, {
       method: 'POST',
-      body: data,
+      body: {
+        formFields: [
+          { id: 'email', value: data.email },
+          { id: 'password', value: data.password },
+          { id: 'firstName', value: data.firstName },
+          { id: 'lastName', value: data.lastName },
+        ],
+      },
       credentials: 'include',
     })
 
-    // Cookies déjà set par l'API
-    setUser(response.user, response.expiresAt)
-
-    // Démarrer le timer de refresh automatique
-    startRefreshTimer()
-
+    setUser(response.user)
     return response
   }
 
   /**
    * Logout
-   * L'API clear les cookies httpOnly automatiquement
+   * SuperTokens clear les cookies automatiquement
    */
   const logout = async () => {
     try {
-      await $fetch(`${config.public.apiUrl}/auth/logout`, {
+      await $fetch(`${config.public.apiUrl}/auth/signout`, {
         method: 'POST',
-        credentials: 'include', // Envoyer les cookies pour blacklist
+        credentials: 'include',
       })
     } catch (error) {
-      // Même si l'API échoue, on clear le state local
-      console.warn('[Auth] Logout API error:', error)
+      console.warn('[Auth] Logout error:', error)
     }
 
-    // Arrêter le timer de refresh
-    stopRefreshTimer()
-
-    // Clear user state
     clearUser()
-
-    // Redirect to login
     await router.push('/login')
   }
 
   /**
-   * Reset password (forgot password flow)
+   * Request password reset email
    */
-  const resetPassword = async (token: string, password: string) => {
-    const response = await $fetch<{ success: boolean }>(`${config.public.apiUrl}/auth/reset-password`, {
+  const requestPasswordReset = async (email: string) => {
+    await $fetch(`${config.public.apiUrl}/auth/user/password/reset/token`, {
       method: 'POST',
-      body: { token, password },
+      body: {
+        formFields: [{ id: 'email', value: email }],
+      },
     })
+  }
 
-    return response
+  /**
+   * Reset password with token
+   */
+  const resetPassword = async (token: string, newPassword: string) => {
+    await $fetch(`${config.public.apiUrl}/auth/user/password/reset`, {
+      method: 'POST',
+      body: {
+        formFields: [{ id: 'password', value: newPassword }],
+        token,
+      },
+    })
   }
 
   return {
     login,
     register,
     logout,
+    requestPasswordReset,
     resetPassword,
   }
 }

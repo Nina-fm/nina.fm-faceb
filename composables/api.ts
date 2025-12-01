@@ -29,14 +29,7 @@ export interface ApiError extends Error {
 export const useApi = () => {
   const config = useRuntimeConfig()
 
-  // IMPORTANT: useTokenRefresh ne doit être appelé que côté client
-  // car il utilise navigateTo et autres composables client-only
-  const { refreshToken } = import.meta.client ? useTokenRefresh() : { refreshToken: async () => false }
-
   const baseURL = (config.public.apiUrl as string) || 'http://localhost:4000'
-
-  // Flag pour éviter les boucles infinies de retry
-  let isRefreshing = false
 
   /**
    * Fonction générique pour effectuer des appels API
@@ -67,9 +60,8 @@ export const useApi = () => {
         baseURL,
         headers: requestHeaders,
         timeout,
-        credentials: 'include', // Important: envoyer les cookies avec chaque requête
+        credentials: 'include', // SuperTokens envoie automatiquement les cookies
         onRequest() {
-          // Log des requêtes en développement
           if (import.meta.dev) {
             console.log(`[API] ${method} ${endpoint}${isRetry ? ' (retry)' : ''}`)
           }
@@ -79,7 +71,6 @@ export const useApi = () => {
         },
       }
 
-      // Utilisation de l'assertion de type pour contourner les conflits de types complexes de Nuxt
       const response = await ($fetch as (url: string, opts?: Record<string, unknown>) => Promise<T>)(
         endpoint,
         fetchConfig,
@@ -89,40 +80,15 @@ export const useApi = () => {
       const errorObj = error as Record<string, unknown>
       const status = (errorObj?.status || errorObj?.statusCode) as number
 
-      // Gestion du 401 : tentative de refresh puis retry
+      // 401: Session expirée ou invalide → redirect login
+      // SuperTokens gère automatiquement le refresh, si on reçoit 401 c'est vraiment expiré
       if (status === 401 && !endpoint.includes('/auth/') && !isRetry) {
-        // Éviter les boucles infinies
-        if (isRefreshing) {
-          console.log('[API] Refresh déjà en cours - redirection vers /login')
-          await navigateTo('/login')
-          throw error
-        }
-
-        console.log('[API] 401 Unauthorized - tentative de refresh du token')
-        isRefreshing = true
-
-        try {
-          const refreshSuccess = await refreshToken()
-          isRefreshing = false
-
-          if (refreshSuccess) {
-            console.log('[API] Token refreshed - retry de la requête...')
-            // Retry la requête originale avec le nouveau token
-            return await call<T>(endpoint, options, true)
-          } else {
-            console.log('[API] Refresh échoué - redirection vers /login')
-            await navigateTo('/login')
-            throw error
-          }
-        } catch (refreshError) {
-          isRefreshing = false
-          console.error('[API] Erreur lors du refresh:', refreshError)
-          await navigateTo('/login')
-          throw error
-        }
+        console.log('[API] 401 - Session expirée, redirect vers login')
+        await navigateTo('/login')
+        throw error
       }
 
-      // Transformation de l'erreur pour l'interface utilisateur
+      // Transformation de l'erreur
       const apiError: ApiError = new Error(
         ((errorObj?.data as Record<string, unknown>)?.message as string) ||
           (errorObj?.message as string) ||

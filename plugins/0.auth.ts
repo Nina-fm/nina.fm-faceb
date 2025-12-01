@@ -1,9 +1,11 @@
 /**
- * Plugin d'authentification - CLIENT ONLY
- * Charge le user au mount côté client AVANT le premier rendu
- * Démarre le timer de refresh automatique si user authentifié
+ * Plugin d'authentification ultra-léger - CLIENT ONLY
  *
- * IMPORTANT: Ce plugin ne s'exécute QUE côté client (env: { islands: false })
+ * Charge simplement le user au mount côté client.
+ * SuperTokens gère automatiquement :
+ * - Les cookies httpOnly
+ * - Le refresh des tokens
+ * - L'expiration des sessions
  */
 export default defineNuxtPlugin({
   name: 'auth',
@@ -12,26 +14,19 @@ export default defineNuxtPlugin({
     islands: false, // Client-side only
   },
   async setup() {
-    // Double protection: ne JAMAIS s'exécuter côté serveur
     if (import.meta.server) {
       return
     }
 
     const { fetchUser } = useAuth()
-    const { startRefreshTimer } = useTokenRefresh()
     const route = useRoute()
 
-    // Load user before rendering
+    // Load user from SuperTokens session
     const user = await fetchUser()
 
-    // If user loaded and on login/register page, redirect to home
+    // If user on login/register page, redirect home
     if (user && (route.path === '/login' || route.path === '/register')) {
       await navigateTo('/')
-    }
-
-    // Start refresh timer if user is authenticated
-    if (user) {
-      startRefreshTimer()
     }
   },
 })

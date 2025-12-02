@@ -39,8 +39,9 @@ export default defineNuxtConfig({
     debug: false,
     public: {
       sitename,
-      // NUXT_PUBLIC_API_URL en prod, API_URL en dev
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || process.env.API_URL || '/api',
+      // Dev: direct API URL (no proxy needed with SuperTokens cookies)
+      // Prod: production API URL
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:4000',
     },
   },
 
@@ -52,16 +53,8 @@ export default defineNuxtConfig({
     port: Number(process.env.FRONT_OUTPUT_PORT) || 3000,
   },
 
-  // Proxy dev pour éviter CORS et simplifier les URLs
-  nitro: {
-    devProxy: {
-      '/api': {
-        target: process.env.API_DEV_TARGET || 'http://localhost:4000',
-        changeOrigin: true,
-        prependPath: false,
-      },
-    },
-  },
+  // Plus besoin de proxy avec SuperTokens cookies
+  // Les cookies httpOnly sont envoyés automatiquement entre localhost:3002 et localhost:4000
 
   typescript: {
     strict: true,

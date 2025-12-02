@@ -19,15 +19,15 @@ export const useAuth = () => {
   const isAuthenticated = computed(() => !!user.value)
   const userRole = computed(() => user.value?.role || null)
 
-  // Fetch user depuis SuperTokens session
+  // Fetch user depuis profile complet (inclut avatar, bio, etc.)
   const fetchUser = async () => {
     try {
       const config = useRuntimeConfig()
-      const response = await $fetch<User>(`${config.public.apiUrl}/auth/session`, {
+      const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/profile`, {
         credentials: 'include',
       })
-      user.value = response
-      return response
+      user.value = response.user
+      return response.user
     } catch {
       user.value = null
       return null

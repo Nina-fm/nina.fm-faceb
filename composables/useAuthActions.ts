@@ -17,17 +17,12 @@ export const useAuthActions = () => {
 
   /**
    * Login avec email/password
-   * SuperTokens gère les cookies automatiquement
+   * SuperTokens géré en interne par l'API, retourne profil complet
    */
   const login = async (email: string, password: string) => {
-    const response = await $fetch<{ user: User }>(`${config.public.apiUrl}/auth/signin`, {
+    const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/login`, {
       method: 'POST',
-      body: {
-        formFields: [
-          { id: 'email', value: email },
-          { id: 'password', value: password },
-        ],
-      },
+      body: { email, password },
       credentials: 'include',
     })
 
@@ -36,19 +31,19 @@ export const useAuthActions = () => {
   }
 
   /**
-   * Register avec email/password + firstName/lastName
-   * SuperTokens gère les cookies automatiquement
+   * Register avec email/password + name
+   * SuperTokens géré en interne par l'API, retourne profil complet
    */
   const register = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
-    const response = await $fetch<{ user: User }>(`${config.public.apiUrl}/auth/signup`, {
+    // Combine firstName + lastName en name pour l'API
+    const name = `${data.firstName} ${data.lastName}`.trim()
+
+    const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/register`, {
       method: 'POST',
       body: {
-        formFields: [
-          { id: 'email', value: data.email },
-          { id: 'password', value: data.password },
-          { id: 'firstName', value: data.firstName },
-          { id: 'lastName', value: data.lastName },
-        ],
+        email: data.email,
+        password: data.password,
+        name,
       },
       credentials: 'include',
     })
@@ -59,11 +54,11 @@ export const useAuthActions = () => {
 
   /**
    * Logout
-   * SuperTokens clear les cookies automatiquement
+   * SuperTokens géré en interne par l'API
    */
   const logout = async () => {
     try {
-      await $fetch(`${config.public.apiUrl}/auth/signout`, {
+      await $fetch(`${config.public.apiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       })
@@ -89,15 +84,44 @@ export const useAuthActions = () => {
 
   /**
    * Reset password with token
+   * Returns success status
    */
   const resetPassword = async (token: string, newPassword: string) => {
-    await $fetch(`${config.public.apiUrl}/auth/user/password/reset`, {
-      method: 'POST',
-      body: {
-        formFields: [{ id: 'password', value: newPassword }],
-        token,
+    const response = await $fetch<{ success: boolean; message?: string }>(
+      `${config.public.apiUrl}/auth/reset-password-confirm`,
+      {
+        method: 'POST',
+        body: {
+          token,
+          password: newPassword,
+        },
+        credentials: 'include',
       },
-    })
+    )
+    return response
+  }
+
+  /**
+   * Reset password with token + auto-login for Face B users
+   * Returns user if login successful, null otherwise
+   */
+  const resetPasswordAndLogin = async (token: string, newPassword: string, email: string) => {
+    // 1. Reset password
+    const resetResult = await resetPassword(token, newPassword)
+
+    if (!resetResult.success) {
+      return { success: false, user: null }
+    }
+
+    // 2. Auto-login with new password
+    try {
+      const loginResponse = await login(email, newPassword)
+      return { success: true, user: loginResponse.user }
+    } catch (error) {
+      // Reset succeeded but login failed - user can login manually
+      console.warn('[Auth] Password reset succeeded but auto-login failed:', error)
+      return { success: true, user: null }
+    }
   }
 
   return {
@@ -106,5 +130,6 @@ export const useAuthActions = () => {
     logout,
     requestPasswordReset,
     resetPassword,
+    resetPasswordAndLogin,
   }
 }

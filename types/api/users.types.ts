@@ -133,4 +133,5 @@ export const USERS_ENDPOINTS = {
   BASE: '/users',
   BY_ID: (id: string) => `/users/${id}`,
   PROFILE: (id: string) => `/users/${id}/profile`,
+  PASSWORD: (id: string) => `/users/${id}/password`,
 } as const

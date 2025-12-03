@@ -12,6 +12,7 @@ type UserProfile = components['schemas']['Profile']
 type CreateUserDto = components['schemas']['CreateUserDto']
 type UpdateUserDto = components['schemas']['UpdateUserDto']
 type UpdateUserProfileDto = components['schemas']['UpdateUserProfileDto']
+type ChangePasswordDto = components['schemas']['ChangePasswordDto']
 type UserRole = User['role']
 
 /**
@@ -149,6 +150,21 @@ export const useUserApi = () => {
   })
 
   /**
+   * Changer le mot de passe d'un utilisateur
+   * Nécessite le mot de passe actuel et être le propriétaire
+   */
+  const changePassword = useMutation({
+    mutationFn: async ({ userId, payload }: { userId: string; payload: ChangePasswordDto }) => {
+      return call<{ message: string }>(API_ENDPOINTS.USERS.PASSWORD(userId), {
+        method: HttpMethod.PATCH,
+        body: payload,
+        requireAuth: true,
+      })
+    },
+    onError: createErrorHandler('le changement de mot de passe'),
+  })
+
+  /**
    * Utility: Vérifier si l'utilisateur actuel peut gérer les utilisateurs
    */
   const canManageUsers = computed(() => {
@@ -210,6 +226,7 @@ export const useUserApi = () => {
     updateUser,
     updateUserProfile,
     deleteUser,
+    changePassword,
 
     // Utilities
     canManageUsers,

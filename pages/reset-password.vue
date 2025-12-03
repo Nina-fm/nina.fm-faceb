@@ -27,7 +27,7 @@
     try {
       await forgotPassword(email)
       toast.success('Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !')
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors de l'envoi de l'email de réinitialisation")
     }
   }

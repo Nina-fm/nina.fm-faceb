@@ -69,15 +69,11 @@
 
   // Adapter les signatures pour correspondre aux attentes des composants
   const handleResendInvitation = async (id: string | number) => {
-    // Pour l'instant, on va juste récupérer l'email depuis les données
     const invitation = invitations.value.find((inv) => inv.id === String(id))
     if (!invitation) return
 
     try {
-      await resendInvitation.mutateAsync({
-        invitationId: String(id),
-        email: invitation.email,
-      })
+      await resendInvitation.mutateAsync(String(id))
       toast.success(`Invitation renvoyée à ${invitation.email} !`)
     } catch (error: unknown) {
       const errorMessage =

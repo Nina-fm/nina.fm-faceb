@@ -125,6 +125,7 @@
                 default: () => [
                   h(InvitationTableActions, {
                     deletable: status === 'pending',
+                    sendable: status === 'pending',
                     onResend: () => handleRowResend(id),
                     onDelete: () => handleRowDelete(id),
                   }),

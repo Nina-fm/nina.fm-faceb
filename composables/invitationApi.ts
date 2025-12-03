@@ -102,16 +102,19 @@ export const useInvitationApi = () => {
 
   /**
    * Renvoyer une invitation (créer un nouveau token)
-   * Fonctionnalité helper qui combine cancel + send
+   * Utilise l'endpoint PATCH /invitations/:id/resend
    */
   const resendInvitation = useMutation({
-    mutationFn: async ({ invitationId, email, message }: { invitationId: string; email: string; message?: string }) => {
-      await cancelInvitation.mutateAsync(invitationId)
-      return sendInvitation.mutateAsync({ email, message })
+    mutationFn: async (invitationId: string) => {
+      return call<Invitation>(API_ENDPOINTS.INVITATIONS.RESEND(invitationId), {
+        method: HttpMethod.POST,
+        requireAuth: true,
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invitations.lists() })
     },
+    onError: createErrorHandler("le renvoi de l'invitation"),
   })
 
   /**

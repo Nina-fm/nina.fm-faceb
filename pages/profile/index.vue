@@ -28,7 +28,7 @@
   })
 
   const handleCancel = async () => {
-    await navigateTo('/')
+    await navigateTo('/users')
   }
 </script>
 

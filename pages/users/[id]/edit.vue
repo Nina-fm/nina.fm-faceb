@@ -27,8 +27,11 @@
     ],
   })
 
+  // Référence au composant UserForm pour pouvoir reset le formulaire
+  const userFormRef = ref<{ resetForm?: () => void }>()
+
   const handleCancel = async () => {
-    await navigateTo('/users')
+    await navigateTo(`/users/${id}`)
   }
 
   const handleSubmit = async (values: Record<string, unknown>) => {
@@ -85,6 +88,15 @@
       }
 
       toast.success('Utilisateur modifié.')
+
+      // Reset le formulaire pour éviter l'alerte de navigation
+      // TanStack Query va automatiquement refetch les données
+      if (userFormRef.value?.resetForm) {
+        userFormRef.value.resetForm()
+      }
+
+      // Rediriger vers la page de détail de l'utilisateur
+      await navigateTo(`/users/${id}`)
     } catch (error) {
       console.error('Error editing user:', error)
       toast.error("Erreur lors de la modification de l'utilisateur.")
@@ -102,6 +114,7 @@
   </PageHeader>
   <UserForm
     v-if="user"
+    ref="userFormRef"
     :user="user"
     :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadImage.isPending.value"
     can-edit-roles

@@ -7,7 +7,7 @@
 
   const { user: currentUser, fetchUser } = useAuth()
   const currentUserId = computed(() => currentUser.value?.id || '')
-  const { isViewer, isAdmin } = usePermissions()
+  const { isViewer } = usePermissions()
   const { getUser, updateUser, updateUserProfile } = useUserApi()
   const { uploadImage } = useImageApi()
 

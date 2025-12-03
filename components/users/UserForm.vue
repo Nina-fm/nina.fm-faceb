@@ -6,6 +6,8 @@
 
   const formSchema = z.object({
     nickname: z.string().min(2, 'Le nom doit faire au moins 2 caractères').max(255),
+    firstName: z.string().max(255).nullable().optional(),
+    lastName: z.string().max(255).nullable().optional(),
     email: z.string().email('Email invalide').min(1, 'Email requis'),
     description: z.string().max(1000).nullable().optional(),
     avatar: z
@@ -55,6 +57,8 @@
     validationSchema: toTypedSchema(formSchema),
     initialValues: {
       nickname: props.user.profile?.nickname || '',
+      firstName: props.user.profile?.firstName || '',
+      lastName: props.user.profile?.lastName || '',
       email: props.user.email,
       description: props.user.profile?.description || '',
       avatar: props.user.profile?.avatar
@@ -76,6 +80,8 @@
       form.resetForm({
         values: {
           nickname: user.profile?.nickname || '',
+          firstName: user.profile?.firstName || '',
+          lastName: user.profile?.lastName || '',
           email: user.email,
           description: user.profile?.description || '',
           avatar: user.profile?.avatar
@@ -119,6 +125,10 @@
             <ImageField name="avatar" bucket="avatars" label="Avatar" class="w-1/4" />
             <div class="flex w-3/4 flex-col gap-5">
               <TextField name="nickname" label="Nom d'affichage" />
+              <div class="flex gap-4">
+                <TextField name="firstName" label="Prénom" class="flex-1" />
+                <TextField name="lastName" label="Nom" class="flex-1" />
+              </div>
               <TextField name="email" label="Email" readonly />
               <TextareaField name="description" label="Description" />
               <SelectField v-if="canEditRoles" name="role" label="Rôle" :options="roleOptions" />

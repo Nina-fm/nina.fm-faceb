@@ -47,7 +47,7 @@
       if (err?.status === 409 || err?.status === 500) {
         const message = err?.data?.message || ''
         if (message.includes('duplicate') || message.includes('already exists')) {
-          toast.error('Cet email est déjà utilisé')
+          toast.error('Un compte associé à cet email existe déjà')
         } else {
           toast.error("Une erreur est survenue lors de l'inscription")
         }

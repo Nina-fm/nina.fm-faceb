@@ -42,6 +42,18 @@
               <Badge v-if="isMe">Moi</Badge>
             </div>
             <div class="mt-5 flex flex-col gap-2">
+              <div v-if="user?.profile?.firstName" class="text-muted-foreground flex gap-4 text-sm">
+                <span class="text-muted-foreground w-28 font-bold">Prénom</span>
+                <span class="text-foreground">
+                  {{ user.profile.firstName }}
+                </span>
+              </div>
+              <div v-if="user?.profile?.lastName" class="text-muted-foreground flex gap-4 text-sm">
+                <span class="text-muted-foreground w-28 font-bold">Nom</span>
+                <span class="text-foreground">
+                  {{ user.profile.lastName }}
+                </span>
+              </div>
               <div class="text-muted-foreground flex gap-4 text-sm">
                 <span class="text-muted-foreground w-28 font-bold">Email</span>
                 <span class="text-foreground">

@@ -7,7 +7,8 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUser, updateUser, updateUserProfile, uploadUserAvatar } = useUserApi()
+  const { getUser, updateUser, updateUserProfile } = useUserApi()
+  const { uploadImage } = useImageApi()
   const { data } = getUser(id)
   const user = computed(() => data.value?.data)
 
@@ -32,19 +33,37 @@
 
   const handleSubmit = async (values: Record<string, unknown>) => {
     try {
-      // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
-      const avatar = values.avatar as { file?: File } | undefined
-      if (avatar?.file instanceof File) {
-        await uploadUserAvatar.mutateAsync({
-          userId: id,
-          file: avatar.file,
+      // Étape 1 : Gestion de l'avatar
+      let newAvatarId: string | null | undefined = undefined
+      const hasNewFile =
+        values.avatar &&
+        typeof values.avatar === 'object' &&
+        'file' in values.avatar &&
+        values.avatar.file instanceof File
+
+      if (hasNewFile) {
+        // Upload du nouvel avatar dans le bucket 'avatars'
+        const uploadedImage = await uploadImage.mutateAsync({
+          file: values.avatar.file as File,
+          bucket: 'avatars',
         })
+        newAvatarId = uploadedImage.id
+      } else if (values.avatar && typeof values.avatar === 'object' && !('id' in values.avatar)) {
+        // L'avatar a été supprimé (pas de fichier et pas d'ID existant)
+        newAvatarId = null
       }
 
-      // Étape 2 : Mise à jour du profil (nickname, description)
+      // Étape 2 : Mise à jour du profil (nickname, firstName, lastName, description, avatarId)
       const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
+        firstName: values.firstName,
+        lastName: values.lastName,
         description: values.description,
+      }
+
+      // Ajouter avatarId seulement si il a changé (upload ou suppression)
+      if (newAvatarId !== undefined) {
+        profilePayload.avatarId = newAvatarId
       }
 
       await updateUserProfile.mutateAsync({
@@ -84,7 +103,7 @@
   <UserForm
     v-if="user"
     :user="user"
-    :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadUserAvatar.isPending.value"
+    :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadImage.isPending.value"
     can-edit-roles
     teleport-to="page-header-actions"
     @cancel="handleCancel"

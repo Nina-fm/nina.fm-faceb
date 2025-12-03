@@ -81,9 +81,11 @@
         newAvatarId = null
       }
 
-      // Étape 2 : Mise à jour du profil (nickname, description, avatarId)
+      // Étape 2 : Mise à jour du profil (nickname, firstName, lastName, description, avatarId)
       const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
+        firstName: values.firstName,
+        lastName: values.lastName,
         description: values.description,
       }
 

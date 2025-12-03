@@ -27,5 +27,5 @@
 </script>
 
 <template>
-  <Alert :variant="variant" class="flex w-fit justify-center rounded-full px-3 py-1">{{ label }}</Alert>
+  <Badge :variant="`${variant}Muted`" class="flex w-fit justify-center rounded-full px-3 py-1">{{ label }}</Badge>
 </template>

@@ -1,96 +1,135 @@
 import type { User } from '~/types/api/users.types'
 
 /**
- * Composable pour les actions d'authentification
- * Login, register, logout - utilise cookies httpOnly
+ * Composable ultra-léger pour les actions d'authentification SuperTokens
+ *
+ * SuperTokens gère automatiquement :
+ * - Cookies httpOnly (access + refresh)
+ * - Refresh des tokens
+ * - Expiration des sessions
+ *
+ * On appelle juste les endpoints et on met à jour l'UI
  */
 export const useAuthActions = () => {
   const { setUser, clearUser } = useAuth()
-  const { startRefreshTimer, stopRefreshTimer } = useTokenRefresh()
   const router = useRouter()
   const config = useRuntimeConfig()
 
   /**
    * Login avec email/password
-   * L'API set les cookies httpOnly automatiquement
+   * SuperTokens géré en interne par l'API, retourne profil complet
    */
   const login = async (email: string, password: string) => {
     const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/login`, {
       method: 'POST',
       body: { email, password },
-      credentials: 'include', // Important: envoyer et recevoir cookies
+      credentials: 'include',
     })
 
-    // Cookies déjà set par l'API, on stocke juste le user
-    setUser(response.user, response.expiresAt)
-
-    // Démarrer le timer de refresh automatique
-    startRefreshTimer()
-
+    setUser(response.user)
     return response
   }
 
   /**
-   * Register avec email/password + invitation token optionnel
-   * L'API set les cookies httpOnly automatiquement
+   * Register avec email/password + name
+   * SuperTokens géré en interne par l'API, retourne profil complet
    */
-  const register = async (data: { email: string; password: string; name?: string; invitationToken?: string }) => {
+  const register = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
+    // Combine firstName + lastName en name pour l'API
+    const name = `${data.firstName} ${data.lastName}`.trim()
+
     const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/register`, {
       method: 'POST',
-      body: data,
+      body: {
+        email: data.email,
+        password: data.password,
+        name,
+      },
       credentials: 'include',
     })
 
-    // Cookies déjà set par l'API
-    setUser(response.user, response.expiresAt)
-
-    // Démarrer le timer de refresh automatique
-    startRefreshTimer()
-
+    setUser(response.user)
     return response
   }
 
   /**
    * Logout
-   * L'API clear les cookies httpOnly automatiquement
+   * SuperTokens géré en interne par l'API
    */
   const logout = async () => {
     try {
       await $fetch(`${config.public.apiUrl}/auth/logout`, {
         method: 'POST',
-        credentials: 'include', // Envoyer les cookies pour blacklist
+        credentials: 'include',
       })
     } catch (error) {
-      // Même si l'API échoue, on clear le state local
-      console.warn('[Auth] Logout API error:', error)
+      console.warn('[Auth] Logout error:', error)
     }
 
-    // Arrêter le timer de refresh
-    stopRefreshTimer()
-
-    // Clear user state
     clearUser()
-
-    // Redirect to login
     await router.push('/login')
   }
 
   /**
-   * Reset password (forgot password flow)
+   * Request password reset email
    */
-  const resetPassword = async (token: string, password: string) => {
-    const response = await $fetch<{ success: boolean }>(`${config.public.apiUrl}/auth/reset-password`, {
+  const requestPasswordReset = async (email: string) => {
+    await $fetch(`${config.public.apiUrl}/auth/user/password/reset/token`, {
       method: 'POST',
-      body: { token, password },
+      body: {
+        formFields: [{ id: 'email', value: email }],
+      },
     })
+  }
 
+  /**
+   * Reset password with token
+   * Returns success status
+   */
+  const resetPassword = async (token: string, newPassword: string) => {
+    const response = await $fetch<{ success: boolean; message?: string }>(
+      `${config.public.apiUrl}/auth/reset-password-confirm`,
+      {
+        method: 'POST',
+        body: {
+          token,
+          password: newPassword,
+        },
+        credentials: 'include',
+      },
+    )
     return response
+  }
+
+  /**
+   * Reset password with token + auto-login for Face B users
+   * Returns user if login successful, null otherwise
+   */
+  const resetPasswordAndLogin = async (token: string, newPassword: string, email: string) => {
+    // 1. Reset password
+    const resetResult = await resetPassword(token, newPassword)
+
+    if (!resetResult.success) {
+      return { success: false, user: null }
+    }
+
+    // 2. Auto-login with new password
+    try {
+      const loginResponse = await login(email, newPassword)
+      return { success: true, user: loginResponse.user }
+    } catch (error) {
+      // Reset succeeded but login failed - user can login manually
+      console.warn('[Auth] Password reset succeeded but auto-login failed:', error)
+      return { success: true, user: null }
+    }
   }
 
   return {
     login,
     register,
     logout,
+    requestPasswordReset,
     resetPassword,
+    resetPasswordAndLogin,
   }
 }

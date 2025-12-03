@@ -97,4 +97,5 @@ export const INVITATIONS_ENDPOINTS = {
   BASE: '/invitations',
   VALIDATE: '/invitations/validate',
   BY_ID: (id: string) => `/invitations/${id}`,
+  RESEND: (id: string) => `/invitations/${id}/resend`,
 } as const

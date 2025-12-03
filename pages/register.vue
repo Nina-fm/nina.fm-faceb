@@ -11,7 +11,8 @@
 
   const formSchema = z
     .object({
-      name: z.string().optional().describe('Nom'),
+      firstName: z.string().min(1, 'Prénom requis').describe('Prénom'),
+      lastName: z.string().min(1, 'Nom requis').describe('Nom'),
       email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),
       password: z.string().min(1, 'Mot de passe requis'),
       confirm: z.string().min(1, 'Mot de passe requis'),
@@ -23,18 +24,20 @@
 
   const handleSubmit = async ({
     email,
-    name,
+    firstName,
+    lastName,
     password,
   }: {
     email: string
-    name?: string
+    firstName: string
+    lastName: string
     password: string
     confirm: string
   }) => {
     try {
-      // invitationToken doit être string | undefined
-      const token = invitationToken.value || undefined
-      await register({ email, name, password, invitationToken: token })
+      // Note: Un nickname temporaire sera généré automatiquement
+      // L'utilisateur pourra le personnaliser dans son profil après connexion
+      await register({ email, firstName, lastName, password })
       toast.success('Compte créé avec succès')
 
       // Reload page to trigger SSR + middleware redirect
@@ -44,7 +47,7 @@
       if (err?.status === 409 || err?.status === 500) {
         const message = err?.data?.message || ''
         if (message.includes('duplicate') || message.includes('already exists')) {
-          toast.error('Cet email est déjà utilisé')
+          toast.error('Un compte associé à cet email existe déjà')
         } else {
           toast.error("Une erreur est survenue lors de l'inscription")
         }
@@ -61,7 +64,8 @@
 
   // Valeurs par défaut du formulaire
   const defaultValues = computed(() => ({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: emailPrefill.value || '',
     password: '',
     confirm: '',
@@ -92,7 +96,13 @@
       :schema="formSchema"
       :default-values="defaultValues"
       :field-config="{
-        name: {
+        firstName: {
+          label: 'Prénom',
+          inputProps: {
+            type: 'text',
+          },
+        },
+        lastName: {
           label: 'Nom',
           inputProps: {
             type: 'text',

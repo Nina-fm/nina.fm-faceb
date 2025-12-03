@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import { toast } from 'vue-sonner'
   import type { InvitationFormData } from './invitation.schema'
   import { invitationFormSchema, invitationFormSetValues, roleOptions } from './invitation.schema'
 
@@ -7,27 +6,15 @@
     (e: 'submit', payload: InvitationFormData): void | Promise<void>
   }>()
 
-  const { sendInvitation } = useInvitationApi()
-
   const form = useForm({
     validationSchema: toTypedSchema(invitationFormSchema),
     initialValues: invitationFormSetValues(),
   })
 
-  const handleSubmit = async (values: InvitationFormData) => {
-    try {
-      await sendInvitation.mutateAsync(values)
-      form.resetForm()
-      emit('submit', values)
-      toast.success('Invitation envoyée !')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      if (error?.statusCode === 409) {
-        toast.error("Une invitation existe déjà pour cet email ou l'utilisateur est déjà inscrit.")
-      } else {
-        toast.error("Une erreur est survenue lors de l'envoi de l'invitation.")
-      }
-    }
+  const handleSubmit = (values: InvitationFormData) => {
+    // Émettre l'événement au parent qui gérera l'appel API
+    emit('submit', values)
+    form.resetForm()
   }
 </script>
 

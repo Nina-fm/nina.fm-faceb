@@ -13,7 +13,10 @@ export interface AuthPaths {
     }
     get?: never
     put?: never
-    /** User login */
+    /**
+     * User login (DEPRECATED - use SuperTokens signin instead)
+     * @deprecated
+     */
     post: operations['AuthController_signIn']
     delete?: never
     options?: never
@@ -30,7 +33,10 @@ export interface AuthPaths {
     }
     get?: never
     put?: never
-    /** User registration */
+    /**
+     * User registration (DEPRECATED - use SuperTokens signup instead)
+     * @deprecated
+     */
     post: operations['AuthController_signUp']
     delete?: never
     options?: never
@@ -89,6 +95,23 @@ export interface AuthPaths {
     patch?: never
     trace?: never
   }
+  '/auth/session': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get SuperTokens session info */
+    get: operations['AuthController_getSession']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/auth/forgot-password': {
     parameters: {
       query?: never
@@ -132,6 +155,7 @@ export type AuthOperations =
   | 'AuthController_refreshTokens'
   | 'AuthController_signOut'
   | 'AuthController_getProfile'
+  | 'AuthController_getSession'
   | 'AuthController_forgotPassword'
   | 'AuthController_resetPassword'
 
@@ -150,6 +174,7 @@ export const AUTH_ENDPOINTS = {
   REFRESH: '/auth/refresh',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
+  SESSION: '/auth/session',
   FORGOT_PASSWORD: '/auth/forgot-password',
   RESET_PASSWORD: '/auth/reset-password',
 } as const

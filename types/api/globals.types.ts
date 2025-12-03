@@ -11,7 +11,10 @@ export interface paths {
     }
     get?: never
     put?: never
-    /** User login */
+    /**
+     * User login (DEPRECATED - use SuperTokens signin instead)
+     * @deprecated
+     */
     post: operations['AuthController_signIn']
     delete?: never
     options?: never
@@ -28,7 +31,10 @@ export interface paths {
     }
     get?: never
     put?: never
-    /** User registration */
+    /**
+     * User registration (DEPRECATED - use SuperTokens signup instead)
+     * @deprecated
+     */
     post: operations['AuthController_signUp']
     delete?: never
     options?: never
@@ -79,6 +85,23 @@ export interface paths {
     }
     /** Get current user profile */
     get: operations['AuthController_getProfile']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/session': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get SuperTokens session info */
+    get: operations['AuthController_getSession']
     put?: never
     post?: never
     delete?: never
@@ -1062,6 +1085,66 @@ export interface paths {
     patch: operations['TracksController_reorder']
     trace?: never
   }
+  '/sessions/{sessionId}/tracks/{id}/metadata': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Update track metadata
+     * @description Update audio analysis metadata for a track (BPM, key, etc.).
+     */
+    patch: operations['TracksController_updateMetadata']
+    trace?: never
+  }
+  '/sessions/{sessionId}/tracks/{id}/generate-waveform': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Generate waveform data
+     * @description Generate and store waveform visualization data for the track.
+     */
+    post: operations['TracksController_generateWaveform']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sessions/{sessionId}/tracks/generate-waveforms': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Generate waveforms for all tracks in session
+     * @description Generate waveform data for all tracks in the session that don't have them yet.
+     */
+    post: operations['TracksController_generateWaveformsForSession']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sessions/{sessionId}/tracks/{id}': {
     parameters: {
       query?: never
@@ -1370,6 +1453,10 @@ export interface components {
       updatedAt: string
       /** @description User avatar */
       avatar?: components['schemas']['ImageFile']
+      /** @description Full URL to user avatar */
+      avatarUrl?: string
+      /** @description Full URL to user avatar thumbnail */
+      avatarThumbnailUrl?: string
     }
     ForgotPasswordDto: {
       /**
@@ -1441,6 +1528,10 @@ export interface components {
       description?: string | null
       /** @description User avatar */
       avatar?: components['schemas']['ImageFile'] | null
+      /** @description Full URL to user avatar */
+      avatarUrl?: string | null
+      /** @description Full URL to user avatar thumbnail */
+      avatarThumbnailUrl?: string | null
       /**
        * Format: date-time
        * @description Profile creation date
@@ -2332,6 +2423,84 @@ export interface components {
        */
       name?: string
     }
+    SessionTrackResponseDto: {
+      /** @description Track unique identifier */
+      id: string
+      /** @description Session ID this track belongs to */
+      sessionId: string
+      /** @description Related mixtape ID */
+      mixtapeId?: Record<string, never>
+      /**
+       * @description Stored filename
+       * @example a1b2c3d4-track.mp3
+       */
+      filename: string
+      /**
+       * @description Original uploaded filename
+       * @example my-awesome-track.mp3
+       */
+      originalName: string
+      /**
+       * @description File MIME type
+       * @example audio/mpeg
+       */
+      mimeType: string
+      /**
+       * @description File size in bytes
+       * @example 5242880
+       */
+      fileSizeBytes: number
+      /**
+       * @description Storage path on disk
+       * @example uploads/audio/mix-sessions/xxx/tracks/original/file.mp3
+       */
+      storagePath: string
+      /**
+       * @description Track order in timeline
+       * @example 0
+       */
+      trackOrder: number
+      /** @description Audio duration in seconds */
+      duration?: number
+      /** @description BPM (Beats Per Minute) */
+      bpm?: number
+      /** @description Musical key */
+      musicalKey?: string
+      /** @description Artist name */
+      artist?: string
+      /** @description Track title */
+      title?: string
+      /** @description Album name */
+      album?: string
+      /** @description Genre */
+      genre?: string
+      /** @description Release year */
+      year?: number
+      /** @description Waveform data (JSON) */
+      waveformData?: string
+      /** @description Processing status */
+      processingStatus?: string
+      /**
+       * Format: date-time
+       * @description Upload date
+       */
+      uploadedAt: string
+      /**
+       * Format: date-time
+       * @description Creation date
+       */
+      createdAt: string
+      /**
+       * Format: date-time
+       * @description Last update date
+       */
+      updatedAt: string
+      /**
+       * @description Public streaming URL for the audio file
+       * @example https://api.nina.fm/sessions/123e4567-e89b-12d3-a456-426614174000/tracks/123e4567-e89b-12d3-a456-426614174001/stream
+       */
+      streamUrl: string
+    }
     SessionTrack: {
       /** @description Track unique identifier */
       id: string
@@ -2373,6 +2542,26 @@ export interface components {
        * @example 0
        */
       trackOrder: number
+      /** @description Audio duration in seconds */
+      duration?: number
+      /** @description BPM (Beats Per Minute) */
+      bpm?: number
+      /** @description Musical key */
+      musicalKey?: string
+      /** @description Artist name */
+      artist?: string
+      /** @description Track title */
+      title?: string
+      /** @description Album name */
+      album?: string
+      /** @description Genre */
+      genre?: string
+      /** @description Release year */
+      year?: number
+      /** @description Waveform data (JSON) */
+      waveformData?: string
+      /** @description Processing status */
+      processingStatus?: string
       /**
        * Format: date-time
        * @description Upload date
@@ -2403,11 +2592,18 @@ export interface components {
        */
       description?: Record<string, never>
       /**
+       * @description DJ name
+       * @example DJ Shadow
+       */
+      djName?: Record<string, never>
+      /**
        * @description Session status
        * @example draft
        * @enum {string}
        */
       status: 'draft' | 'in_progress' | 'completed' | 'exported'
+      /** @description Session cover image */
+      cover?: components['schemas']['ImageFile']
       /** @description Creator user ID */
       createdById?: Record<string, never>
       /** @description Creator user */
@@ -2427,7 +2623,7 @@ export interface components {
        * Format: date-time
        * @description Last update date
        */
-      updatedAt: string
+      updatedAt?: string
       /** @description Export date */
       exportedAt?: Record<string, never>
     }
@@ -2442,6 +2638,28 @@ export interface components {
        */
       trackIds: string[]
     }
+    UpdateSessionTrackMetadataDto: {
+      /** @description Audio duration in seconds */
+      duration?: number
+      /** @description BPM (Beats Per Minute) */
+      bpm?: number
+      /** @description Musical key */
+      musicalKey?: string
+      /** @description Artist name */
+      artist?: string
+      /** @description Track title */
+      title?: string
+      /** @description Album name */
+      album?: string
+      /** @description Genre */
+      genre?: string
+      /** @description Release year */
+      year?: number
+      /** @description Waveform data (JSON) */
+      waveformData?: string
+      /** @description Processing status */
+      processingStatus?: string
+    }
     CreateMixSessionDto: {
       /**
        * @description Nom de la session de mix
@@ -2453,12 +2671,88 @@ export interface components {
        * @example Un mix de mes meilleurs morceaux techno
        */
       description?: string
+      /**
+       * @description Nom du DJ
+       * @example DJ Shadow
+       */
+      djName?: string
+    }
+    EnrichedMixSessionDto: {
+      /** @description Session unique identifier */
+      id: string
+      /**
+       * @description Session name
+       * @example My Summer Mix
+       */
+      name: string
+      /**
+       * @description Session description
+       * @example A collection of my favorite summer tracks
+       */
+      description?: Record<string, never>
+      /**
+       * @description DJ name
+       * @example DJ Shadow
+       */
+      djName?: string
+      /**
+       * @description Session status
+       * @example draft
+       * @enum {string}
+       */
+      status: 'draft' | 'in_progress' | 'completed' | 'exported'
+      /** @description Session cover image */
+      cover?: components['schemas']['ImageFile']
+      /** @description Cover image URL */
+      coverUrl?: string
+      /** @description Cover thumbnail URL */
+      coverThumbnailUrl?: string
+      /** @description Creator user ID */
+      createdById?: Record<string, never>
+      /** @description Creator user */
+      createdBy?: components['schemas']['User']
+      /** @description Related mixtape ID */
+      mixtapeId?: Record<string, never>
+      /** @description Related mixtape */
+      mixtape?: components['schemas']['Mixtape']
+      /** @description Session tracks */
+      tracks: components['schemas']['SessionTrack'][]
+      /**
+       * Format: date-time
+       * @description Creation date
+       */
+      createdAt: string
+      /**
+       * Format: date-time
+       * @description Last update date
+       */
+      updatedAt?: string
+      /** @description Export date */
+      exportedAt?: Record<string, never>
+    }
+    MixSessionResponseDto: {
+      /** @description The mix session data */
+      data: components['schemas']['EnrichedMixSessionDto']
+    }
+    MixSessionsListResponseDto: {
+      /** @description The list of mix sessions */
+      data: components['schemas']['EnrichedMixSessionDto'][]
     }
     UpdateMixSessionDto: {
       /** @description Nom de la session */
       name?: string
       /** @description Description de la session */
       description?: string
+      /**
+       * @description Nom du DJ
+       * @example DJ Shadow
+       */
+      djName?: string
+      /**
+       * @description Cover image ID
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      coverId?: string
       /**
        * @description Statut de la session
        * @enum {string}
@@ -2615,7 +2909,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Returns user profile and expiry, sets httpOnly cookies */
+      /** @description Returns user profile and expiry, sets httpOnly cookies. This endpoint is deprecated and will be removed in future versions. Use SuperTokens /auth/signin instead. */
       200: {
         headers: {
           [name: string]: unknown
@@ -2637,7 +2931,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Returns user profile and expiry, sets httpOnly cookies */
+      /** @description Returns user profile and expiry, sets httpOnly cookies. This endpoint is deprecated and will be removed in future versions. Use SuperTokens /auth/signup instead. */
       200: {
         headers: {
           [name: string]: unknown
@@ -2699,6 +2993,24 @@ export interface operations {
         content: {
           'application/json': components['schemas']['User']
         }
+      }
+    }
+  }
+  AuthController_getSession: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns current session information */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
@@ -4744,7 +5056,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['SessionTrack'][]
+          'application/json': components['schemas']['SessionTrackResponseDto'][]
         }
       }
     }
@@ -4816,7 +5128,84 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['SessionTrack'][]
+          'application/json': components['schemas']['SessionTrackResponseDto'][]
+        }
+      }
+    }
+  }
+  TracksController_updateMetadata: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description Track UUID */
+        id: string
+        /** @description Session UUID */
+        sessionId: unknown
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateSessionTrackMetadataDto']
+      }
+    }
+    responses: {
+      /** @description Track metadata updated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionTrackResponseDto']
+        }
+      }
+    }
+  }
+  TracksController_generateWaveform: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description Track UUID */
+        id: string
+        /** @description Session UUID */
+        sessionId: unknown
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Waveform generated and stored successfully */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionTrackResponseDto']
+        }
+      }
+    }
+  }
+  TracksController_generateWaveformsForSession: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description Session UUID */
+        sessionId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Waveforms generated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionTrackResponseDto'][]
         }
       }
     }
@@ -4907,7 +5296,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['MixSession'][]
+          'application/json': components['schemas']['MixSessionsListResponseDto']
         }
       }
     }
@@ -4931,7 +5320,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['MixSession']
+          'application/json': components['schemas']['MixSessionResponseDto']
         }
       }
     }
@@ -4953,7 +5342,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['MixSession']
+          'application/json': components['schemas']['MixSessionResponseDto']
         }
       }
       /** @description Session non trouvée */
@@ -5013,7 +5402,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['MixSession']
+          'application/json': components['schemas']['MixSessionResponseDto']
         }
       }
       /** @description Session non trouvée */

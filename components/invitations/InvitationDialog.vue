@@ -8,8 +8,8 @@
     submit: [payload: { email: string; message?: string }]
   }>()
 
-  const handleSubmit = async (payload: { email: string; message?: string }) => {
-    emit('update:modelValue', false)
+  const handleSubmit = (payload: { email: string; message?: string }) => {
+    // Émettre seulement l'événement submit, le parent gérera la fermeture
     emit('submit', payload)
   }
 </script>

@@ -7,7 +7,8 @@
 
   const { params } = useRoute()
   const id = params.id as string
-  const { getUser, updateUser, updateUserProfile, uploadUserAvatar } = useUserApi()
+  const { getUser, updateUser, updateUserProfile } = useUserApi()
+  const { uploadImage } = useImageApi()
   const { data } = getUser(id)
   const user = computed(() => data.value?.data)
 
@@ -26,25 +27,46 @@
     ],
   })
 
+  // Référence au composant UserForm pour pouvoir reset le formulaire
+  const userFormRef = ref<{ resetForm?: () => void }>()
+
   const handleCancel = async () => {
-    await navigateTo('/users')
+    await navigateTo(`/users/${id}`)
   }
 
   const handleSubmit = async (values: Record<string, unknown>) => {
     try {
-      // Étape 1 : Upload de l'avatar si un nouveau fichier a été fourni
-      const avatar = values.avatar as { file?: File } | undefined
-      if (avatar?.file instanceof File) {
-        await uploadUserAvatar.mutateAsync({
-          userId: id,
-          file: avatar.file,
+      // Étape 1 : Gestion de l'avatar
+      let newAvatarId: string | null | undefined = undefined
+      const hasNewFile =
+        values.avatar &&
+        typeof values.avatar === 'object' &&
+        'file' in values.avatar &&
+        values.avatar.file instanceof File
+
+      if (hasNewFile) {
+        // Upload du nouvel avatar dans le bucket 'avatars'
+        const uploadedImage = await uploadImage.mutateAsync({
+          file: values.avatar.file as File,
+          bucket: 'avatars',
         })
+        newAvatarId = uploadedImage.id
+      } else if (values.avatar && typeof values.avatar === 'object' && !('id' in values.avatar)) {
+        // L'avatar a été supprimé (pas de fichier et pas d'ID existant)
+        newAvatarId = null
       }
 
-      // Étape 2 : Mise à jour du profil (nickname, description)
+      // Étape 2 : Mise à jour du profil (nickname, firstName, lastName, description, avatarId)
       const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
+        firstName: values.firstName,
+        lastName: values.lastName,
         description: values.description,
+      }
+
+      // Ajouter avatarId seulement si il a changé (upload ou suppression)
+      if (newAvatarId !== undefined) {
+        profilePayload.avatarId = newAvatarId
       }
 
       await updateUserProfile.mutateAsync({
@@ -66,6 +88,15 @@
       }
 
       toast.success('Utilisateur modifié.')
+
+      // Reset le formulaire pour éviter l'alerte de navigation
+      // TanStack Query va automatiquement refetch les données
+      if (userFormRef.value?.resetForm) {
+        userFormRef.value.resetForm()
+      }
+
+      // Rediriger vers la page de détail de l'utilisateur
+      await navigateTo(`/users/${id}`)
     } catch (error) {
       console.error('Error editing user:', error)
       toast.error("Erreur lors de la modification de l'utilisateur.")
@@ -83,8 +114,9 @@
   </PageHeader>
   <UserForm
     v-if="user"
+    ref="userFormRef"
     :user="user"
-    :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadUserAvatar.isPending.value"
+    :pending="updateUser.isPending.value || updateUserProfile.isPending.value || uploadImage.isPending.value"
     can-edit-roles
     teleport-to="page-header-actions"
     @cancel="handleCancel"

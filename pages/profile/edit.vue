@@ -21,18 +21,8 @@
   watch(
     userData,
     (userValue) => {
-      console.log('[PROFILE/EDIT] watch user - Debug:', {
-        hasViewerRole: isViewer.value,
-        hasAdminRole: isAdmin.value,
-        userId: userValue?.id,
-        currentUserId: currentUserId.value,
-        areEqual: userValue?.id === currentUserId.value,
-        userDataExists: !!userValue,
-      })
-
       // Si on a les données utilisateur et que c'est un VIEWER qui tente de modifier un autre profil
       if (userValue && isViewer.value && userValue.id !== currentUserId.value) {
-        console.log('[PROFILE/EDIT] Redirection vers / - utilisateur VIEWER tentant de modifier un autre profil')
         return navigateTo('/')
       }
     },
@@ -81,9 +71,11 @@
         newAvatarId = null
       }
 
-      // Étape 2 : Mise à jour du profil (nickname, description, avatarId)
+      // Étape 2 : Mise à jour du profil (nickname, firstName, lastName, description, avatarId)
       const profilePayload: Record<string, unknown> = {
         nickname: values.nickname,
+        firstName: values.firstName,
+        lastName: values.lastName,
         description: values.description,
       }
 

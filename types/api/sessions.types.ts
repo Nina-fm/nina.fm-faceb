@@ -64,6 +64,66 @@ export interface SessionsPaths {
     patch: operations['TracksController_reorder']
     trace?: never
   }
+  '/sessions/{sessionId}/tracks/{id}/metadata': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Update track metadata
+     * @description Update audio analysis metadata for a track (BPM, key, etc.).
+     */
+    patch: operations['TracksController_updateMetadata']
+    trace?: never
+  }
+  '/sessions/{sessionId}/tracks/{id}/generate-waveform': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Generate waveform data
+     * @description Generate and store waveform visualization data for the track.
+     */
+    post: operations['TracksController_generateWaveform']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sessions/{sessionId}/tracks/generate-waveforms': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Generate waveforms for all tracks in session
+     * @description Generate waveform data for all tracks in the session that don't have them yet.
+     */
+    post: operations['TracksController_generateWaveformsForSession']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sessions/{sessionId}/tracks/{id}': {
     parameters: {
       query?: never
@@ -115,6 +175,9 @@ export type SessionsOperations =
   | 'TracksController_findAll'
   | 'TracksController_upload'
   | 'TracksController_reorder'
+  | 'TracksController_updateMetadata'
+  | 'TracksController_generateWaveform'
+  | 'TracksController_generateWaveformsForSession'
   | 'TracksController_findOne'
   | 'TracksController_remove'
   | 'TracksController_stream'
@@ -125,6 +188,9 @@ export const SESSIONS_ENDPOINTS = {
   TRACKS: (sessionId: string) => `/sessions/${sessionId}/tracks`,
   TRACKS_UPLOAD: (sessionId: string) => `/sessions/${sessionId}/tracks/upload`,
   TRACKS_REORDER: (sessionId: string) => `/sessions/${sessionId}/tracks/reorder`,
+  TRACKS__METADATA: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}/metadata`,
+  TRACKS__GENERATE_WAVEFORM: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}/generate-waveform`,
+  TRACKS_GENERATE_WAVEFORMS: (sessionId: string) => `/sessions/${sessionId}/tracks/generate-waveforms`,
   TRACKS_WITH_ID: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}`,
   TRACKS__STREAM: (sessionId: string, id: string) => `/sessions/${sessionId}/tracks/${id}/stream`,
 } as const

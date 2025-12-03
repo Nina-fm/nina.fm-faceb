@@ -89,9 +89,14 @@ export type MixSessionsOperations =
 
 // ===== TYPES =====
 
+export type SessionTrackResponseDto = components['schemas']['SessionTrackResponseDto']
 export type SessionTrack = components['schemas']['SessionTrack']
 export type MixSession = components['schemas']['MixSession']
+export type UpdateSessionTrackMetadataDto = components['schemas']['UpdateSessionTrackMetadataDto']
 export type CreateMixSessionDto = components['schemas']['CreateMixSessionDto']
+export type EnrichedMixSessionDto = components['schemas']['EnrichedMixSessionDto']
+export type MixSessionResponseDto = components['schemas']['MixSessionResponseDto']
+export type MixSessionsListResponseDto = components['schemas']['MixSessionsListResponseDto']
 export type UpdateMixSessionDto = components['schemas']['UpdateMixSessionDto']
 
 // ===== ENDPOINTS =====

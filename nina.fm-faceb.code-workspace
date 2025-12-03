@@ -1,0 +1,44 @@
+{
+  "folders": [
+    {
+      "name": "FACE B",
+      "path": ".",
+    },
+    {
+      "name": "API",
+      "path": "../nina.fm-api",
+    },
+  ],
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Dev Fullstack FACE B",
+        "type": "shell",
+        "command": "pnpm",
+        "args": ["run", "dev:stack"],
+        "options": {
+          "cwd": "${workspaceFolder:FACE B}",
+        },
+      },
+      {
+        "label": "Dev FACE B",
+        "type": "shell",
+        "command": "pnpm",
+        "args": ["run", "dev"],
+        "options": {
+          "cwd": "${workspaceFolder:FACE B}",
+        },
+      },
+      {
+        "label": "Dev API",
+        "type": "shell",
+        "command": "pnpm",
+        "args": ["run", "dev:api"],
+        "options": {
+          "cwd": "${workspaceFolder:API}",
+        },
+      },
+    ],
+  },
+}

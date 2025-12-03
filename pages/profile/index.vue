@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   // Types globaux depuis api.d.ts - Role est disponible
-  import { PencilIcon, XIcon } from 'lucide-vue-next'
+  import { KeyRoundIcon, PencilIcon, XIcon } from 'lucide-vue-next'
   import type { User } from '~/types/api/users.types'
 
   definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
@@ -28,7 +28,7 @@
   })
 
   const handleCancel = async () => {
-    await navigateTo('/')
+    await navigateTo('/users')
   }
 </script>
 
@@ -37,6 +37,11 @@
     <template #actions>
       <Button size="fab" variant="outline" @click="handleCancel">
         <XIcon />
+      </Button>
+      <Button size="fab" variant="outline">
+        <NuxtLink :to="`/profile/change-password`">
+          <KeyRoundIcon />
+        </NuxtLink>
       </Button>
       <Button size="fab" variant="outline">
         <NuxtLink :to="`/profile/edit`">

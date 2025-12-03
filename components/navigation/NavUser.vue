@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ChevronsUpDown, IdCardIcon, LogOut } from 'lucide-vue-next'
+  import { ChevronsUpDown, IdCardIcon, KeyRoundIcon, LogOut } from 'lucide-vue-next'
   import { useSidebar } from '~/components/ui/sidebar'
 
   const { isMobile } = useSidebar()
@@ -45,6 +45,12 @@
               <NuxtLink to="/profile">
                 <IdCardIcon />
                 Mon profil
+              </NuxtLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem as-child>
+              <NuxtLink to="/profile/change-password">
+                <KeyRoundIcon />
+                Mon mot de passe
               </NuxtLink>
             </DropdownMenuItem>
             <!-- <DropdownMenuItem>

@@ -7,9 +7,13 @@
   const config = useRuntimeConfig()
 
   const forgotPassword = async (email: string) => {
-    const response = await $fetch<{ success: boolean }>(`${config.public.apiUrl}/auth/forgot-password`, {
+    // Passer l'origin de Face B pour que le lien de reset pointe vers cette app
+    // On utilise window.location.origin côté client uniquement
+    const origin = import.meta.client ? window.location.origin : 'http://localhost:3002'
+
+    const response = await $fetch<{ message: string }>(`${config.public.apiUrl}/auth/forgot-password`, {
       method: 'POST',
-      body: { email },
+      body: { email, origin },
       credentials: 'include',
     })
     return response
@@ -20,10 +24,10 @@
   })
 
   const handleSubmit = async ({ email }: { email: string }) => {
-    const { success } = await forgotPassword(email)
-    if (success) {
+    try {
+      await forgotPassword(email)
       toast.success('Si un compte correspond à cet email, un lien de réinitialisation y a été envoyé !')
-    } else {
+    } catch (error) {
       toast.error("Erreur lors de l'envoi de l'email de réinitialisation")
     }
   }

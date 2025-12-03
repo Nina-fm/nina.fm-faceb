@@ -50,7 +50,7 @@
             <DropdownMenuItem as-child>
               <NuxtLink to="/profile/change-password">
                 <KeyRoundIcon />
-                Changer mon mot de passe
+                Mon mot de passe
               </NuxtLink>
             </DropdownMenuItem>
             <!-- <DropdownMenuItem>

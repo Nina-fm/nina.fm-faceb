@@ -72,6 +72,23 @@ export interface InvitationsPaths {
     patch?: never
     trace?: never
   }
+  '/invitations/{id}/resend': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Renvoyer une invitation existante */
+    post: operations['InvitationsController_resendInvitation']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 
 // Operations for this domain
@@ -80,6 +97,7 @@ export type InvitationsOperations =
   | 'InvitationsController_findAll'
   | 'InvitationsController_validateToken'
   | 'InvitationsController_cancelInvitation'
+  | 'InvitationsController_resendInvitation'
 
 // ===== TYPES =====
 

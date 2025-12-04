@@ -11,10 +11,7 @@ export interface paths {
     }
     get?: never
     put?: never
-    /**
-     * User login (DEPRECATED - use SuperTokens signin instead)
-     * @deprecated
-     */
+    /** User login - Simple wrapper around SuperTokens */
     post: operations['AuthController_signIn']
     delete?: never
     options?: never
@@ -31,28 +28,8 @@ export interface paths {
     }
     get?: never
     put?: never
-    /**
-     * User registration (DEPRECATED - use SuperTokens signup instead)
-     * @deprecated
-     */
+    /** User registration - Simple wrapper around SuperTokens */
     post: operations['AuthController_signUp']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/auth/refresh': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Refresh access token */
-    post: operations['AuthController_refreshTokens']
     delete?: never
     options?: never
     head?: never
@@ -68,7 +45,7 @@ export interface paths {
     }
     get?: never
     put?: never
-    /** User logout */
+    /** User logout - Simple wrapper around SuperTokens */
     post: operations['AuthController_signOut']
     delete?: never
     options?: never
@@ -218,6 +195,26 @@ export interface paths {
      * @description Update a user's profile information. All users can update their own profile.
      */
     patch: operations['UsersController_updateProfile']
+    trace?: never
+  }
+  '/users/{id}/password': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Change user password
+     * @description Change a user password. Requires current password for verification. Users can only change their own password.
+     */
+    patch: operations['UsersController_changePassword']
     trace?: never
   }
   '/files/audio': {
@@ -551,6 +548,23 @@ export interface paths {
     post?: never
     /** Annuler une invitation */
     delete: operations['InvitationsController_cancelInvitation']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/invitations/{id}/resend': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Renvoyer une invitation existante */
+    post: operations['InvitationsController_resendInvitation']
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -1439,6 +1453,10 @@ export interface components {
       id: string
       /** @description User nickname */
       nickname: string
+      /** @description User first name */
+      firstName?: string
+      /** @description User last name */
+      lastName?: string
       /** @description User description */
       description?: string
       /**
@@ -1464,6 +1482,11 @@ export interface components {
        * @example user@example.com
        */
       email: string
+      /**
+       * @description Origin URL of the app requesting password reset (for redirect link)
+       * @example http://localhost:3001
+       */
+      origin?: string
     }
     ResetPasswordDto: {
       /**
@@ -1524,6 +1547,10 @@ export interface components {
       id: string
       /** @description User nickname */
       nickname: string
+      /** @description User first name */
+      firstName?: string | null
+      /** @description User last name */
+      lastName?: string | null
       /** @description User description */
       description?: string | null
       /** @description User avatar */
@@ -1607,6 +1634,16 @@ export interface components {
        */
       nickname?: string
       /**
+       * @description User first name
+       * @example John
+       */
+      firstName?: string
+      /**
+       * @description User last name
+       * @example Doe
+       */
+      lastName?: string
+      /**
        * @description Profile description or bio
        * @example Passionate DJ mixing electronic and hip-hop music
        */
@@ -1616,6 +1653,18 @@ export interface components {
        * @example 456e4567-e89b-12d3-a456-426614174001
        */
       avatarId?: Record<string, never>
+    }
+    ChangePasswordDto: {
+      /**
+       * @description Current password
+       * @example currentPassword123
+       */
+      oldPassword: string
+      /**
+       * @description New password
+       * @example newSecurePassword456
+       */
+      newPassword: string
     }
     AudioFile: {
       /** @description File unique identifier */
@@ -2909,7 +2958,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Returns user profile and expiry, sets httpOnly cookies. This endpoint is deprecated and will be removed in future versions. Use SuperTokens /auth/signin instead. */
+      /** @description Returns full user profile with avatar, bio, etc. */
       200: {
         headers: {
           [name: string]: unknown
@@ -2931,25 +2980,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Returns user profile and expiry, sets httpOnly cookies. This endpoint is deprecated and will be removed in future versions. Use SuperTokens /auth/signup instead. */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  AuthController_refreshTokens: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Returns new tokens in httpOnly cookies */
+      /** @description Returns full user profile with avatar, bio, etc. */
       200: {
         headers: {
           [name: string]: unknown
@@ -3380,6 +3411,59 @@ export interface operations {
         content?: never
       }
       /** @description Bad request - Invalid input data */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorized - Invalid or missing token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden - Insufficient privileges */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description User not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  UsersController_changePassword: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description User unique identifier */
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangePasswordDto']
+      }
+    }
+    responses: {
+      /** @description Password changed successfully */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Bad request - Invalid current password */
       400: {
         headers: {
           [name: string]: unknown
@@ -3974,6 +4058,40 @@ export interface operations {
     responses: {
       /** @description Invitation annulée */
       200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Invitation non trouvée */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  InvitationsController_resendInvitation: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Invitation renvoyée */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Invitation déjà utilisée */
+      400: {
         headers: {
           [name: string]: unknown
         }

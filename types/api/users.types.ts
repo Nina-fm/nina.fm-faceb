@@ -80,6 +80,26 @@ export interface UsersPaths {
     patch: operations['UsersController_updateProfile']
     trace?: never
   }
+  '/users/{id}/password': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Change user password
+     * @description Change a user password. Requires current password for verification. Users can only change their own password.
+     */
+    patch: operations['UsersController_changePassword']
+    trace?: never
+  }
 }
 
 // Operations for this domain
@@ -91,6 +111,7 @@ export type UsersOperations =
   | 'UsersController_update'
   | 'UsersController_createProfile'
   | 'UsersController_updateProfile'
+  | 'UsersController_changePassword'
 
 // ===== TYPES =====
 

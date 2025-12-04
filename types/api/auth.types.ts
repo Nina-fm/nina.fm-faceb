@@ -13,10 +13,7 @@ export interface AuthPaths {
     }
     get?: never
     put?: never
-    /**
-     * User login (DEPRECATED - use SuperTokens signin instead)
-     * @deprecated
-     */
+    /** User login - Simple wrapper around SuperTokens */
     post: operations['AuthController_signIn']
     delete?: never
     options?: never
@@ -33,28 +30,8 @@ export interface AuthPaths {
     }
     get?: never
     put?: never
-    /**
-     * User registration (DEPRECATED - use SuperTokens signup instead)
-     * @deprecated
-     */
+    /** User registration - Simple wrapper around SuperTokens */
     post: operations['AuthController_signUp']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/auth/refresh': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Refresh access token */
-    post: operations['AuthController_refreshTokens']
     delete?: never
     options?: never
     head?: never
@@ -70,7 +47,7 @@ export interface AuthPaths {
     }
     get?: never
     put?: never
-    /** User logout */
+    /** User logout - Simple wrapper around SuperTokens */
     post: operations['AuthController_signOut']
     delete?: never
     options?: never
@@ -152,7 +129,6 @@ export interface AuthPaths {
 export type AuthOperations =
   | 'AuthController_signIn'
   | 'AuthController_signUp'
-  | 'AuthController_refreshTokens'
   | 'AuthController_signOut'
   | 'AuthController_getProfile'
   | 'AuthController_getSession'
@@ -171,7 +147,6 @@ export type ResetPasswordDto = components['schemas']['ResetPasswordDto']
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
-  REFRESH: '/auth/refresh',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
   SESSION: '/auth/session',

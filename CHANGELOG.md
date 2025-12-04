@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.1
+
+### Patch Changes
+
+- b459446: Fix changing password issue
+
 ## 1.2.0
 
 ### Minor Changes

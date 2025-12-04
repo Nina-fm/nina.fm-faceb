@@ -1,6 +1,6 @@
 {
   "name": "nina.fm-faceb",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The official Nina.fm admin",
   "private": true,
   "type": "module",

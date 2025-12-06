@@ -1,4 +1,4 @@
-import type { AnyFn, Obj } from '~/types/supatypes'
+import type { AnyFn } from '@vueuse/core'
 
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj))
 
@@ -12,7 +12,7 @@ export const uniqid = (): string => {
 
 export const getPercent = (count: number, total: number): number => Math.ceil((count * 100) / total)
 
-export const isEmpty = (obj: Obj | null) => {
+export const isEmpty = (obj: object | null) => {
   if (obj === null || obj === undefined) return true
   return JSON.stringify(obj) === JSON.stringify(Object.create(null))
 }

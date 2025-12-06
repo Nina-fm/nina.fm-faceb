@@ -2639,12 +2639,12 @@ export interface components {
        * @description Session description
        * @example A collection of my favorite summer tracks
        */
-      description?: Record<string, never>
+      description?: string
       /**
        * @description DJ name
        * @example DJ Shadow
        */
-      djName?: Record<string, never>
+      djName?: string
       /**
        * @description Session status
        * @example draft
@@ -2738,7 +2738,7 @@ export interface components {
        * @description Session description
        * @example A collection of my favorite summer tracks
        */
-      description?: Record<string, never>
+      description?: string
       /**
        * @description DJ name
        * @example DJ Shadow

@@ -24,7 +24,7 @@ export const useTokenRefresh = () => {
       })
 
       if (response) {
-        setUser(response, null)
+        setUser(response)
         return true
       }
       return false

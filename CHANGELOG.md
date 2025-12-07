@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.2
+
+### Patch Changes
+
+- 7962b86: Fix role attribution on register after invitation
+
 ## 1.2.1
 
 ### Patch Changes

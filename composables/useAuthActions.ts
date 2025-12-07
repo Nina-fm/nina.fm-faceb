@@ -22,7 +22,7 @@ export const useAuthActions = () => {
   const login = async (email: string, password: string) => {
     const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/login`, {
       method: 'POST',
-      body: { email, password },
+      body: { email, password, appSlug: 'faceb' },
       credentials: 'include',
     })
 
@@ -52,6 +52,7 @@ export const useAuthActions = () => {
         password: data.password,
         name,
         invitationToken: data.invitationToken,
+        appSlug: 'faceb',
       },
       credentials: 'include',
     })
@@ -132,6 +133,37 @@ export const useAuthActions = () => {
     }
   }
 
+  /**
+   * Check if an email already exists in the system
+   */
+  const checkEmailExists = async (email: string): Promise<{ exists: boolean; message: string }> => {
+    const response = await $fetch<{ exists: boolean; message: string }>(`${config.public.apiUrl}/auth/check-email`, {
+      method: 'GET',
+      params: { email },
+    })
+    return response
+  }
+
+  /**
+   * Link an existing account with an invitation
+   * Used when user already has an account (e.g., from Mixtaper) and is invited to Face B
+   */
+  const linkAccountWithInvitation = async (data: {
+    email: string
+    password: string
+    invitationToken: string
+    name?: string
+  }) => {
+    const response = await $fetch<{ user: User; expiresAt: number }>(`${config.public.apiUrl}/auth/link-invitation`, {
+      method: 'POST',
+      body: { ...data, appSlug: 'faceb' },
+      credentials: 'include',
+    })
+
+    setUser(response.user)
+    return response
+  }
+
   return {
     login,
     register,
@@ -139,5 +171,7 @@ export const useAuthActions = () => {
     requestPasswordReset,
     resetPassword,
     resetPasswordAndLogin,
+    checkEmailExists,
+    linkAccountWithInvitation,
   }
 }

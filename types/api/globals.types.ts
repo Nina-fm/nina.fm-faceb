@@ -121,6 +121,43 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/auth/check-email': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Check if an email already exists in the system */
+    get: operations['AuthController_checkEmail']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/link-invitation': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Link an existing account with an invitation
+     * @description Verifies credentials, applies role from invitation, and grants app access
+     */
+    post: operations['AuthController_linkInvitation']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/users': {
     parameters: {
       query?: never
@@ -1354,6 +1391,11 @@ export interface components {
     SignInDto: {
       email: string
       password: string
+      /**
+       * @description App slug identifier (e.g., "mixtaper", "faceb")
+       * @example faceb
+       */
+      appSlug: string
     }
     SignUpDto: {
       email: string
@@ -1361,6 +1403,11 @@ export interface components {
       name?: string
       /** @description Invitation token to validate and mark as used */
       invitationToken?: string
+      /**
+       * @description App slug identifier (e.g., "mixtaper", "faceb")
+       * @example mixtaper
+       */
+      appSlug: string
     }
     Invitation: {
       /** Format: uuid */
@@ -1499,6 +1546,36 @@ export interface components {
        * @example NewSecurePassword123!
        */
       password: string
+    }
+    CheckEmailResponseDto: {
+      /**
+       * @description Whether the email exists in the system
+       * @example true
+       */
+      exists: boolean
+      /**
+       * @description Message for the user
+       * @example Un compte existe déjà avec cet email
+       */
+      message: string
+    }
+    LinkInvitationDto: {
+      /**
+       * @description Email of the existing account
+       * @example user@example.com
+       */
+      email: string
+      /** @description Password to verify account ownership */
+      password: string
+      /** @description Invitation token to link */
+      invitationToken: string
+      /** @description Name to update (optional) */
+      name?: string
+      /**
+       * @description App slug identifier (e.g., "mixtaper", "faceb")
+       * @example faceb
+       */
+      appSlug: string
     }
     UsersQueryDto: {
       /**
@@ -3089,6 +3166,65 @@ export interface operations {
       }
       /** @description Invalid or expired token */
       400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  AuthController_checkEmail: {
+    parameters: {
+      query: {
+        /** @description Email to check */
+        email: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns whether the email exists */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CheckEmailResponseDto']
+        }
+      }
+    }
+  }
+  AuthController_linkInvitation: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LinkInvitationDto']
+      }
+    }
+    responses: {
+      /** @description Account linked successfully, returns user profile */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Invalid invitation token */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Invalid credentials */
+      401: {
         headers: {
           [name: string]: unknown
         }

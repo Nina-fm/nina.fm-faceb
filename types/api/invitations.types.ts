@@ -102,6 +102,7 @@ export type InvitationsOperations =
 // ===== TYPES =====
 
 export type Invitation = components['schemas']['Invitation']
+export type LinkInvitationDto = components['schemas']['LinkInvitationDto']
 export type InvitationsQueryDto = components['schemas']['InvitationsQueryDto']
 export type ValidateInvitationTokenResponseDto = components['schemas']['ValidateInvitationTokenResponseDto']
 export type SendInvitationDto = components['schemas']['SendInvitationDto']

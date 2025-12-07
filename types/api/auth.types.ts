@@ -123,6 +123,43 @@ export interface AuthPaths {
     patch?: never
     trace?: never
   }
+  '/auth/check-email': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Check if an email already exists in the system */
+    get: operations['AuthController_checkEmail']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/link-invitation': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Link an existing account with an invitation
+     * @description Verifies credentials, applies role from invitation, and grants app access
+     */
+    post: operations['AuthController_linkInvitation']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 
 // Operations for this domain
@@ -134,6 +171,8 @@ export type AuthOperations =
   | 'AuthController_getSession'
   | 'AuthController_forgotPassword'
   | 'AuthController_resetPassword'
+  | 'AuthController_checkEmail'
+  | 'AuthController_linkInvitation'
 
 // ===== TYPES =====
 
@@ -152,4 +191,6 @@ export const AUTH_ENDPOINTS = {
   SESSION: '/auth/session',
   FORGOT_PASSWORD: '/auth/forgot-password',
   RESET_PASSWORD: '/auth/reset-password',
+  CHECK_EMAIL: '/auth/check-email',
+  LINK_INVITATION: '/auth/link-invitation',
 } as const

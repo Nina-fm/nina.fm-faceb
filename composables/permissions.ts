@@ -15,6 +15,7 @@ export const usePermissions = () => {
 
   // Permissions granulaires
   const canManageUsers = computed(() => isAdmin.value)
+  const canViewUsers = computed(() => isAdmin.value || isManager.value)
   const canManageMixtapes = computed(() => isAdmin.value || isManager.value)
   const canManageDJs = computed(() => isAdmin.value || isManager.value)
   const canManageTags = computed(() => isAdmin.value || isManager.value)
@@ -130,6 +131,7 @@ export const usePermissions = () => {
 
     // Permissions granulaires
     canManageUsers,
+    canViewUsers,
     canManageMixtapes,
     canManageDJs,
     canManageTags,

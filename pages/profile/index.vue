@@ -6,7 +6,7 @@
   definePageMeta({ requiresRoles: [Role.ADMIN, Role.MANAGER, Role.CONTRIBUTOR, Role.VIEWER] })
 
   const { user } = useAuth()
-  const { checkRole } = usePermissions()
+  const { checkRole, canViewUsers } = usePermissions()
 
   // Cast user to mutable type for UserDetails component
   // OpenAPI generated types are readonly, User type is mutable
@@ -28,7 +28,7 @@
   })
 
   const handleCancel = async () => {
-    await navigateTo('/users')
+    await navigateTo(canViewUsers.value ? '/users' : '/')
   }
 </script>
 

@@ -33,8 +33,15 @@ export const useAuthActions = () => {
   /**
    * Register avec email/password + name
    * SuperTokens géré en interne par l'API, retourne profil complet
+   * @param invitationToken - Token d'invitation pour assigner le rôle
    */
-  const register = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
+  const register = async (data: {
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    invitationToken?: string
+  }) => {
     // Combine firstName + lastName en name pour l'API
     const name = `${data.firstName} ${data.lastName}`.trim()
 
@@ -44,6 +51,7 @@ export const useAuthActions = () => {
         email: data.email,
         password: data.password,
         name,
+        invitationToken: data.invitationToken,
       },
       credentials: 'include',
     })

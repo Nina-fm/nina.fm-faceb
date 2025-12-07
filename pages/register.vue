@@ -37,7 +37,8 @@
     try {
       // Note: Un nickname temporaire sera généré automatiquement
       // L'utilisateur pourra le personnaliser dans son profil après connexion
-      await register({ email, firstName, lastName, password })
+      // Passer le token d'invitation pour assigner le bon rôle
+      await register({ email, firstName, lastName, password, invitationToken: invitationToken.value })
       toast.success('Compte créé avec succès')
 
       // Reload page to trigger SSR + middleware redirect

@@ -55,9 +55,9 @@
     await refetch()
   }
 
-  const handleSubmitInvite = async ({ email, message }: { email: string; message?: string }) => {
+  const handleSubmitInvite = async ({ email, message, role }: { email: string; message?: string; role?: string }) => {
     try {
-      await sendInvitation.mutateAsync({ email, message })
+      await sendInvitation.mutateAsync({ email, message, role: role as 'ADMIN' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' })
       toast.success(`Invitation envoyée à ${email} !`)
       openInviteDialog.value = false
     } catch (error: unknown) {

@@ -1,14 +1,16 @@
 <script lang="ts" setup>
+  import type { InvitationFormData } from './invitation.schema'
+
   defineProps<{
     modelValue: boolean
   }>()
 
   const emit = defineEmits<{
     'update:modelValue': [value: boolean]
-    submit: [payload: { email: string; message?: string }]
+    submit: [payload: InvitationFormData]
   }>()
 
-  const handleSubmit = (payload: { email: string; message?: string }) => {
+  const handleSubmit = (payload: InvitationFormData) => {
     // Émettre seulement l'événement submit, le parent gérera la fermeture
     emit('submit', payload)
   }

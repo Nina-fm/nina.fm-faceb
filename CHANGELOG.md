@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.3
+
+### Patch Changes
+
+- f50ca7c: Fix invitation with role
+
 ## 1.2.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.5
+
+### Patch Changes
+
+- 7ce3238: Fix permissions routing
+
 ## 1.2.4
 
 ### Patch Changes

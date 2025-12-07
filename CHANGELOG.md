@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.4
+
+### Patch Changes
+
+- 2ec41f9: Fix SSO account linking/creation
+
 ## 1.2.3
 
 ### Patch Changes

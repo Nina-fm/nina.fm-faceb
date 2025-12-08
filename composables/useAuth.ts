@@ -1,17 +1,16 @@
 import type { User } from '~/types/api/users.types'
 
 /**
- * Composable ultra-léger pour l'authentification SuperTokens
+ * Composable pour l'authentification SuperTokens
  *
- * SuperTokens gère TOUT automatiquement :
- * - Cookies httpOnly (access + refresh tokens)
- * - Refresh automatique des sessions
- * - Sécurité et expiration
+ * SuperTokens SDK gère automatiquement :
+ * - Les cookies httpOnly
+ * - Le refresh des tokens (automatique et proactif)
+ * - La sécurité et l'expiration
  *
- * Ce composable ne gère QUE l'état user pour l'UI
+ * Ce composable gère uniquement l'état user pour l'UI.
  */
 export const useAuth = () => {
-  // State minimal : juste le user (SuperTokens gère les cookies)
   const user = useState<User | null>('auth:user', () => null)
   const isAuthLoading = useState<boolean>('auth:isLoading', () => true)
 
@@ -19,7 +18,7 @@ export const useAuth = () => {
   const isAuthenticated = computed(() => !!user.value)
   const userRole = computed(() => user.value?.role || null)
 
-  // Fetch user depuis profile complet (inclut avatar, bio, etc.)
+  // Fetch user depuis profile - SuperTokens intercepte et gère le refresh automatiquement
   const fetchUser = async () => {
     try {
       const config = useRuntimeConfig()

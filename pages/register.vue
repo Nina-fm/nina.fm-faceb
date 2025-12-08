@@ -6,8 +6,17 @@
 
   const { register, checkEmailExists, linkAccountWithInvitation } = useAuthActions()
   const { invitationToken, tokenValidation } = useInvitationValidation()
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
   const emailPrefill = ref<string | undefined>(undefined)
   const invitationError = ref<string | null>(null)
+
+  // Si déjà connecté, rediriger vers home
+  onMounted(() => {
+    if (isAuthenticated.value) {
+      router.push('/')
+    }
+  })
 
   // État pour déterminer si le compte existe déjà
   const accountExists = ref(false)

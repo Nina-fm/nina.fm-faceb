@@ -1,12 +1,15 @@
 /**
- * Plugin d'authentification ultra-léger - CLIENT ONLY
+ * Plugin d'authentification SuperTokens - CLIENT ONLY
  *
- * Charge simplement le user au mount côté client.
- * SuperTokens gère automatiquement :
- * - Les cookies httpOnly
- * - Le refresh des tokens
- * - L'expiration des sessions
+ * Initialise le SDK SuperTokens qui gère automatiquement :
+ * - Interception des fetch pour ajouter credentials
+ * - Refresh automatique des tokens sur 401
+ * - Refresh proactif avant expiration
+ * - Synchronisation multi-onglets
  */
+import SuperTokens from 'supertokens-web-js'
+import Session from 'supertokens-web-js/recipe/session'
+
 export default defineNuxtPlugin({
   name: 'auth',
   enforce: 'pre',
@@ -17,6 +20,32 @@ export default defineNuxtPlugin({
     if (import.meta.server) {
       return
     }
+
+    const config = useRuntimeConfig()
+    const apiUrl = config.public.apiUrl as string
+
+    // Initialiser SuperTokens SDK
+    SuperTokens.init({
+      appInfo: {
+        appName: 'Nina.fm Face B',
+        apiDomain: apiUrl,
+        apiBasePath: '/auth',
+      },
+      recipeList: [
+        Session.init({
+          tokenTransferMethod: 'cookie',
+          onHandleEvent: (context) => {
+            if (context.action === 'UNAUTHORISED') {
+              // Session expirée et refresh échoué
+              // Ne pas rediriger si déjà sur /login (évite boucle infinie)
+              if (!window.location.pathname.startsWith('/login')) {
+                window.location.href = '/login'
+              }
+            }
+          },
+        }),
+      ],
+    })
 
     const { fetchUser } = useAuth()
     const route = useRoute()

@@ -1,14 +1,11 @@
+import Session from 'supertokens-web-js/recipe/session'
 import type { User } from '~/types/api/users.types'
 
 /**
- * Composable ultra-léger pour les actions d'authentification SuperTokens
+ * Composable pour les actions d'authentification SuperTokens
  *
- * SuperTokens gère automatiquement :
- * - Cookies httpOnly (access + refresh)
- * - Refresh des tokens
- * - Expiration des sessions
- *
- * On appelle juste les endpoints et on met à jour l'UI
+ * SuperTokens SDK gère automatiquement le refresh des tokens.
+ * On appelle juste les endpoints et on met à jour l'UI.
  */
 export const useAuthActions = () => {
   const { setUser, clearUser } = useAuth()
@@ -62,15 +59,12 @@ export const useAuthActions = () => {
   }
 
   /**
-   * Logout
-   * SuperTokens géré en interne par l'API
+   * Logout - utilise SuperTokens signOut
    */
   const logout = async () => {
     try {
-      await $fetch(`${config.public.apiUrl}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      })
+      // SuperTokens signOut révoque la session et nettoie les cookies
+      await Session.signOut()
     } catch (error) {
       console.warn('[Auth] Logout error:', error)
     }

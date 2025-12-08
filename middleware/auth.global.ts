@@ -6,17 +6,7 @@
 import type { RouteLocationNormalized } from 'vue-router'
 
 export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized, _from: RouteLocationNormalized) => {
-  // Routes publiques (avec meta.auth = false)
-  const isPublicRoute = to.meta.auth === false
-
-  // Si route publique, laisser passer
-  if (isPublicRoute) {
-    return
-  }
-
-  // Côté serveur : ne pas bloquer, juste retourner
-  // Le SSR va s'exécuter normalement, mais le plugin client va charger l'auth
-  // et le middleware client fera les vérifications de permissions
+  // Côté serveur : ne pas bloquer, le plugin client gère l'auth
   if (import.meta.server) {
     return
   }
@@ -27,6 +17,14 @@ export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized, _fr
   // Si utilisateur authentifié tente d'accéder login/register, redirect home
   if (isAuthenticated.value && (to.path === '/login' || to.path === '/register')) {
     return navigateTo('/')
+  }
+
+  // Routes publiques (avec meta.auth = false)
+  const isPublicRoute = to.meta.auth === false
+
+  // Si route publique, laisser passer
+  if (isPublicRoute) {
+    return
   }
 
   // Si route protégée et non authentifié, redirect login

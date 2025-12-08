@@ -5,6 +5,15 @@
   definePageMeta({ layout: 'naked', auth: false })
 
   const { login } = useAuthActions()
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+
+  // Si déjà connecté, rediriger vers home
+  onMounted(() => {
+    if (isAuthenticated.value) {
+      router.push('/')
+    }
+  })
 
   const formSchema = z.object({
     email: z.string().email('Email invalide').min(1, 'Email requis').describe('Email'),

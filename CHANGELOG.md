@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.6
+
+### Patch Changes
+
+- 100ed25: feat: integrate supertokens-web-js SDK
+
 ## 1.2.5
 
 ### Patch Changes

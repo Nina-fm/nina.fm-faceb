@@ -77,53 +77,29 @@ export const useAuthActions = () => {
    * Request password reset email
    */
   const requestPasswordReset = async (email: string) => {
-    await $fetch(`${config.public.apiUrl}/auth/user/password/reset/token`, {
+    await $fetch(`${config.public.apiUrl}/auth/forgot-password`, {
       method: 'POST',
       body: {
-        formFields: [{ id: 'email', value: email }],
+        email,
+        origin: window.location.origin, // Pour que SuperTokens redirige vers la bonne app
       },
     })
   }
 
   /**
-   * Reset password with token
-   * Returns success status
-   */
-  const resetPassword = async (token: string, newPassword: string) => {
-    const response = await $fetch<{ success: boolean; message?: string }>(
-      `${config.public.apiUrl}/auth/reset-password-confirm`,
-      {
-        method: 'POST',
-        body: {
-          token,
-          password: newPassword,
-        },
-        credentials: 'include',
-      },
-    )
-    return response
-  }
-
-  /**
    * Reset password with token + auto-login for Face B users
-   * Returns user if login successful, null otherwise
+   * Note: Password reset is handled automatically by SuperTokens via email link
+   * This function just attempts login with the new password
    */
-  const resetPasswordAndLogin = async (token: string, newPassword: string, email: string) => {
-    // 1. Reset password
-    const resetResult = await resetPassword(token, newPassword)
-
-    if (!resetResult.success) {
-      return { success: false, user: null }
-    }
-
-    // 2. Auto-login with new password
+  const resetPasswordAndLogin = async (newPassword: string, email: string) => {
+    // Try to login with new password (assuming reset was successful via SuperTokens)
     try {
       const loginResponse = await login(email, newPassword)
       return { success: true, user: loginResponse.user }
     } catch (error) {
-      // Reset succeeded but login failed - user can login manually
-      console.warn('[Auth] Password reset succeeded but auto-login failed:', error)
-      return { success: true, user: null }
+      // Login failed - user needs to try again or reset again
+      console.warn('[Auth] Login with new password failed:', error)
+      return { success: false, user: null }
     }
   }
 
@@ -163,7 +139,6 @@ export const useAuthActions = () => {
     register,
     logout,
     requestPasswordReset,
-    resetPassword,
     resetPasswordAndLogin,
     checkEmailExists,
     linkAccountWithInvitation,

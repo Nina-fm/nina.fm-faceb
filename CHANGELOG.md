@@ -1,5 +1,11 @@
 # nina.fm-faceb
 
+## 1.2.7
+
+### Patch Changes
+
+- 52e972c: Fix after big auth cleanup in API
+
 ## 1.2.6
 
 ### Patch Changes

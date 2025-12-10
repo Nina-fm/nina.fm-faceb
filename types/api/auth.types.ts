@@ -106,23 +106,6 @@ export interface AuthPaths {
     patch?: never
     trace?: never
   }
-  '/auth/reset-password': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Reset password with token */
-    post: operations['AuthController_resetPassword']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/auth/check-email': {
     parameters: {
       query?: never
@@ -170,7 +153,6 @@ export type AuthOperations =
   | 'AuthController_getProfile'
   | 'AuthController_getSession'
   | 'AuthController_forgotPassword'
-  | 'AuthController_resetPassword'
   | 'AuthController_checkEmail'
   | 'AuthController_linkInvitation'
 
@@ -179,7 +161,6 @@ export type AuthOperations =
 export type SignInDto = components['schemas']['SignInDto']
 export type SignUpDto = components['schemas']['SignUpDto']
 export type ForgotPasswordDto = components['schemas']['ForgotPasswordDto']
-export type ResetPasswordDto = components['schemas']['ResetPasswordDto']
 
 // ===== ENDPOINTS =====
 
@@ -190,7 +171,6 @@ export const AUTH_ENDPOINTS = {
   PROFILE: '/auth/profile',
   SESSION: '/auth/session',
   FORGOT_PASSWORD: '/auth/forgot-password',
-  RESET_PASSWORD: '/auth/reset-password',
   CHECK_EMAIL: '/auth/check-email',
   LINK_INVITATION: '/auth/link-invitation',
 } as const

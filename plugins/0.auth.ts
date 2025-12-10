@@ -32,25 +32,9 @@ export default defineNuxtPlugin({
         appName: 'Nina.fm Face B',
         apiDomain: apiUrl,
         apiBasePath: '/auth',
-        websiteDomain: window.location.origin,
-        websiteBasePath: '/auth',
       },
       recipeList: [
-        EmailPassword.init({
-          signInAndUpFeature: {
-            disableDefaultUI: true, // On utilise nos propres pages
-          },
-          resetPasswordUsingTokenFeature: {
-            disableDefaultUI: true, // On utilise notre propre page /set-password
-          },
-          resetPasswordUsingToken: {
-            // Configurer la redirection vers notre page custom
-            onHandleResetPasswordUsingToken: async (context) => {
-              // Rediriger vers notre page avec le token
-              window.location.href = `/set-password?token=${context.token}`
-            },
-          },
-        }),
+        EmailPassword.init(),
         Session.init({
           tokenTransferMethod: 'cookie',
           onHandleEvent: (context) => {

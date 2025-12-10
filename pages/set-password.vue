@@ -7,7 +7,6 @@
 
   const route = useRoute()
   const router = useRouter()
-  const { login } = useAuthActions()
 
   // Récupérer le token depuis l'URL (envoyé par SuperTokens)
   const token = route.query.token as string

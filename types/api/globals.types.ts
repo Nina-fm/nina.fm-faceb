@@ -104,23 +104,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/auth/reset-password': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Reset password with token */
-    post: operations['AuthController_resetPassword']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/auth/check-email': {
     parameters: {
       query?: never
@@ -1534,18 +1517,6 @@ export interface components {
        * @example http://localhost:3001
        */
       origin?: string
-    }
-    ResetPasswordDto: {
-      /**
-       * @description Reset password token
-       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-       */
-      token: string
-      /**
-       * @description New password
-       * @example NewSecurePassword123!
-       */
-      password: string
     }
     CheckEmailResponseDto: {
       /**
@@ -3137,35 +3108,6 @@ export interface operations {
     responses: {
       /** @description Password reset email sent if account exists */
       200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  AuthController_resetPassword: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ResetPasswordDto']
-      }
-    }
-    responses: {
-      /** @description Password successfully reset */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      /** @description Invalid or expired token */
-      400: {
         headers: {
           [name: string]: unknown
         }

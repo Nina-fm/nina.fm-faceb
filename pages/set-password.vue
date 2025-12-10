@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import EmailPassword from 'supertokens-web-js/recipe/emailpassword'
   import { toast } from 'vue-sonner'
   import * as z from 'zod'
 
@@ -6,15 +7,13 @@
 
   const route = useRoute()
   const router = useRouter()
-  const { resetPasswordAndLogin } = useAuthActions()
+  const { login } = useAuthActions()
 
-  // Récupérer le token et l'email depuis l'URL
+  // Récupérer le token depuis l'URL (envoyé par SuperTokens)
   const token = route.query.token as string
-  const emailFromUrl = route.query.email as string
 
   const formSchema = z
     .object({
-      email: z.string().email('Email invalide').min(1, 'Email requis'),
       password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
       confirm: z.string().min(1, 'Confirmation requise'),
     })
@@ -23,33 +22,37 @@
       path: ['confirm'],
     })
 
-  // Valeurs par défaut du formulaire avec email pré-rempli
-  const defaultValues = {
-    email: emailFromUrl || '',
-    password: '',
-    confirm: '',
-  }
-
-  const handleSubmit = async ({ email, password }: { email: string; password: string; confirm: string }) => {
+  const handleSubmit = async ({ password }: { password: string; confirm: string }) => {
     if (!token) {
       toast.error('Token de réinitialisation manquant')
       return
     }
 
-    // Reset password + auto-login pour les users Face B
-    const result = await resetPasswordAndLogin(token, password, email)
+    try {
+      // Utiliser SuperTokens pour reset le mot de passe
+      const response = await EmailPassword.submitNewPassword({
+        formFields: [
+          {
+            id: 'password',
+            value: password,
+          },
+        ],
+        token,
+      })
 
-    if (result.success) {
-      if (result.user) {
-        // Auto-login réussi
-        toast.success('Mot de passe modifié et connexion automatique !')
-        await router.push('/')
+      if (response.status === 'OK') {
+        toast.success('Mot de passe modifié avec succès !')
+
+        // Essayer de récupérer l'email depuis les userContext de SuperTokens
+        // ou rediriger vers login pour connexion manuelle
+        await router.push('/login?message=password-reset-success')
       } else {
-        // Reset ok mais auto-login échoué
-        toast.success('Mot de passe modifié avec succès ! Vous pouvez maintenant vous connecter.')
-        await router.push('/login')
+        // Token invalide ou expiré
+        toast.error('Le lien de réinitialisation est invalide ou a expiré')
+        await router.push('/reset-password')
       }
-    } else {
+    } catch (error) {
+      console.error('Reset password error:', error)
       toast.error('Erreur lors de la réinitialisation du mot de passe')
     }
   }
@@ -57,7 +60,7 @@
   onMounted(() => {
     if (!token) {
       toast.error('Token de réinitialisation manquant')
-      return navigateTo('/login')
+      return navigateTo('/reset-password')
     }
   })
 </script>
@@ -67,17 +70,7 @@
     <AutoForm
       class="space-y-6"
       :schema="formSchema"
-      :default-values="defaultValues"
       :field-config="{
-        email: {
-          label: 'Email',
-          inputProps: {
-            type: 'email',
-            placeholder: 'votre@email.com',
-            autocomplete: 'email',
-            disabled: !!emailFromUrl, // Lecture seule si l'email vient de l'URL
-          },
-        },
         password: {
           label: 'Nouveau mot de passe',
           inputProps: {
